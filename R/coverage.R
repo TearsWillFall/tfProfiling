@@ -156,16 +156,16 @@ calculate_coverage_tss=function(bin_path="tools/samtools/samtools",ref_data="",b
   ## cov_data=read.csv(text=system(paste(bin_path,"depth base -t 3 -z -L ",paste0(tss_data$chr,":",as.numeric(tss_data$pos)-start,"-",as.numeric(tss_data$pos)+end),bam),intern=TRUE),header=TRUE,sep="\t")
   ## cov_data=cbind(cov_data[,1:3],strand=tss_data$strand)
   ## names(cov_data)=c("chr","pos","cov","strand")
-  cov_data=read.csv(text=system(paste(bin_path,"depth -aa -Q",mapq, "-r",paste0(tss_data[1],":",as.numeric(tss_data[4])-start,"-",as.numeric(tss_data[4])+end),bam),intern=TRUE),header=FALSE,sep="\t")
+  cov_data=read.csv(text=system(paste(bin_path,"depth -aa -Q",mapq, "-r",paste0(tss_data[1],":",as.numeric(tss_data[5])-start,"-",as.numeric(tss_data[5])+end),bam),intern=TRUE),header=FALSE,sep="\t")
   colnames(cov_data)=c("chr","pos","cov")
-  norm_cov=get_norm_local_coverage(pos=tss_data$pos,chr=tss_data$chr,norm_log2=norm_log2)
+  norm_cov=get_norm_local_coverage(pos=tss_data[4],chr=tss_data[1],norm_log2=norm_log2)
   if (norm_cov==0){
     norm_cov=0.001
   }
 
-  cov_data=cbind(cov_data,strand=tss_data$strand)
+  cov_data=cbind(cov_data,strand=tss_data[4])
 
-  return(cov_data %>% dplyr::mutate(cor_cov=cov/mean_cov)  %>% dplyr::mutate(norm_cor_cov=ifelse(cor_cov<cov_limit,cor_cov/norm_cov,NA),pos_relative_to_tss=dplyr::if_else(strand=="+",pos-as.numeric(tss_data$pos),-(pos-as.numeric(tss_data$pos)))) %>% dplyr::arrange(pos_relative_to_tss))
+  return(cov_data %>% dplyr::mutate(cor_cov=cov/mean_cov)  %>% dplyr::mutate(norm_cor_cov=ifelse(cor_cov<cov_limit,cor_cov/norm_cov,NA),pos_relative_to_tss=dplyr::if_else(strand=="+",pos-as.numeric(tss_data[5]),-(pos-as.numeric(tss_data[5])))) %>% dplyr::arrange(pos_relative_to_tss))
   }
   cl=parallel::makeCluster(threads)
   coverage_list=parallel::parApply(cl,tss_to_analyze,1,FUN=FUN,bin_path=bin_path,norm_log2=norm_log2,start=tss_start,end=tss_end,mean_cov=mean_cov,bam=bam,cov_limit=cov_limit,mapq=mapq)
