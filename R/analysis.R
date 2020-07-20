@@ -115,7 +115,7 @@ analyze_tss_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bin
   plot_motif_coverage(log_data,tf_name=tf_name,sample_name=sample_name)
   tictoc::toc()
 
-  print("Analysis finished for", tf_name)
+  print(paste0("Analysis finished for", tf_name))
   tictoc::toc()
   print("######################################################")
 }
