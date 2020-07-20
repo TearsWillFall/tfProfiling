@@ -17,7 +17,8 @@ analyze_tss_around_position(
   cov_limit = 1000,
   max_regions = 1e+05,
   mapq = 0,
-  verbose = FALSE
+  verbose = FALSE,
+  output_dir = ""
 )
 }
 \arguments{
@@ -44,6 +45,8 @@ analyze_tss_around_position(
 \item{mapq}{Min quality of mapping reads. Default 0}
 
 \item{verbose}{Enables progress messages. Default False.}
+
+\item{output_dir}{Directory to output results.}
 }
 \description{
 This function takes a BED file with TFBS, a BAM file with an aligned sequence and a TXT file with the normalized

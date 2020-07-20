@@ -4,12 +4,12 @@
 \alias{get_mean_and_conf_intervals}
 \title{Calculate mean and confidence intervals for positions relative to TFBSs}
 \usage{
-get_mean_and_conf_intervals(data = "", CI = 0.95)
+get_mean_and_conf_intervals(cov_data = "", CI = 0.95)
 }
 \arguments{
-\item{data}{LIST of DATA.FRAMES with the data}
-
 \item{CI}{Confidence Interval}
+
+\item{data}{LIST of DATA.FRAMES with the data}
 }
 \description{
 This function takes a LIST of DATA.FRAMES as input(each DATA.FRAME for each TFBS), and returns a DATA.FRAME
