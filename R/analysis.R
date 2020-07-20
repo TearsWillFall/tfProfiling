@@ -17,10 +17,11 @@
 #' @param mapq Min quality of mapping reads. Default 0
 #' @param threads Number of threads. Default 1
 #' @param verbose Enables progress messages. Default False.
+#' @param output_dir Directory to output results.
 #' @export
 
 
-analyze_tss_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bin_path2="tools/samtools/samtools",bed="",bam="",tss_start=1000,tss_end=1000,mean_cov="",norm="",threads=1,cov_limit=1000,max_regions=100000,mapq=0,verbose=FALSE){
+analyze_tss_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bin_path2="tools/samtools/samtools",bed="",bam="",tss_start=1000,tss_end=1000,mean_cov="",norm="",threads=1,cov_limit=1000,max_regions=100000,mapq=0,verbose=FALSE,output_dir==""){
   tictoc::tic("Analysis time")
 
 
