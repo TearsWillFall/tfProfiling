@@ -155,12 +155,13 @@ calculate_coverage_tss=function(bin_path="tools/samtools/samtools",ref_data="",b
 
 
   FUN=function(x,bin_path,norm_log2,start,end,mean_cov,bam,cov_limit,mapq){
-  tss_data=as.data.frame(x)
+  tss_data=t(x)
   ## IF running sambamba
   ## cov_data=read.csv(text=system(paste(bin_path,"depth base -t 3 -z -L ",paste0(tss_data$chr,":",as.numeric(tss_data$pos)-start,"-",as.numeric(tss_data$pos)+end),bam),intern=TRUE),header=TRUE,sep="\t")
   ## cov_data=cbind(cov_data[,1:3],strand=tss_data$strand)
   ## names(cov_data)=c("chr","pos","cov","strand")
-  cov_data=read.csv(text=system(paste(bin_path,"depth -aa -Q",mapq, "-r",paste0(tss_data[1],":",as.numeric(tss_data[5])-start,"-",as.numeric(tss_data[5])+end),bam),intern=TRUE),header=FALSE,sep="\t")
+
+  cov_data=read.csv(text=system(paste(bin_path,"depth -aa -Q",mapq, "-r",paste0(tss_data$chr,":",as.numeric(tss_data$pos)-start,"-",as.numeric(tss_data$pos)+end),bam),intern=TRUE),header=FALSE,sep="\t")
   colnames(cov_data)=c("chr","pos","cov")
   norm_cov=get_norm_local_coverage(pos=tss_data[4],chr=tss_data[1],norm_log2=norm_log2)
   if (norm_cov==0){
