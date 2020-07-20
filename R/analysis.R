@@ -21,7 +21,7 @@
 
 
 analyze_tss_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bin_path2="tools/samtools/samtools",bed="",bam="",tss_start=1000,tss_end=1000,mean_cov="",norm="",threads=1,cov_limit=1000,max_regions=100000,mapq=0,verbose=FALSE){
-  tic("Analysis time")
+  tictoc::tic("Analysis time")
 
 
   options(scipen=999)
@@ -89,16 +89,16 @@ analyze_tss_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bin
   # Calculate Mean Depth Coverage Around TFBS
 
   print("Calculating Mean Depth Coverage Around TFBS")
-  tic("Calculation time")
+  tictoc::tic("Calculation time")
   coverage_list=calculate_coverage_tss(bin_path=bin_path2,ref_data=ref_data,bam=bam,norm_log2=norm_log2,tss_start=tss_start,tss_end=tss_end,cov_limit=cov_limit,output_dir=output_dir,mapq=mapq,tf_name=tf_name,sample_name=sample_name)
   log_data=get_mean_and_conf_intervals(cov_data=coverage_list)
-  toc()
+  tictoc::toc()
   print("Generating plots")
-  tic("Generation time")
+  tictoc::tic("Generation time")
   plot_motif_coverage(log_data,tf_name=tf_name,sample_name=sample_name)
-  toc()
+  tictoc::toc()
 
   print("Analysis finished for", tf_name)
-  toc()
+  tictoc::toc()
   print("######################################################")
 }
