@@ -36,6 +36,8 @@ analyze_tss_around_position(
 
 \item{mean_cov}{Mean genome wide coverage. If not provided it will be estimated.}
 
+\item{norm}{Path to TXT file with normalized local coverage}
+
 \item{threads}{Number of threads. Default 1}
 
 \item{cov_limit}{Max base depth. Default 1000}

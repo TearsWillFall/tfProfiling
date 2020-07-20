@@ -12,6 +12,7 @@
 #' @param tss_start Number of bases to analyze forward from TFBS central point. Default 1000
 #' @param tss_end Number of bases to analyze  backward from TFBS central point. Default 1000
 #' @param mean_cov Mean genome wide coverage. If not provided it will be estimated.
+#' @param norm Path to TXT file with normalized local coverage
 #' @param cov_limit Max base depth. Default 1000
 #' @param max_regions Max number of TFBS to analyze. Default 100000
 #' @param mapq Min quality of mapping reads. Default 0
@@ -34,10 +35,6 @@ analyze_tss_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bin
 
   if(output_dir==""){
     sep=""
-  }
-
-  if(!dir.exists(output_dir)){
-    dir.create(output_dir)
   }
 
   output_dir=paste0(output_dir,sep,sample_name)
@@ -67,7 +64,7 @@ analyze_tss_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bin
 
   # Calculate Mean Genome-wide Coverage
 
-  if (!mean_cov==""){
+  if (mean_cov==""){
     print("Calculating Genome-Wide Coverage")
     tictoc::tic("")
     system.time(calculate_genowide_coverage(bin_path=bin_path,bam=bam,verbose=verbose))
@@ -78,14 +75,13 @@ analyze_tss_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bin
 
   # Read normalized local coverage
 
-  if(!norm==""){
-    norm_log2=read.table(norm,header=TRUE)
-    colnames(norm_log2)=c("chr","start","end","log2")
-    if(any(is.na(norm_log2))){
-      warning("NAs found substituted with 0s.")
-      norm_log2[is.na(norm_log2)]=0
-    }
+  norm_log2=read.table(norm,header=TRUE)
+  colnames(norm_log2)=c("chr","start","end","log2")
+  if(any(is.na(norm_log2))){
+    warning("NAs found substituted with 0s.")
+    norm_log2[is.na(norm_log2)]=0
   }
+
 
   # Calculate Mean Depth Coverage Around TFBS
 
