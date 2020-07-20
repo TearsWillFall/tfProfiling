@@ -100,6 +100,11 @@ analyze_tss_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bin
   print("Calculating Mean Depth Coverage Around TFBS")
   tictoc::tic("Calculation time")
   coverage_list=calculate_coverage_tss(bin_path=bin_path2,ref_data=ref_data,bam=bam,norm_log2=norm_log2,tss_start=tss_start,tss_end=tss_end,cov_limit=cov_limit,output_dir=output_dir,mapq=mapq,tf_name=tf_name,sample_name=sample_name,threads=threads)
+  out_file=paste0(output_dir,sep,tf_name,".tss")
+
+  write.table(log_data,quote=FALSE,row.names=FALSE,out_file)
+
+
   log_data=get_mean_and_conf_intervals(cov_data=coverage_list)
   tictoc::toc()
   print("Generating plots")

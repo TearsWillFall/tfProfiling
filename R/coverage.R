@@ -174,13 +174,6 @@ calculate_coverage_tss=function(bin_path="tools/samtools/samtools",ref_data="",b
   print(paste("TSS analyzed:",nrow(tss_to_analyze)))
   print(paste("TSS skipped:",nrow(ref_data)-nrow(tss_to_analyze)))
 
-  sep="/"
-
-  if(output_dir==""){
-    sep=""
-  }
-  out_file=paste0(output_dir,sep,tf_name,".tss")
-
-  write.table(log_data,quote=FALSE,row.names=FALSE,out_file)
+  
   return(coverage_list)
   }
