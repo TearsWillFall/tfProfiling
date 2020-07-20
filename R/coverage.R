@@ -65,7 +65,10 @@ get_norm_local_coverage=function(pos="",chr="",norm_log2=""){
 #' @export
 
 get_mean_and_conf_intervals=function(cov_data="",CI=0.95){
-  FUN=function(x,cov_data){cov_data[[x],,drop=FALSE]$norm_cor_cov}
+  FUN=function(x,cov_data){
+    dat=cov_data[[x]]
+    return(dat[,"norm_cor_cov",drop=FALSE])
+  }
   norm_cor_cov_list=sapply(seq(1:length(cov_data)),FUN=FUN,cov_data=cov_data)
   norm_cor_cov_df=norm_cor_cov_list %>% dplyr::bind_cols()
   norm_cor_cov_means=rowMeans(norm_cor_cov_df,na.rm = TRUE)
