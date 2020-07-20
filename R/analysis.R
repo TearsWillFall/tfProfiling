@@ -31,6 +31,9 @@ analyze_tss_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bin
   sample_name=ULPwgs::get_sample_name(bam)
   tf_name=ULPwgs::get_sample_name(bed)
 
+
+  print(paste("Analyzing",tf_name,"Binding Sites for",sample_name))
+
   sep="/"
 
   if(output_dir==""){
@@ -72,7 +75,7 @@ analyze_tss_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bin
   }
 
 
-  print(paste("Analyzing",tf_name,"Binding Sites for",sample_name))
+
   print(paste(nrow(ref_data)," TSS found in total."))
 
   if ((max_regions) !=0 & max_regions<nrow(ref_data)){
