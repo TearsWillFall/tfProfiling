@@ -76,7 +76,7 @@ analyze_tss_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bin
 
 
 
-  print(paste(nrow(ref_data)," TSS found in total."))
+  print(paste(nrow(ref_data)," TSS found in total"))
 
   if ((max_regions) !=0 & max_regions<nrow(ref_data)){
     print(paste("Total TSS > Maximum Number of regions to analyze",paste0("(",max_regions,")")))
