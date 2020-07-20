@@ -169,7 +169,7 @@ calculate_coverage_tss=function(bin_path="tools/samtools/samtools",ref_data="",b
   }
   cl=parallel::makeCluster(threads)
   coverage_list=parallel::parApply(cl,tss_to_analyze,1,FUN=FUN,bin_path=bin_path,norm_log2=norm_log2,start=tss_start,end=tss_end,mean_cov=mean_cov,bam=bam,cov_limit=cov_limit,mapq=mapq)
-  parallel::stopCluster(cl)
+  on.exit(parallel::stopCluster(cl))
   print(paste("TSS analyzed:",nrow(tss_to_analyze)))
   print(paste("TSS skipped:",nrow(ref_data)-nrow(tss_to_analyze)))
 
