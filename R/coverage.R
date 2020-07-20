@@ -173,7 +173,7 @@ calculate_coverage_tss=function(bin_path="tools/samtools/samtools",ref_data="",b
   return(cov_data %>% dplyr::mutate(cor_cov=cov/as.numeric(mean_cov))  %>% dplyr::mutate(norm_cor_cov=ifelse(cor_cov<cov_limit,cor_cov/norm_cov,NA),pos_relative_to_tss=dplyr::if_else(strand=="+",pos-as.numeric(tss_data[5]),-(pos-as.numeric(tss_data[5])))) %>% dplyr::arrange(pos_relative_to_tss))
   }
   cl=parallel::makeCluster(threads)
-  coverage_list=pbapply(X=as.data.frame(tss_to_analyze),1,FUN=FUN,bin_path=bin_path,norm_log2=norm_log2,start=tss_start,end=tss_end,mean_cov=mean_cov,bam=bam,cov_limit=cov_limit,mapq=mapq,cl=cl)
+  coverage_list=pbapply(X=tss_to_analyze,1,FUN=FUN,bin_path=bin_path,norm_log2=norm_log2,start=tss_start,end=tss_end,mean_cov=mean_cov,bam=bam,cov_limit=cov_limit,mapq=mapq,cl=cl)
   ## coverage_list=pbapply::pblapply(seq(1,nrow(tss_to_analyze),1),FUN=FUN,tss_data=tss_to_analyze,bin_path=bin_path,norm_log2=norm_log2,start=tss_start,end=tss_end,mean_cov=mean_cov,bam=bam,cov_limit=cov_limit,mapq=mapq,cl=cl)
   on.exit(parallel::stopCluster(cl))
   print(paste("TSS analyzed:",nrow(tss_to_analyze)))
