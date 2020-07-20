@@ -71,7 +71,7 @@ analyze_tss_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bin
     mean_cov=get_mean_coverage(file=paste0(sample_name,"_GENOME_COVERAGE/",sample_name,"_genome_coverage.txt"),output_dir=paste0(sample_name,"_GENOME_COVERAGE/"),sample_name=sample_name,save=TRUE)
     tictoc::toc()
   }
-  print(paste0("Mean genome-wide coverage:",mean_cov))
+  print(paste0("Mean genome-wide coverage: ",mean_cov))
 
   # Read normalized local coverage
 
