@@ -137,7 +137,7 @@ get_mean_coverage=function(file="",output_dir="",region="genome",sample_name="",
 #' @param threads Number of threads. Default 1
 #' @param output_dir Directory to output results
 #' @export
-#' @import import pbapply
+#' @import pbapply
 
 calculate_coverage_tss=function(bin_path="tools/samtools/samtools",ref_data="",bam="",sample_name="",tf_name="",mean_cov="",norm_log2="",tss_start=1000,tss_end=1000,cov_limit=1000,mapq=0,threads=1,output_dir=""){
   if(ncol(ref_data)<6){
