@@ -21,7 +21,7 @@
 
 
 analyze_tss_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bin_path2="tools/samtools/samtools",bed="",bam="",tss_start=1000,tss_end=1000,mean_cov="",norm="",threads=1,cov_limit=1000,max_regions=100000,mapq=0,verbose=FALSE){
-
+  tic("Analysis time")
 
 
   options(scipen=999)
@@ -68,9 +68,12 @@ analyze_tss_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bin
 
   if (!mean_cov==""){
     print("Calculating Genome-Wide Coverage")
+    tictoc::tic("")
     system.time(calculate_genowide_coverage(bin_path=bin_path,bam=bam,verbose=verbose))
     mean_cov=get_mean_coverage(file=paste0(sample_name,"_GENOME_COVERAGE/",sample_name,"_genome_coverage.txt"),output_dir=paste0(sample_name,"_GENOME_COVERAGE/"),sample_name=sample_name,save=TRUE)
+    tictoc::toc("Calculation time")
   }
+  print(paste0("Mean genome-wide coverage:",mean_cov))
 
   # Read normalized local coverage
 
@@ -86,10 +89,16 @@ analyze_tss_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bin
   # Calculate Mean Depth Coverage Around TFBS
 
   print("Calculating Mean Depth Coverage Around TFBS")
-  system.time(coverage_list=calculate_coverage_tss(bin_path=bin_path2,ref_data=ref_data,bam=bam,norm_log2=norm_log2,tss_start=tss_start,tss_end=tss_end,cov_limit=cov_limit,output_dir=output_dir,mapq=mapq,verbose=verbose,tf_name=tf_name,sample_name=sample_name))
+  tic("Calculation time")
+  coverage_list=calculate_coverage_tss(bin_path=bin_path2,ref_data=ref_data,bam=bam,norm_log2=norm_log2,tss_start=tss_start,tss_end=tss_end,cov_limit=cov_limit,output_dir=output_dir,mapq=mapq,tf_name=tf_name,sample_name=sample_name)
   log_data=get_mean_and_conf_intervals(cov_data=coverage_list)
+  toc()
   print("Generating plots")
+  tic("Generation time")
   plot_motif_coverage(log_data,tf_name=tf_name,sample_name=sample_name)
+  toc()
+
   print("Analysis finished for", tf_name)
+  toc()
   print("######################################################")
 }
