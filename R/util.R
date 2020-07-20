@@ -17,15 +17,4 @@ char2seed <- function(x,set=TRUE){
 		return(seed)
 	}
 }
-
-#' @import foreach
-pbSapply <- function(cl, X, FUN, ...) {
-  doSNOW::registerDoSNOW(cl)
-  pb <- txtProgressBar(max=length(X),style=3)
-  on.exit(close(pb))
-  progress <- function(n) setTxtProgressBar(pb, n)
-  opts <- list(progress=progress)
-  foreach(i=X, .combine='c', .options.snow=opts) %dopar% {
-    FUN(i, ...)
-  }
-}
+pbapply

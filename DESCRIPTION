@@ -17,7 +17,7 @@ Imports:
     magrittr,
     dplyr,
     tictoc,
-    doSNOW
+    pbapply
 biocViews:
 Remotes:
          git::https://github.com/TearsWillFall/ULPwgs.git
