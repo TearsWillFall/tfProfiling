@@ -80,7 +80,7 @@ analyze_tss_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bin
 
   if ((max_regions) !=0 & max_regions<nrow(ref_data)){
     print(paste("Total TSS > Maximum Number of regions to analyze",paste0("(",max_regions,")")))
-    print(paste("Random sampling",max_regions,"regions from all TSS."))
+    print(paste("Random sampling",max_regions,"regions from all TSS"))
     char2seed(tf_name,FALSE)
     ref_data=ref_data[sample(c(1:nrow(ref_data)),max_regions),]
 
@@ -93,7 +93,7 @@ analyze_tss_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bin
   norm_log2=read.table(norm,header=TRUE)
   colnames(norm_log2)=c("chr","start","end","log2")
   if(any(is.na(norm_log2))){
-    warning("NAs found substituted with 0s.")
+    warning("NAs found substituted with 0s")
     norm_log2[is.na(norm_log2)]=0
   }
 

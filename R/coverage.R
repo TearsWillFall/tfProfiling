@@ -77,7 +77,7 @@ get_mean_and_conf_intervals=function(cov_data="",CI=0.95){
       norm_cor_cov_mes=apply(norm_cor_cov_df,1,FUN=function(x){qt(CI,sum(!is.na(x))-1)*sd(x[!is.na(x)])/sqrt(sum(!is.na(x)))})
         results=data.frame(POSITION_RELATIVE_TO_TSS=cov_data[[1]]$pos_relative_to_tss,MEAN_DEPTH=norm_cor_cov_means,CI95_LOWER_BOUND=norm_cor_cov_means-norm_cor_cov_mes,CI95_UPPER_BOUND=norm_cor_cov_means+norm_cor_cov_mes,TSS_ANALYZED=numb_analyz_tss)
   }else{
-  results=data.frame(POSITION_RELATIVE_TO_TSS=cov_data[[1]]$pos_relative_to_tss,MEAN_DEPTH=norm_cor_cov_means,TSS_ANALYZED=numb_analyz_tss)
+  results=data.frame(POSITION_RELATIVE_TO_TFBS=cov_data[[1]]$pos_relative_to_tss,MEAN_DEPTH=norm_cor_cov_means,TSS_ANALYZED=numb_analyz_tss)
   }
   return (results)
 }
