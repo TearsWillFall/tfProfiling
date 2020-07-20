@@ -82,7 +82,7 @@ analyze_tss_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bin
     print(paste("Total TSS > Maximum Number of regions to analyze",paste0("(",max_regions,")")))
     print(paste("Random sampling",max_regions,"regions from all TSS."))
     char2seed(tf_name,FALSE)
-    ref_data=sample(ref_data)
+    ref_data=sample(ref_data,max_regions)
 
   }
 
