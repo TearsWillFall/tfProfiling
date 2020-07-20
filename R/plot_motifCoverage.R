@@ -25,7 +25,7 @@ plot_motif_coverage=function(data="",trend_line=TRUE,tf_name="",sample_name="",o
   ggplot2::ggtitle(paste(tf_name,"for sample",sample_name)) +
   ggplot2::theme_classic()
   if(trend){
-      p=p+ggplot2::geom_line(col="red")+ ggplot2::geom_smooth(method = "loess", formula = y ~ x, size = 1) +
+      p=p+ggplot2::geom_line(col="red")+ ggplot2::geom_smooth(method = "loess", formula = y ~ x, size = 1)
   }
   print(p)
   dev.off()

@@ -1,6 +1,6 @@
 Package: tfProfiling
 Title: An implementation of PeterUlz (https://github.com/PeterUlz/TranscriptionFactorProfiling) TranscriptionFactorProfiling
-pipeline in R for GNU/Unix based systems
+       pipeline in R for GNU/Unix based systems
 Version: 0.0.0.9000
 Authors@R:
     person(given = "Osvaldas",
@@ -17,5 +17,6 @@ Imports:
     magrittr,
     dplyr
 biocViews:
-Remotes: git::https://github.com/TearsWillFall/BTools.git,
+Remotes:
+         git::https://github.com/TearsWillFall/BTools.git,
          git::https://github.com/TearsWillFall/ULPwgs.git
