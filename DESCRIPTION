@@ -18,5 +18,4 @@ Imports:
     dplyr
 biocViews:
 Remotes:
-         git::https://github.com/TearsWillFall/BTools.git,
          git::https://github.com/TearsWillFall/ULPwgs.git
