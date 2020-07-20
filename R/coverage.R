@@ -155,6 +155,7 @@ calculate_coverage_tss=function(bin_path="tools/samtools/samtools",ref_data="",b
 
 
   FUN=function(x,bin_path,norm_log2,start,end,mean_cov,bam,cov_limit,mapq){
+    print(tss_data)
   tss_data=t(x)
   ## IF running sambamba
   ## cov_data=read.csv(text=system(paste(bin_path,"depth base -t 3 -z -L ",paste0(tss_data$chr,":",as.numeric(tss_data$pos)-start,"-",as.numeric(tss_data$pos)+end),bam),intern=TRUE),header=TRUE,sep="\t")
@@ -168,7 +169,7 @@ calculate_coverage_tss=function(bin_path="tools/samtools/samtools",ref_data="",b
     norm_cov=0.001
   }
 
-  cov_data=cbind(cov_data,strand=tss_data[4])
+  cov_data=cbind(cov_data,strand=tss_data$strand)
 
   return(cov_data %>% dplyr::mutate(cor_cov=cov/as.numeric(mean_cov))  %>% dplyr::mutate(norm_cor_cov=ifelse(cor_cov<cov_limit,cor_cov/norm_cov,NA),pos_relative_to_tss=dplyr::if_else(strand=="+",pos-as.numeric(tss_data[5]),-(pos-as.numeric(tss_data[5])))) %>% dplyr::arrange(pos_relative_to_tss))
   }
