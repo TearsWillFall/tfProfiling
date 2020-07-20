@@ -67,7 +67,7 @@ get_norm_local_coverage=function(pos="",chr="",norm_log2=""){
 get_mean_and_conf_intervals=function(cov_data="",CI=0.95){
   FUN=function(x,cov_data){
     dat=cov_data[x]
-    print(dat)
+    print(cov_data)
     return(dat[,"norm_cor_cov",drop=FALSE])
   }
   norm_cor_cov_list=sapply(seq(1:length(cov_data)),FUN=FUN,cov_data=cov_data)
