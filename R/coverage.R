@@ -65,16 +65,16 @@ get_norm_local_coverage=function(pos="",chr="",norm_log2=""){
 #' @export
 
 get_mean_and_conf_intervals=function(cov_data="",CI=0.95){
-  FUN=function(x,cov_data){cov_data[x] %>% dplyr::select(norm_cor_cov)}
+  FUN=function(x,cov_data){cov_data[[x]] %>% dplyr::select(norm_cor_cov)}
   norm_cor_cov_list=sapply(seq(1:length(cov_data)),FUN=FUN,cov_data=cov_data)
   norm_cor_cov_df=norm_cor_cov_list %>% dplyr::bind_cols()
   norm_cor_cov_means=rowMeans(norm_cor_cov_df,na.rm = TRUE)
   numb_analyz_tss=norm_cor_cov_df %>% is.na() %>% `!` %>% rowSums()
   if (all(numb_analyz_tss>3)){
       norm_cor_cov_mes=apply(norm_cor_cov_df,1,FUN=function(x){qt(CI,sum(!is.na(x))-1)*sd(x[!is.na(x)])/sqrt(sum(!is.na(x)))})
-        results=data.frame(POSITION_RELATIVE_TO_TSS=cov_data[1]$pos_relative_to_tss,MEAN_DEPTH=norm_cor_cov_means,CI95_LOWER_BOUND=norm_cor_cov_means-norm_cor_cov_mes,CI95_UPPER_BOUND=norm_cor_cov_means+norm_cor_cov_mes,TSS_ANALYZED=numb_analyz_tss)
+        results=data.frame(POSITION_RELATIVE_TO_TSS=cov_data[[1]]$pos_relative_to_tss,MEAN_DEPTH=norm_cor_cov_means,CI95_LOWER_BOUND=norm_cor_cov_means-norm_cor_cov_mes,CI95_UPPER_BOUND=norm_cor_cov_means+norm_cor_cov_mes,TSS_ANALYZED=numb_analyz_tss)
   }else{
-  results=data.frame(POSITION_RELATIVE_TO_TSS=cov_data[1]$pos_relative_to_tss,MEAN_DEPTH=norm_cor_cov_means,TSS_ANALYZED=numb_analyz_tss)
+  results=data.frame(POSITION_RELATIVE_TO_TSS=cov_data[[1]]$pos_relative_to_tss,MEAN_DEPTH=norm_cor_cov_means,TSS_ANALYZED=numb_analyz_tss)
   }
   return (results)
 }
