@@ -18,7 +18,7 @@ char2seed <- function(x,set=TRUE){
 	}
 }
 
-#' @import doSNOW
+#' @import foreach
 pbSapply <- function(cl, X, FUN, ...) {
   doSNOW::registerDoSNOW(cl)
   pb <- txtProgressBar(max=length(X))
