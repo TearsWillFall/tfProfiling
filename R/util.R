@@ -21,7 +21,7 @@ char2seed <- function(x,set=TRUE){
 #' @import foreach
 pbSapply <- function(cl, X, FUN, ...) {
   doSNOW::registerDoSNOW(cl)
-  pb <- txtProgressBar(max=length(X))
+  pb <- txtProgressBar(max=length(X),style=3)
   on.exit(close(pb))
   progress <- function(n) setTxtProgressBar(pb, n)
   opts <- list(progress=progress)
