@@ -155,9 +155,9 @@ calculate_coverage_tss=function(bin_path="tools/samtools/samtools",ref_data="",b
 
   print(tss_to_analyze)
   FUN=function(x,bin_path,norm_log2,start,end,mean_cov,bam,cov_limit,mapq){
-
+  print(x)
   tss_data=t(x)
-  print(tss_data)
+
   ## IF running sambamba
   ## cov_data=read.csv(text=system(paste(bin_path,"depth base -t 3 -z -L ",paste0(tss_data$chr,":",as.numeric(tss_data$pos)-start,"-",as.numeric(tss_data$pos)+end),bam),intern=TRUE),header=TRUE,sep="\t")
   ## cov_data=cbind(cov_data[,1:3],strand=tss_data$strand)
