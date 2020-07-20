@@ -105,7 +105,7 @@ analyze_tss_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bin
   coverage_list=calculate_coverage_tss(bin_path=bin_path2,ref_data=ref_data,bam=bam,norm_log2=norm_log2,tss_start=tss_start,tss_end=tss_end,cov_limit=cov_limit,output_dir=output_dir,mapq=mapq,tf_name=tf_name,sample_name=sample_name,threads=threads,mean_cov=mean_cov)
   log_data=get_mean_and_conf_intervals(cov_data=coverage_list)
 
-  out_file=paste0(output_dir,sep,tf_name,".tss")
+  out_file=paste0(output_dir,"/",tf_name,".tss")
 
   write.table(log_data,quote=FALSE,row.names=FALSE,out_file)
 

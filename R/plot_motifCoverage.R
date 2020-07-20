@@ -24,7 +24,7 @@ plot_motif_coverage=function(data="",trend_line=TRUE,tf_name="",sample_name="",o
   ggplot2::geom_ribbon(ggplot2::aes(ymin=CI95_LOWER_BOUND, ymax=CI95_UPPER_BOUND), fill="red", alpha=0.1) +
   ggplot2::ggtitle(paste(tf_name,"for sample",sample_name)) +
   ggplot2::theme_classic()
-  if(trend){
+  if(trend_line){
       p=p+ggplot2::geom_line(col="red")+ ggplot2::geom_smooth(method = "loess", formula = y ~ x, size = 1)
   }
   print(p)
