@@ -56,8 +56,8 @@ analyze_tss_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bin
       mean_cov=get_mean_coverage(file=paste0(output_dir,"/",sample_name,"_GENOME_COVERAGE/",sample_name,"_genome_coverage.txt"),output_dir=paste0(output_dir,"/",sample_name,"_GENOME_COVERAGE/"),sample_name=sample_name,save=TRUE)
       tictoc::toc()
     }else{
-      print(paste("Genome-Wide Coverage for sample",sample_name,"already exists"))
-      print(paste("Loading"))
+      print(paste("Genome-wide Coverage for sample",sample_name,"already exists"))
+      print(paste("Loading Genome-wide Coverage"))
       mean_cov=get_mean_coverage(file=paste0(output_dir,"/",sample_name,"_GENOME_COVERAGE/",sample_name,"_genome_coverage.txt"),output_dir=paste0(output_dir,"/",sample_name,"_GENOME_COVERAGE/"),sample_name=sample_name,save=TRUE)
     }
 
@@ -116,4 +116,22 @@ analyze_tss_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bin
   print(paste("Analysis finished for", tf_name))
   tictoc::toc()
   print("######################################################")
+}
+
+accessibility_score=function(){
+
+
+    cov_data=read.table("~/SRR11742859/ATF-1/ATF-1.tss",header=TRUE)
+    sample_name<-args[2]
+    outfile<-
+    cov_data$LOW<-getLowSignal(cov_data$MEAN_DEPTH)
+    cov_data$HIGH<-getHighSignal(cov_data$MEAN_DEPTH.Cov,cov_data$LOW)
+
+    n<-cov_data$TSS_ANALYZED
+    range<-max(data$high) - min(data$high)
+    peaks<-find_peaks(data$high,m=20)
+    peak_positions = data$Position[peaks]
+    peak_distance = c(diff(peak_positions))
+    mean_peak_distance = mean(peak_distance)
+    median_peak_distance = median(peak_distance)
 }
