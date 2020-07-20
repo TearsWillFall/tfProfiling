@@ -66,10 +66,10 @@ analyze_tss_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bin
 
   if (mean_cov==""){
     print("Calculating Genome-Wide Coverage")
-    tictoc::tic("")
+    tictoc::tic("Calculation time")
     system.time(calculate_genowide_coverage(bin_path=bin_path,bam=bam,verbose=verbose))
     mean_cov=get_mean_coverage(file=paste0(sample_name,"_GENOME_COVERAGE/",sample_name,"_genome_coverage.txt"),output_dir=paste0(sample_name,"_GENOME_COVERAGE/"),sample_name=sample_name,save=TRUE)
-    tictoc::toc("Calculation time")
+    tictoc::toc()
   }
   print(paste0("Mean genome-wide coverage:",mean_cov))
 
