@@ -3,14 +3,14 @@
 #' This function takes a DATA.FRAME/ TXT file with the frequency data of the TFBS coverage and
 #' generates a plot for it.
 #'
-#' @param data DATA.FRAME with data or Path to TXT file
+#' @param data LIST with data or Path to TXT file
 #' @param output_dir Directory to output results.
 #' @export
 #' @import ggplot2
 
 plot_freq_decomposition=function(data="",output_dir=""){
 
-  if(!is.data.frame(data)){
+  if(!is.list(data)){
     cov_data=read.table(data,header=TRUE)
     name=ULPwgs::get_sample_name(data)
   }else{
