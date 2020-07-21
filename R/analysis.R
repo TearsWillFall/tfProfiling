@@ -133,11 +133,13 @@ analyze_tfbs_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bi
 
 
 
-accessibility_score=function(data="",output_dir=""){
+accessibility_score=function(data="",output_dir="",name=""){
+
     tictoc::tic("Calculation time")
 
     if(!is.data.frame(data)){
       cov_data=read.table(data,header=TRUE)
+      name=ULPwgs::get_sample_name(data)
     }else{
       cov_data=data
     }
@@ -149,7 +151,7 @@ accessibility_score=function(data="",output_dir=""){
       sep=""
     }
 
-    name=ULPwgs::get_sample_name(data)
+
     filter_length=max(cov_data$POSITION_RELATIVE_TO_TFBS)
 
     cov_data$LOW<-get_low_signal(cov_data$MEAN_DEPTH,ifelse(filter_length%%2==0,filter_length+1,filter_length))
@@ -167,12 +169,13 @@ accessibility_score=function(data="",output_dir=""){
     stats=list(TF=name,MEAN_NUMBER_TFBS_ANALYZED=n,RANGE=range,MEAN_PEAK_DISTANCE=mean_peak_distance,MEDIAN_PEAK_DISTANCE=median_peak_distance,PEAKS=peaks,PEAK_POSITIONS=peak_positions,PEAK_DISTANCE =peak_distance)
 
     info=list(COV_DATA=cov_data,STATS=stats)
-
+    tictoc::toc()
     out_file=paste0(output_dir,sep,name,".",max(cov_data$TFBS_ANALYZED),"TFBS.S",abs(min(cov_data$POSITION_RELATIVE_TO_TFBS)),"-E",max(cov_data$POSITION_RELATIVE_TO_TFBS),".FREQUENCY.txt")
 
-    sink(out_file)
-    print(info)
-    sink()
+    cat(paste(Sys.time(),"\n\n"),file=out_file,append=FALSE)
+    cat(cov_data,file=out_file,append=TRUE)
+    cat("\n",file=out_file,append=TRUE)
+    cat(stats,file=out_file,append=TRUE)
 
     return(info)
   }
