@@ -1,9 +1,21 @@
-plot_freq_decomposition=function(data=""){
+#' Plot frequency decomposition for TFBS coverage data
+#'
+#' This function takes a DATA.FRAME/ TXT file with the frequency data of the TFBS coverage and
+#' generates a plot for it.
+#'
+#' @param data DATA.FRAME with data or Path to TXT file
+#' @param output_dir Directory to output results.
+#' @export
+#' @import ggplot2
+
+plot_freq_decomposition=function(data="",output_dir=""){
 
   if(!is.data.frame(data)){
     cov_data=read.table(data,header=TRUE)
+    name=ULPwgs::get_sample_name(data)
   }else{
-    cov_data=data["cov_data"]
+    cov_data=data["COV_DATA"]
+    name=data$STATS$TF
   }
 
 
@@ -25,7 +37,7 @@ plot_freq_decomposition=function(data=""){
   scale_color_manual(name = "TYPE", labels = c("HIGH","LOW","ORIGINAL"),values = c("red","black", "blue"))+
   theme_classic()+
   theme(legend.position="bottom") +labs(y="NORM_MEAN_DEPTH")+
-  ggtitle("ORIGINAL+HIGH_&_LOW_FREQUENCY")
+  ggtitle("ORIGINAL+HIGH_&_LOW_FREQUENCY") +caption(name)
 
 
 
