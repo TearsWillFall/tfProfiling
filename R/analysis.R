@@ -176,7 +176,7 @@ accessibility_score=function(data="",output_dir="",name=""){
     ## Generate LOG with data
 
     cat(paste(Sys.time(),"\n\n"),file=out_file,append=FALSE)
-    cat(paste("## COVERAGE \n"),file=log_file,append=TRUE)
+    cat(paste("## COVERAGE \n"),file=out_file,append=TRUE)
     write.table(cov_data,file=out_file,append=TRUE,sep="\t",quote=FALSE,row.names=FALSE)
     cat("\n",file=out_file,append=TRUE)
     cat(paste("## STATS \n"),file=out_file,append=TRUE)
