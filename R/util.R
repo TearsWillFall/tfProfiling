@@ -17,4 +17,3 @@ char2seed <- function(x,set=TRUE){
 		return(seed)
 	}
 }
-pbapply

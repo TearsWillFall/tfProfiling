@@ -1,13 +1,13 @@
 
 get_low_signal <- function(coverage_signal) {
    normalized <- coverage_signal / mean(coverage_signal)
-   low<-sgolayfilt(normalized,3,1001)
+   low<-signal::sgolayfilt(normalized,3,1001)
    return(low)
 }
 
-getHighSignal <- function(coverage_signal,low_signal) {
+get_high_signal <- function(coverage_signal,low_signal) {
    normalized <- coverage_signal / mean(coverage_signal)
-   high<-sgolayfilt(normalized,3,51)
+   high<-signal::sgolayfilt(normalized,3,51)
    high_adjusted<-(high/low_signal)
    return(high_adjusted)
 }

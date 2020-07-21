@@ -117,21 +117,74 @@ analyze_tss_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bin
   tictoc::toc()
   print("######################################################")
 }
+file="~/SRR11742859/ATF-1/ATF-1.tss"
 
+
+
+library(ggplot2)
 accessibility_score=function(){
 
-
-    cov_data=read.table("~/SRR11742859/ATF-1/ATF-1.tss",header=TRUE)
-    sample_name<-args[2]
-    outfile<-
-    cov_data$LOW<-getLowSignal(cov_data$MEAN_DEPTH)
-    cov_data$HIGH<-getHighSignal(cov_data$MEAN_DEPTH.Cov,cov_data$LOW)
-
-    n<-cov_data$TSS_ANALYZED
-    range<-max(data$high) - min(data$high)
-    peaks<-find_peaks(data$high,m=20)
-    peak_positions = data$Position[peaks]
+library(tidyverse)
+    cov_data=read.table(file,header=TRUE)
+    sample_name=ULPwgs::get_sample_name(file)
+    cov_data$LOW<-get_low_signal(cov_data$MEAN_DEPTH)
+    cov_data$HIGH<-get_high_signal(cov_data$MEAN_DEPTH,cov_data$LOW)
+    n<-cov_data$TSS_ANALYZED[1]
+    range<-max(cov_data$HIGH) - min(cov_data$LOW)
+    peaks<-find_peaks(cov_data$HIGH,m=20)
+    peak_positions = cov_data$POSITION_RELATIVE_TO_TFBS[peaks]
     peak_distance = c(diff(peak_positions))
     mean_peak_distance = mean(peak_distance)
     median_peak_distance = median(peak_distance)
-}
+
+    df <- cov_data %>%
+    select(POSITION_RELATIVE_TO_TFBS,MEAN_DEPTH, HIGH, LOW) %>%
+    gather(key = "variable", value = "TYPE",-POSITION_RELATIVE_TO_TFBS)
+
+    p1=ggplot(cov_data,aes(x=POSITION_RELATIVE_TO_TFBS, y = MEAN_DEPTH)) +
+    geom_line(col="red") +theme_classic() +labs(y="MEAN_DEPTH") + ggtitle("ORIGINAL")
+
+    p2=ggplot(cov_data,aes(x=POSITION_RELATIVE_TO_TFBS, y = HIGH)) +
+    geom_line(col="darkred") +theme_classic() + ggtitle("HIGH_FREQUENCY") +labs(y="MEAN_DEPTH")
+
+    p3=ggplot(cov_data,aes(x=POSITION_RELATIVE_TO_TFBS, y = LOW)) +
+    geom_line(col="steelblue") +theme_classic() + ggtitle("LOW_FREQUENCY") +labs(y="MEAN_DEPTH")
+
+    arrow=ggplot(data.frame(c(0,1),c(0,1)))+geom_segment(aes(x = 5, y = 30, xend = 3.5, yend = 25),
+                arrow = arrow(length = unit(0.5, "cm"))) + theme_void()
+
+    p4=ggplot(df,aes(x=POSITION_RELATIVE_TO_TFBS, y = TYPE)) +
+    geom_line(aes(color = variable)) +
+    scale_color_manual(name = "TYPE", labels = c("HIGH","LOW","ORIGINAL"),values = c("darkred", "steelblue","red"))+
+    theme_classic()+
+    theme(legend.position="bottom") +labs(y="MEAN_DEPTH")+
+    ggtitle("ORIGINAL+HIGH_&_LOW_FREQUENCY")
+
+
+          p=gridExtra::grid.arrange(
+                  grobs = list(p1,p2,p3,p4),
+                  widths = c(1, 1, 1,1),
+                  layout_matrix = rbind(c(1, 1, 1,1),
+                                        c(2, 2, 3,3),
+                                        c(4, 4, 4,4)),
+                common.legend = TRUE, legend="right")
+
+                    p=p+annotation_custom(arrow)
+
+
+        fit <- loess(cov_data$HIGH ~ log(cov_data$POSITION_RELATIVE_TO_TFBS),data=cov_data)
+    data$prior<-predict(fit,data)
+
+    png(args[3])
+    ggplot()+geom_point(aes(x=data$V2,y=data$prior),color="blue")+geom_point(aes(x=data$V2,y=data$V3),color=rgb(0,0,0,0.3))+ylim(0,1)
+    dev.off()
+
+    data$adjusted_range<-data$V3 / data$prior
+    data$adjusted_range_normalized <- data$adjusted_range / data$adjusted_range[which(data$V1 == "CTCF.50perc_hg19.tss")]
+    data$adjusted_range_rank <- rank(data$adjusted_range)
+    #ggplot(filtered_data,aes(x=V2,y=adjusted_range))+geom_point()
+
+
+
+
+  }

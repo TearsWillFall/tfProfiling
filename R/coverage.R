@@ -140,12 +140,9 @@ get_mean_coverage=function(file="",output_dir="",region="genome",sample_name="",
 #' @import pbapply
 
 calculate_coverage_tss=function(bin_path="tools/samtools/samtools",ref_data="",bam="",sample_name="",tf_name="",mean_cov="",norm_log2="",tss_start=1000,tss_end=1000,cov_limit=1000,mapq=0,threads=1,output_dir=""){
-  if(ncol(ref_data)<6){
-    ref_data=data.frame(chr=ref_data[,1],start=ref_data[,2],end=ref_data[,3],strand="+",pos=as.integer((ref_data[,3]+ref_data[,2])/2))
 
-  }else{
-    ref_data=data.frame(chr=ref_data[,1],start=ref_data[,2],end=ref_data[,3],strand=ref_data[,which(ref_data[1,]=="+" |ref_data[1,]=="-")],pos=as.integer((ref_data[,3]+ref_data[,2])/2))
-  }
+  ref_data=data.frame(chr=ref_data[,1],start=ref_data[,2],end=ref_data[,3],strand=ref_data[,which(ref_data[1,]=="+" |ref_data[1,]=="-")],pos=(ref_data[,3]+ref_data[,2])/2)
+
 
   tss_to_analyze=ref_data
 
