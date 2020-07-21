@@ -159,15 +159,14 @@ accessibility_score=function(data="",output_dir="",name=""){
 
     n=floor(mean(cov_data$TFBS_ANALYZED))
     range=max(cov_data$HIGH) - min(cov_data$LOW)
-    peaks=find_peaks(cov_data$HIGH,m=20)
-    peak_positions = cov_data$POSITION_RELATIVE_TO_TFBS[peaks]
-    peak_distance = c(diff(peak_positions))
+    peaks=data.frame(PEAKS=find_peaks(cov_data$HIGH,m=20))
+    peak_positions = data.frame(PEAK_POSITIONS=cov_data$POSITION_RELATIVE_TO_TFBS[peaks])
+    peak_distance = data.frame(PEAK_DISTANCE=c(diff(peak_positions)))
     mean_peak_distance = mean(peak_distance)
     median_peak_distance = median(peak_distance)
 
 
-    stats=list(TF=name,MEAN_NUMBER_TFBS_ANALYZED=n,RANGE=range,MEAN_PEAK_DISTANCE=mean_peak_distance,MEDIAN_PEAK_DISTANCE=median_peak_distance,PEAKS=peaks,PEAK_POSITIONS=peak_positions,PEAK_DISTANCE =peak_distance)
-
+    stats=data.frame(TF=name,MEAN_NUMBER_TFBS_ANALYZED=n,RANGE=range,MEAN_PEAK_DISTANCE=mean_peak_distance,MEDIAN_PEAK_DISTANCE=median_peak_distance)
     info=list(COV_DATA=cov_data,STATS=stats)
     tictoc::toc()
 
@@ -176,11 +175,16 @@ accessibility_score=function(data="",output_dir="",name=""){
     ## Generate LOG with data
 
     cat(paste(Sys.time(),"\n\n"),file=out_file,append=FALSE)
-    cat(paste("## COVERAGE \n"),file=out_file,append=TRUE)
-    write.table(cov_data,file=out_file,append=TRUE,sep="\t",quote=FALSE,row.names=FALSE)
+    cat(paste("# COVERAGE \n"),file=out_file,append=TRUE)
+    write.table(cov_data,file=out_file,append=TRUE,sep="\t",quote=FALSE,row.names=FALSE,col.names=TRUE)
     cat("\n",file=out_file,append=TRUE)
     cat(paste("## STATS \n"),file=out_file,append=TRUE)
-    cat(stats,file=out_file,append=TRUE)
-
+    write.table(stats,file=out_file,append=TRUE,sep="\t",quote=FALSE,row.names=FALSE,col.names=TRUE)
+    cat(paste("### PEAKS \n"),file=out_file,append=TRUE)
+    write.table(peaks,file=out_file,append=TRUE,sep="\t",quote=FALSE,row.names=FALSE,col.names=TRUE)
+    cat(paste("### PEAK_POSITIONS \n"),file=out_file,append=TRUE)
+    write.table(peak_positions,file=out_file,append=TRUE,sep="\t",quote=FALSE,row.names=FALSE,col.names=TRUE)
+    cat(paste("#### PEAK_DISTANCE \n"),file=out_file,append=TRUE)
+    write.table(peak_distance,file=out_file,append=TRUE,sep="\t",quote=FALSE,row.names=FALSE,col.names=TRUE)
     return(info)
   }
