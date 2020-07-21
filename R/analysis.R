@@ -116,6 +116,7 @@ analyze_tfbs_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bi
   print(paste("Analysis finished for", tf_name))
   tictoc::toc()
   print("######################################################")
+  rm(list = ls())
   gc()
 }
 file="~/SRR11742864/Androgen/Androgen.tss"
