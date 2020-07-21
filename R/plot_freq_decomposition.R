@@ -18,6 +18,12 @@ plot_freq_decomposition=function(data="",output_dir=""){
     name=data$STATS$TF
   }
 
+  sep="/"
+
+  if(output_dir==""){
+    sep=""
+  }
+
 
   df <- cov_data %>%dplyr::select(POSITION_RELATIVE_TO_TFBS,MEAN_DEPTH, HIGH, LOW) %>% dplyr::mutate(MEAN_DEPTH=MEAN_DEPTH/mean(MEAN_DEPTH)) %>%
   tidyr::gather(key = "FACTOR", value = "TYPE",-POSITION_RELATIVE_TO_TFBS) %>% dplyr::mutate(FACTOR=relevel(factor(FACTOR),"MEAN_DEPTH","HIGH","LOW")) %>% dplyr::mutate(SIZE=ifelse(FACTOR=="MEAN_DEPTH",0.1,ifelse(FACTOR=="HIGH",0.11,0.12)))
@@ -41,13 +47,20 @@ plot_freq_decomposition=function(data="",output_dir=""){
 
 
 
-        p=gridExtra::grid.arrange(
-                grobs = list(p1,p2,p3,p4),
-                widths = c(1, 1, 1,1),
-                layout_matrix = rbind(c(1, 1, 1,1),
-                                      c(2, 2, 3,3),
-                                      c(4, 4, 4,4)),
-              common.legend = TRUE, legend="right")
+  p=gridExtra::grid.arrange(
+          grobs = list(p1,p2,p3,p4),
+          widths = c(1, 1, 1,1),
+          layout_matrix = rbind(c(1, 1, 1,1),
+                                c(2, 2, 3,3),
+                                c(4, 4, 4,4)),
+        common.legend = TRUE, legend="right")
 
-                  p=p+annotation_custom(arrow)
+
+out_file=paste0(output_dir,sep,name,".",max(cov_data$TFBS_ANALYZED),"TFBS.S",abs(min(cov_data$POSITION_RELATIVE_TO_TFBS)),"-E",max(cov_data$POSITION_RELATIVE_TO_TFBS),".FREQUENCY.pdf")
+
+pdf(out_file)
+print(p)
+dev.off()
+
+
 }

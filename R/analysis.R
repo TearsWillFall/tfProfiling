@@ -120,7 +120,21 @@ analyze_tfbs_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bi
 }
 
 
+#' Estimates the unranked Accesibility score for TFBS
+#'
+#' This function takes a DATA.FRAME/ TXT file with the TFBS coverage data and
+#' estimates the Accesibility score as the range between the global maximum and minimum of
+#' the high-frequency signal. In order, to estimate the high-frequency signal, and remove
+#' the local biases the Savitzky-Golay filter is used.
+
+#' @param data DATA.FRAME with data or Path to TXT file
+#' @param output_dir Directory to output results.
+#' @export
+
+
+
 accessibility_score=function(data="",output_dir=""){
+    tictoc::tic("Calculation time")
 
     if(!is.data.frame(data)){
       cov_data=read.table(data,header=TRUE)
@@ -136,13 +150,14 @@ accessibility_score=function(data="",output_dir=""){
     }
 
     name=ULPwgs::get_sample_name(data)
+    filter_length=max(cov_data$POSITION_RELATIVE_TO_TFBS)
 
-    cov_data$LOW<-get_low_signal(cov_data$MEAN_DEPTH,max(cov_data$POSITION_RELATIVE_TO_TFBS)+1)
-    cov_data$HIGH<-get_high_signal(cov_data$MEAN_DEPTH,cov_data$LOW,(max(cov_data$POSITION_RELATIVE_TO_TFBS))/2+1)
+    cov_data$LOW<-get_low_signal(cov_data$MEAN_DEPTH,ifelse(filter_length%%2==0,filter_length+1,filter_length))
+    cov_data$HIGH<-get_high_signal(cov_data$MEAN_DEPTH,cov_data$LOW,ifelse(floor(filter_length/20)%%2==0,floor(filter_length/20)+1,floor(filter_length/20)))
 
-    n<-floor(mean(cov_data$TFBS_ANALYZED))
-    range<-max(cov_data$HIGH) - min(cov_data$LOW)
-    peaks<-find_peaks(cov_data$HIGH,m=20)
+    n=floor(mean(cov_data$TFBS_ANALYZED))
+    range=max(cov_data$HIGH) - min(cov_data$LOW)
+    peaks=find_peaks(cov_data$HIGH,m=20)
     peak_positions = cov_data$POSITION_RELATIVE_TO_TFBS[peaks]
     peak_distance = c(diff(peak_positions))
     mean_peak_distance = mean(peak_distance)
