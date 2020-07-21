@@ -72,12 +72,12 @@ get_mean_and_conf_intervals=function(cov_data="",CI=0.95){
   norm_cor_cov_list=lapply(seq(1:length(cov_data)),FUN=FUN,cov_data=cov_data)
   norm_cor_cov_df=suppressMessages(norm_cor_cov_list %>% dplyr::bind_cols())
   norm_cor_cov_means=rowMeans(norm_cor_cov_df,na.rm = TRUE)
-  numb_analyz_tss=norm_cor_cov_df %>% is.na() %>% `!` %>% rowSums()
-  if (all(numb_analyz_tss>3)){
+  numb_analyz_tfbs=norm_cor_cov_df %>% is.na() %>% `!` %>% rowSums()
+  if (all(numb_analyz_tfbs>3)){
       norm_cor_cov_mes=apply(norm_cor_cov_df,1,FUN=function(x){qt(CI,sum(!is.na(x))-1)*sd(x[!is.na(x)])/sqrt(sum(!is.na(x)))})
-        results=data.frame(POSITION_RELATIVE_TO_TFBS=cov_data[[1]]$pos_relative_to_tss,MEAN_DEPTH=norm_cor_cov_means,CI95_LOWER_BOUND=norm_cor_cov_means-norm_cor_cov_mes,CI95_UPPER_BOUND=norm_cor_cov_means+norm_cor_cov_mes,TSS_ANALYZED=numb_analyz_tss)
+        results=data.frame(POSITION_RELATIVE_TO_TFBS=cov_data[[1]]$pos_relative_to_tfbs,MEAN_DEPTH=norm_cor_cov_means,CI95_LOWER_BOUND=norm_cor_cov_means-norm_cor_cov_mes,CI95_UPPER_BOUND=norm_cor_cov_means+norm_cor_cov_mes,TFBS_ANALYZED=numb_analyz_tfbs)
   }else{
-  results=data.frame(POSITION_RELATIVE_TO_TFBS=cov_data[[1]]$pos_relative_to_tss,MEAN_DEPTH=norm_cor_cov_means,TSS_ANALYZED=numb_analyz_tss)
+  results=data.frame(POSITION_RELATIVE_TO_TFBS=cov_data[[1]]$pos_relative_to_tfbs,MEAN_DEPTH=norm_cor_cov_means,TFBS_ANALYZED=numb_analyz_tfbs)
   }
   return (results)
 }
@@ -119,7 +119,7 @@ get_mean_coverage=function(file="",output_dir="",region="genome",sample_name="",
 #'
 #' This function takes a DATA.FRAME with TFBS positions, a BAM file with the sequence to analyze, a mean genome wide coverage,
 #' local coverage values for CNA, and outputs the corrected mean depth coverage values around TFBS and
-#' a TSS file with them. For better understanding check: https://www.nature.com/articles/s41467-019-12714-4
+#' a tfbs file with them. For better understanding check: https://www.nature.com/articles/s41467-019-12714-4
 #'
 #'
 #' @param bin_path Path to binary. Default tools/samtools/samtools
@@ -129,8 +129,8 @@ get_mean_coverage=function(file="",output_dir="",region="genome",sample_name="",
 #' @param tf_name Transcription Factor name
 #' @param mean_cov Mean genome wide coverage.
 #' @param norm_log2 Data.frame with normalized local coverage
-#' @param tss_start Number of bases to analyze forward from TFBS central point. Default 1000
-#' @param tss_end Number of bases to analyze  backward from TFBS central point. Default 1000
+#' @param tfbs_start Number of bases to analyze forward from TFBS central point. Default 1000
+#' @param tfbs_end Number of bases to analyze  backward from TFBS central point. Default 1000
 #' @param cov_limit Max base depth. Default 1000
 #' @param max_regions Max number of TFBS to analyze. Default 100000
 #' @param mapq Min quality of mapping reads. Default 0
@@ -139,42 +139,42 @@ get_mean_coverage=function(file="",output_dir="",region="genome",sample_name="",
 #' @export
 #' @import pbapply
 
-calculate_coverage_tss=function(bin_path="tools/samtools/samtools",ref_data="",bam="",sample_name="",tf_name="",mean_cov="",norm_log2="",tss_start=1000,tss_end=1000,cov_limit=1000,mapq=0,threads=1,output_dir=""){
+calculate_coverage_tfbs=function(bin_path="tools/samtools/samtools",ref_data="",bam="",sample_name="",tf_name="",mean_cov="",norm_log2="",tfbs_start=1000,tfbs_end=1000,cov_limit=1000,mapq=0,threads=1,output_dir=""){
 
   ref_data=data.frame(chr=ref_data[,1],start=ref_data[,2],end=ref_data[,3],strand=ref_data[,which(ref_data[1,]=="+" |ref_data[1,]=="-")],pos=as.integer((ref_data[,3]+ref_data[,2])/2))
 
 
-  tss_to_analyze=ref_data
+  tfbs_to_analyze=ref_data
 
-  ## Filter for overlapping TSS or duplicated TSS to save time
+  ## Filter for overlapping TFBS or duplicated TFBS to save time
 
-  tss_to_analyze=tss_to_analyze %>% dplyr::filter(!grepl("_",chr),pos-tss_start>1) %>% dplyr::distinct(chr, pos, .keep_all = TRUE)
+  tfbs_to_analyze=tfbs_to_analyze %>% dplyr::filter(!grepl("_",chr),pos-tfbs_start>1) %>% dplyr::distinct(chr, pos, .keep_all = TRUE)
 
   FUN=function(x,bin_path,norm_log2,start,end,mean_cov,bam,cov_limit,mapq){
-  tss_data=t(x)
+  tfbs_data=t(x)
 
   ## IF running sambamba
-  ## cov_data=read.csv(text=system(paste(bin_path,"depth base -t 3 -z -L ",paste0(tss_data$chr,":",as.numeric(tss_data$pos)-start,"-",as.numeric(tss_data$pos)+end),bam),intern=TRUE),header=TRUE,sep="\t")
-  ## cov_data=cbind(cov_data[,1:3],strand=tss_data$strand)
+  ## cov_data=read.csv(text=system(paste(bin_path,"depth base -t 3 -z -L ",paste0(tfbs_data$chr,":",as.numeric(tfbs_data$pos)-start,"-",as.numeric(tfbs_data$pos)+end),bam),intern=TRUE),header=TRUE,sep="\t")
+  ## cov_data=cbind(cov_data[,1:3],strand=tfbs_data$strand)
   ## names(cov_data)=c("chr","pos","cov","strand")
 
-  cov_data=read.csv(text=system(paste(bin_path,"depth -a -Q",mapq, "-r",paste0(tss_data[1],":",as.numeric(tss_data[5])-start,"-",as.numeric(tss_data[5])+end),bam),intern=TRUE),header=FALSE,sep="\t")
+  cov_data=read.csv(text=system(paste(bin_path,"depth -a -Q",mapq, "-r",paste0(tfbs_data[1],":",as.numeric(tfbs_data[5])-start,"-",as.numeric(tfbs_data[5])+end),bam),intern=TRUE),header=FALSE,sep="\t")
   colnames(cov_data)=c("chr","pos","cov")
-  norm_cov=get_norm_local_coverage(pos=tss_data[5],chr=tss_data[1],norm_log2=norm_log2)
+  norm_cov=get_norm_local_coverage(pos=tfbs_data[5],chr=tfbs_data[1],norm_log2=norm_log2)
   if (norm_cov==0){
     norm_cov=0.001
   }
 
-  cov_data=cbind(cov_data,strand=tss_data[5])
+  cov_data=cbind(cov_data,strand=tfbs_data[5])
 
-  return(cov_data %>% dplyr::mutate(cor_cov=cov/as.numeric(mean_cov))  %>% dplyr::mutate(norm_cor_cov=ifelse(cor_cov<cov_limit,cor_cov/norm_cov,NA),pos_relative_to_tss=dplyr::if_else(strand=="+",pos-as.numeric(tss_data[5]),-(pos-as.numeric(tss_data[5])))) %>% dplyr::arrange(pos_relative_to_tss))
+  return(cov_data %>% dplyr::mutate(cor_cov=cov/as.numeric(mean_cov))  %>% dplyr::mutate(norm_cor_cov=ifelse(cor_cov<cov_limit,cor_cov/norm_cov,NA),pos_relative_to_tfbs=dplyr::if_else(strand=="+",pos-as.numeric(tfbs_data[5]),-(pos-as.numeric(tfbs_data[5])))) %>% dplyr::arrange(pos_relative_to_tfbs))
   }
   cl=parallel::makeCluster(threads)
-  coverage_list=pbapply(X=tss_to_analyze,1,FUN=FUN,bin_path=bin_path,norm_log2=norm_log2,start=tss_start,end=tss_end,mean_cov=mean_cov,bam=bam,cov_limit=cov_limit,mapq=mapq,cl=cl)
-  ## coverage_list=pbapply::pblapply(seq(1,nrow(tss_to_analyze),1),FUN=FUN,tss_data=tss_to_analyze,bin_path=bin_path,norm_log2=norm_log2,start=tss_start,end=tss_end,mean_cov=mean_cov,bam=bam,cov_limit=cov_limit,mapq=mapq,cl=cl)
+  coverage_list=pbapply(X=tfbs_to_analyze,1,FUN=FUN,bin_path=bin_path,norm_log2=norm_log2,start=tfbs_start,end=tfbs_end,mean_cov=mean_cov,bam=bam,cov_limit=cov_limit,mapq=mapq,cl=cl)
+  ## coverage_list=pbapply::pblapply(seq(1,nrow(tfbs_to_analyze),1),FUN=FUN,tfbs_data=tfbs_to_analyze,bin_path=bin_path,norm_log2=norm_log2,start=tfbs_start,end=tfbs_end,mean_cov=mean_cov,bam=bam,cov_limit=cov_limit,mapq=mapq,cl=cl)
   on.exit(parallel::stopCluster(cl))
-  print(paste("TSS analyzed:",nrow(tss_to_analyze)))
-  print(paste("TSS skipped:",nrow(ref_data)-nrow(tss_to_analyze)))
+  print(paste("TFBS analyzed:",nrow(tfbs_to_analyze)))
+  print(paste("TFBS skipped:",nrow(ref_data)-nrow(tfbs_to_analyze)))
 
 
   return(coverage_list)

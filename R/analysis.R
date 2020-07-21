@@ -9,8 +9,8 @@
 #' @param bin_path2 Path to secondary binary. Default tools/samtools/samtools
 #' @param bed Path to BED file.
 #' @param bam Path to BAM file.
-#' @param tss_start Number of bases to analyze forward from TFBS central point. Default 1000
-#' @param tss_end Number of bases to analyze  backward from TFBS central point. Default 1000
+#' @param tfbs_start Number of bases to analyze forward from TFBS central point. Default 1000
+#' @param tfbs_end Number of bases to analyze  backward from TFBS central point. Default 1000
 #' @param mean_cov Mean genome wide coverage. If not provided it will be estimated.
 #' @param norm Path to TXT file with normalized local coverage
 #' @param cov_limit Max base depth. Default 1000
@@ -22,7 +22,7 @@
 #' @export
 
 
-analyze_tss_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bin_path2="tools/samtools/samtools",bed="",bam="",tss_start=1000,tss_end=1000,mean_cov="",norm="",threads=1,cov_limit=1000,max_regions=100000,mapq=0,verbose=FALSE,output_dir=""){
+analyze_tfbs_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bin_path2="tools/samtools/samtools",bed="",bam="",tfbs_start=1000,tfbs_end=1000,mean_cov="",norm="",threads=1,cov_limit=1000,max_regions=100000,mapq=0,verbose=FALSE,output_dir=""){
   tictoc::tic("Analysis time")
 
 
@@ -76,7 +76,7 @@ analyze_tss_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bin
 
 
 
-  print(paste(nrow(ref_data)," TSS found in total"))
+  print(paste(nrow(ref_data)," TFBS found in total"))
 
   if ((max_regions) !=0 & max_regions<nrow(ref_data)){
     print(paste("Total TFBS > Maximum Number of regions to analyze",paste0("(",max_regions,")")))
@@ -101,7 +101,7 @@ analyze_tss_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bin
   # Calculate Mean Depth Coverage Around TFBS
 
   print("Calculating Mean Depth Coverage Around TFBS")
-  coverage_list=calculate_coverage_tss(bin_path=bin_path2,ref_data=ref_data,bam=bam,norm_log2=norm_log2,tss_start=tss_start,tss_end=tss_end,cov_limit=cov_limit,output_dir=output_dir,mapq=mapq,tf_name=tf_name,sample_name=sample_name,threads=threads,mean_cov=mean_cov)
+  coverage_list=calculate_coverage_tfbs(bin_path=bin_path2,ref_data=ref_data,bam=bam,norm_log2=norm_log2,tfbs_start=tfbs_start,tfbs_end=tfbs_end,cov_limit=cov_limit,output_dir=output_dir,mapq=mapq,tf_name=tf_name,sample_name=sample_name,threads=threads,mean_cov=mean_cov)
   log_data=get_mean_and_conf_intervals(cov_data=coverage_list)
 
   out_file=paste0(output_dir,"/",tf_name,".tss")
@@ -117,7 +117,7 @@ analyze_tss_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bin
   tictoc::toc()
   print("######################################################")
 }
-file="~/SRR11742859/ATF-1/ATF-1.tss"
+file="~/SRR11742859/CTCF/CTCF.tfbs"
 
 
 
@@ -129,7 +129,7 @@ library(tidyverse)
     sample_name=ULPwgs::get_sample_name(file)
     cov_data$LOW<-get_low_signal(cov_data$MEAN_DEPTH)
     cov_data$HIGH<-get_high_signal(cov_data$MEAN_DEPTH,cov_data$LOW)
-    n<-cov_data$TSS_ANALYZED[1]
+    n<-cov_data$TFBS_ANALYZED[1]
     range<-max(cov_data$HIGH) - min(cov_data$LOW)
     peaks<-find_peaks(cov_data$HIGH,m=20)
     peak_positions = cov_data$POSITION_RELATIVE_TO_TFBS[peaks]
@@ -138,26 +138,24 @@ library(tidyverse)
     median_peak_distance = median(peak_distance)
 
     df <- cov_data %>%
-    select(POSITION_RELATIVE_TO_TFBS,MEAN_DEPTH, HIGH, LOW) %>%
-    gather(key = "variable", value = "TYPE",-POSITION_RELATIVE_TO_TFBS)
+    dplyr::select(POSITION_RELATIVE_TO_TFBS,MEAN_DEPTH, HIGH, LOW) %>% dplyr::mutate(MEAN_DEPTH=MEAN_DEPTH/mean(MEAN_DEPTH)) %>%
+    tidyr::gather(key = "variable", value = "TYPE",-POSITION_RELATIVE_TO_TFBS)
 
-    p1=ggplot(cov_data,aes(x=POSITION_RELATIVE_TO_TFBS, y = MEAN_DEPTH)) +
-    geom_line(col="red") +theme_classic() +labs(y="MEAN_DEPTH") + ggtitle("ORIGINAL")
+    p1=ggplot(cov_data,aes(x=POSITION_RELATIVE_TO_TFBS, y = MEAN_DEPTH/mean(MEAN_DEPTH))) +
+    geom_line(col="black") +theme_classic() +labs(y="NORM_MEAN_DEPTH") + ggtitle("ORIGINAL")
 
     p2=ggplot(cov_data,aes(x=POSITION_RELATIVE_TO_TFBS, y = HIGH)) +
-    geom_line(col="darkred") +theme_classic() + ggtitle("HIGH_FREQUENCY") +labs(y="MEAN_DEPTH")
+    geom_line(col="darkred") +theme_classic() + ggtitle("HIGH_FREQUENCY") +labs(y="NORM_MEAN_DEPTH")
 
     p3=ggplot(cov_data,aes(x=POSITION_RELATIVE_TO_TFBS, y = LOW)) +
-    geom_line(col="steelblue") +theme_classic() + ggtitle("LOW_FREQUENCY") +labs(y="MEAN_DEPTH")
+    geom_line(col="steelblue") +theme_classic() + ggtitle("LOW_FREQUENCY") +labs(y="NORM_MEAN_DEPTH")
 
-    arrow=ggplot(data.frame(c(0,1),c(0,1)))+geom_segment(aes(x = 5, y = 30, xend = 3.5, yend = 25),
-                arrow = arrow(length = unit(0.5, "cm"))) + theme_void()
 
     p4=ggplot(df,aes(x=POSITION_RELATIVE_TO_TFBS, y = TYPE)) +
     geom_line(aes(color = variable)) +
-    scale_color_manual(name = "TYPE", labels = c("HIGH","LOW","ORIGINAL"),values = c("darkred", "steelblue","red"))+
+    scale_color_manual(name = "TYPE", labels = c("HIGH","LOW","ORIGINAL"),values = c("darkred", "steelblue","black"))+
     theme_classic()+
-    theme(legend.position="bottom") +labs(y="MEAN_DEPTH")+
+    theme(legend.position="bottom") +labs(y="NORM_MEAN_DEPTH")+
     ggtitle("ORIGINAL+HIGH_&_LOW_FREQUENCY")
 
 
