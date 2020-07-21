@@ -52,6 +52,7 @@ plot_freq_decomposition=function(data="",output_dir=""){
           widths = c(1, 1, 1,1),
           layout_matrix = rbind(c(1, 1, 1,1),
                                 c(2, 2, 3,3),
+                                c(4, 4, 4,4),
                                 c(4, 4, 4,4)),
         common.legend = TRUE, legend="right")
 
@@ -59,7 +60,7 @@ plot_freq_decomposition=function(data="",output_dir=""){
 out_file=paste0(output_dir,sep,name,".",max(cov_data$TFBS_ANALYZED),"TFBS.S",abs(min(cov_data$POSITION_RELATIVE_TO_TFBS)),"-E",max(cov_data$POSITION_RELATIVE_TO_TFBS),".FREQUENCY.pdf")
 
 pdf(out_file)
-print(p)
+p
 dev.off()
 
 
