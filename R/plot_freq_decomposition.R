@@ -42,8 +42,8 @@ plot_freq_decomposition=function(data="",output_dir=""){
   geom_line(aes(color = FACTOR)) +
   scale_color_manual(name = "TYPE", labels = c("HIGH","LOW","ORIGINAL"),values = c("red","black", "blue"))+
   theme_classic()+
-  theme(legend.position="bottom") +labs(y="NORM_MEAN_DEPTH")+
-  ggtitle("ORIGINAL+HIGH_&_LOW_FREQUENCY") +caption(name)
+  theme(legend.position="bottom") +labs(y="NORM_MEAN_DEPTH",caption=paste(name,"\n","Unranked Accessibility Score:",data$STATS$RANGE))+
+  ggtitle("ORIGINAL+HIGH_&_LOW_FREQUENCY")
 
 
 
