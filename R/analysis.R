@@ -123,7 +123,7 @@ file="~/SRR11742864/Androgen/Androgen.tss"
 
 
 library(ggplot2)
-accessibility_score=function(file="",output_dir=){
+accessibility_score=function(file="",output_dir=""){
     cov_data=read.table(file,header=TRUE)
     sample_name=ULPwgs::get_sample_name(file)
     cov_data$LOW<-get_low_signal(cov_data$MEAN_DEPTH)
