@@ -120,10 +120,7 @@ analyze_tfbs_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bi
 }
 file="~/SRR11742864/Androgen/Androgen.tss"
 
-list.files("~/SRR11742864/Androgen")=="Androgen.tss"
 
-setwd("~/tfProfiling")
-devtools::load_all()
 library(ggplot2)
 accessibility_score=function(file="",output_dir=""){
     cov_data=read.table(file,header=TRUE)
