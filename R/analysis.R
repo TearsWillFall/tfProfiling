@@ -81,7 +81,7 @@ analyze_tfbs_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bi
   if ((max_regions) !=0 & max_regions<nrow(ref_data)){
     print(paste("Total TFBS > Maximum Number of regions to analyze",paste0("(",max_regions,")")))
     print(paste("Random sampling",max_regions,"regions from all TFBS with seed",char2seed(tf_name,set=FALSE)))
-    char2seed(tf_name,set=TRUE)
+    char2seed(tf_name)
     ref_data=ref_data[sample(c(1:nrow(ref_data)),max_regions),]
 
   }
