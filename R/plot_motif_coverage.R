@@ -18,7 +18,7 @@ plot_motif_coverage=function(data="",trend_line=TRUE,tf_name="",sample_name="",o
   if(output_dir==""){
     sep=""
   }
-  out_file=paste0(output_dir,sep,sample_name,"_",tf_name,".pdf")
+  out_file=paste0(output_dir,sep,sample_name,"_",tf_name,".",max(data$TFBS_ANALYZED),"TFBS.S",tfbs_start,"-E",tfbs_end,".pdf")
   pdf(out_file)
   p=ggplot2::ggplot(data,  ggplot2::aes(x=POSITION_RELATIVE_TO_TFBS,y=MEAN_DEPTH))+
   ggplot2::geom_ribbon(ggplot2::aes(ymin=CI95_LOWER_BOUND, ymax=CI95_UPPER_BOUND), fill="red", alpha=0.1) +

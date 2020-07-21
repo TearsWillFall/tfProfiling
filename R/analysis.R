@@ -104,8 +104,7 @@ analyze_tfbs_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bi
   coverage_list=calculate_coverage_tfbs(bin_path=bin_path2,ref_data=ref_data,bam=bam,norm_log2=norm_log2,tfbs_start=tfbs_start,tfbs_end=tfbs_end,cov_limit=cov_limit,output_dir=output_dir,mapq=mapq,tf_name=tf_name,sample_name=sample_name,threads=threads,mean_cov=mean_cov)
   log_data=get_mean_and_conf_intervals(cov_data=coverage_list)
 
-  out_file=paste0(output_dir,"/",tf_name,".tss")
-
+  out_file=paste0(output_dir,"/",tf_name,".",max(log_data$TFBS_ANALYZED),"TFBS.S",tfbs_start,"-E",tfbs_end,".tss")
   write.table(log_data,quote=FALSE,row.names=FALSE,out_file)
 
   print("Generating plots")
@@ -121,16 +120,18 @@ analyze_tfbs_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bi
 }
 file="~/SRR11742864/Androgen/Androgen.tss"
 
+list.files("~/SRR11742864/Androgen")=="Androgen.tss"
 
-
+setwd("~/tfProfiling")
+devtools::load_all()
 library(ggplot2)
 accessibility_score=function(file="",output_dir=""){
     cov_data=read.table(file,header=TRUE)
     sample_name=ULPwgs::get_sample_name(file)
-    cov_data$LOW<-get_low_signal(cov_data$MEAN_DEPTH)
-    cov_data$HIGH<-get_high_signal(cov_data$MEAN_DEPTH,cov_data$LOW)
+    cov_data$LOW<-get_low_signal(cov_data$MEAN_DEPTH,max(cov_data$POSITION_RELATIVE_TO_TFBS)+1)
+    cov_data$HIGH<-get_high_signal(cov_data$MEAN_DEPTH,cov_data$LOW,(max(cov_data$POSITION_RELATIVE_TO_TFBS))/2+1)
 
-    n<-cov_data$TFBS_ANALYZED[1]
+    n<-floor(mean(cov_data$TFBS_ANALYZED))
     range<-max(cov_data$HIGH) - min(cov_data$LOW)
     peaks<-find_peaks(cov_data$HIGH,m=20)
     peak_positions = cov_data$POSITION_RELATIVE_TO_TFBS[peaks]
@@ -138,26 +139,32 @@ accessibility_score=function(file="",output_dir=""){
     mean_peak_distance = mean(peak_distance)
     median_peak_distance = median(peak_distance)
 
-    df <- cov_data %>%
-    dplyr::select(POSITION_RELATIVE_TO_TFBS,MEAN_DEPTH, HIGH, LOW) %>% dplyr::mutate(MEAN_DEPTH=MEAN_DEPTH/mean(MEAN_DEPTH)) %>%
-    tidyr::gather(key = "variable", value = "TYPE",-POSITION_RELATIVE_TO_TFBS)
+
+    stats=list(MEAN_NUMBER_TFBS_ANALYZED=n,RANGE=range,MEAN_PEAK_DISTANCE=mean_peak_distance,MEDIAN_PEAK_DISTANCE=median_peak_distance,PEAKS=peaks,PEAK_POSITIONS=peak_positions,PEAK_DISTANCE =peak_distance)
+
+    info=list(COV_DATA=cov_data,STATS=stats)
+    write.csv(info,"")
+
+    df <- cov_data %>%dplyr::select(POSITION_RELATIVE_TO_TFBS,MEAN_DEPTH, HIGH, LOW) %>% dplyr::mutate(MEAN_DEPTH=MEAN_DEPTH/mean(MEAN_DEPTH)) %>%
+    tidyr::gather(key = "FACTOR", value = "TYPE",-POSITION_RELATIVE_TO_TFBS) %>% dplyr::mutate(FACTOR=relevel(factor(FACTOR),"MEAN_DEPTH","HIGH","LOW")) %>% dplyr::mutate(SIZE=ifelse(FACTOR=="MEAN_DEPTH",0.1,ifelse(FACTOR=="HIGH",0.11,0.12)))
 
     p1=ggplot(cov_data,aes(x=POSITION_RELATIVE_TO_TFBS, y = MEAN_DEPTH/mean(MEAN_DEPTH))) +
-    geom_line(col="black") +theme_classic() +labs(y="NORM_MEAN_DEPTH") + ggtitle("ORIGINAL")
+    geom_line(col="red") +theme_classic() +labs(y="NORM_MEAN_DEPTH") + ggtitle("ORIGINAL")
 
     p2=ggplot(cov_data,aes(x=POSITION_RELATIVE_TO_TFBS, y = HIGH)) +
-    geom_line(col="darkred") +theme_classic() + ggtitle("HIGH_FREQUENCY") +labs(y="NORM_MEAN_DEPTH")
+    geom_line(col="black") +theme_classic() + ggtitle("HIGH_FREQUENCY") +labs(y="NORM_MEAN_DEPTH")
 
     p3=ggplot(cov_data,aes(x=POSITION_RELATIVE_TO_TFBS, y = LOW)) +
-    geom_line(col="steelblue") +theme_classic() + ggtitle("LOW_FREQUENCY") +labs(y="NORM_MEAN_DEPTH")
+    geom_line(col="blue") +theme_classic() + ggtitle("LOW_FREQUENCY") +labs(y="NORM_MEAN_DEPTH")
 
 
     p4=ggplot(df,aes(x=POSITION_RELATIVE_TO_TFBS, y = TYPE)) +
-    geom_line(aes(color = variable)) +
-    scale_color_manual(name = "TYPE", labels = c("HIGH","LOW","ORIGINAL"),values = c("darkred", "steelblue","black"))+
+    geom_line(aes(color = FACTOR)) +
+    scale_color_manual(name = "TYPE", labels = c("HIGH","LOW","ORIGINAL"),values = c("red","black", "blue"))+
     theme_classic()+
     theme(legend.position="bottom") +labs(y="NORM_MEAN_DEPTH")+
     ggtitle("ORIGINAL+HIGH_&_LOW_FREQUENCY")
+
 
 
           p=gridExtra::grid.arrange(
