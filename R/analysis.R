@@ -170,11 +170,16 @@ accessibility_score=function(data="",output_dir="",name=""){
 
     info=list(COV_DATA=cov_data,STATS=stats)
     tictoc::toc()
+
     out_file=paste0(output_dir,sep,name,".",max(cov_data$TFBS_ANALYZED),"TFBS.S",abs(min(cov_data$POSITION_RELATIVE_TO_TFBS)),"-E",max(cov_data$POSITION_RELATIVE_TO_TFBS),".FREQUENCY.txt")
 
+    ## Generate TXT with data
+    
     cat(paste(Sys.time(),"\n\n"),file=out_file,append=FALSE)
-    cat(cov_data,file=out_file,append=TRUE)
+    cat(paste("## COVERAGE \n"),file=log_file,append=TRUE)
+    write.table(cov_data,file=out_file,append=TRUE,sep="\t",quote=FALSE,row.names=FALSE)
     cat("\n",file=out_file,append=TRUE)
+    cat(paste("## STATS \n"),file=log_file,append=TRUE)
     cat(stats,file=out_file,append=TRUE)
 
     return(info)
