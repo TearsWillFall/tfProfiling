@@ -179,7 +179,7 @@ accessibility_score=function(data="",output_dir="",name=""){
     cat(paste("## COVERAGE \n"),file=log_file,append=TRUE)
     write.table(cov_data,file=out_file,append=TRUE,sep="\t",quote=FALSE,row.names=FALSE)
     cat("\n",file=out_file,append=TRUE)
-    cat(paste("## STATS \n"),file=log_file,append=TRUE)
+    cat(paste("## STATS \n"),file=out_file,append=TRUE)
     cat(stats,file=out_file,append=TRUE)
 
     return(info)
