@@ -160,10 +160,10 @@ accessibility_score=function(data="",output_dir="",name=""){
     n=floor(mean(cov_data$TFBS_ANALYZED))
     range=max(cov_data$HIGH) - min(cov_data$LOW)
     peaks=data.frame(PEAKS=find_peaks(cov_data$HIGH,m=20))
-    peak_positions = data.frame(PEAK_POSITIONS=cov_data$POSITION_RELATIVE_TO_TFBS[peaks])
-    peak_distance = data.frame(PEAK_DISTANCE=c(diff(peak_positions)))
-    mean_peak_distance = mean(peak_distance)
-    median_peak_distance = median(peak_distance)
+    peak_positions = data.frame(PEAK_POSITIONS=cov_data$POSITION_RELATIVE_TO_TFBS[peaks$PEAKS])
+    peak_distance = data.frame(PEAK_DISTANCE=c(diff(peak_positions$PEAK_POSITIONS)))
+    mean_peak_distance = mean(peak_distance$PEAK_DISTANCE)
+    median_peak_distance = median(peak_distance$PEAK_DISTANCE)
 
 
     stats=data.frame(TF=name,MEAN_NUMBER_TFBS_ANALYZED=n,RANGE=range,MEAN_PEAK_DISTANCE=mean_peak_distance,MEDIAN_PEAK_DISTANCE=median_peak_distance)
