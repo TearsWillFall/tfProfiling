@@ -169,7 +169,7 @@ accessibility_score=function(data="",output_dir="",name=""){
     stats=data.frame(TF=name,MEAN_NUMBER_TFBS_ANALYZED=n,RANGE=range,MEAN_PEAK_DISTANCE=mean_peak_distance,MEDIAN_PEAK_DISTANCE=median_peak_distance)
     info=list(COV_DATA=cov_data,STATS=stats)
     tictoc::toc()
-  
+
     out_file=paste0(output_dir,sep,name,".",max(cov_data$TFBS_ANALYZED),"TFBS.S",abs(min(cov_data$POSITION_RELATIVE_TO_TFBS)),"-E",max(cov_data$POSITION_RELATIVE_TO_TFBS),".FREQUENCY.txt")
 
     ## Generate LOG with data

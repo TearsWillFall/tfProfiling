@@ -14,7 +14,7 @@ plot_freq_decomposition=function(data="",output_dir=""){
     cov_data=read.table(data,header=TRUE)
     name=ULPwgs::get_sample_name(data)
   }else{
-    cov_data=data["COV_DATA"]
+    cov_data=data[["COV_DATA"]]
     name=data$STATS$TF
   }
 
@@ -23,7 +23,7 @@ plot_freq_decomposition=function(data="",output_dir=""){
   if(output_dir==""){
     sep=""
   }
-  print(cov_data)
+
 
   df <- cov_data %>%dplyr::select(POSITION_RELATIVE_TO_TFBS,MEAN_DEPTH, HIGH, LOW) %>% dplyr::mutate(MEAN_DEPTH=MEAN_DEPTH/mean(MEAN_DEPTH)) %>%
   tidyr::gather(key = "FACTOR", value = "TYPE",-POSITION_RELATIVE_TO_TFBS) %>% dplyr::mutate(FACTOR=relevel(factor(FACTOR),"MEAN_DEPTH","HIGH","LOW")) %>% dplyr::mutate(SIZE=ifelse(FACTOR=="MEAN_DEPTH",0.1,ifelse(FACTOR=="HIGH",0.11,0.12)))
