@@ -173,7 +173,7 @@ accessibility_score=function(data="",output_dir="",name=""){
     out_file=paste0(output_dir,sep,name,".",max(cov_data$TFBS_ANALYZED),"TFBS.S",abs(min(cov_data$POSITION_RELATIVE_TO_TFBS)),"-E",max(cov_data$POSITION_RELATIVE_TO_TFBS),".FREQUENCY.txt")
 
     ## Generate LOG with data
-
+    options(warn = -1)
     cat(paste(Sys.time(),"\n\n"),file=out_file,append=FALSE)
     cat(paste("# COVERAGE \n"),file=out_file,append=TRUE)
     write.table(cov_data,file=out_file,append=TRUE,sep="\t",quote=FALSE,row.names=FALSE,col.names=TRUE)
@@ -189,5 +189,6 @@ accessibility_score=function(data="",output_dir="",name=""){
     cat("\n",file=out_file,append=TRUE)
     cat(paste("#### PEAK_DISTANCE \n"),file=out_file,append=TRUE)
     write.table(peak_distance,file=out_file,append=TRUE,sep="\t",quote=FALSE,row.names=FALSE,col.names=TRUE)
+    
     return(info)
   }
