@@ -11,7 +11,7 @@ char2seed <- function(x,set=TRUE){
         seed <- as.integer( seed %% (2^31-1) )
 
 	if(set){
-		set.seed(seed,...)
+		set.seed(seed)
 		return(invisible(seed))
 	} else {
 		return(seed)
