@@ -4,7 +4,7 @@ tfProfiling is a group of convenient tools based on [TranscriptionFactorProfilin
 
 ## 1. Description
 
-tfProfiling enhances the process of analyzing TFs profiles in cfDNA data by providing a simplified installation process for the required bioinformatics tools, as well as providing a series of functions that allow calling these tools in R coding language. tfProfiling can be used, either as a standalone tool or in combination of my other tools, such as [ULPwgs](https://github.com/TearsWillFall/ULPwgs) or [DNAfrags](https://github.com/TearsWillFall/DNAfrags) to create complex workflows to analyze cfDNA data.
+tfProfiling enhances the process of analyzing TFs profiles in cfDNA data by providing a simplified installation process for the required bioinformatics tools, as well as providing a series of functions that allow calling these tools in R coding language. tfProfiling can be used, either as a standalone tool or in combination of other tools, such as [ULPwgs](https://github.com/TearsWillFall/ULPwgs) or [DNAfrags](https://github.com/TearsWillFall/DNAfrags) to create complex workflows to analyze cfDNA data.
 
 
 **Example:**
