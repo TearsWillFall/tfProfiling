@@ -1,6 +1,6 @@
 #' Generate seed from non-symbolic characters
 #'
-#' This function takes a string as input and transforms non-symbolic characters into a number
+#' This function takes a string as input and transforms non-symbolic characters into a randomizer seed
 #'
 #' @param x A string
 #' @return A number
@@ -8,7 +8,7 @@
 
 
 
-char2seed <- function(x){
+char2seed <- function(x,set=TRUE){
 
 	tmp <- c(0:9,0:25,0:25)
 	names(tmp) <- c(0:9,letters,LETTERS)
@@ -20,6 +20,10 @@ char2seed <- function(x){
 	seed <- sum(rev( 7^(seq(along=xsplit)-1) ) * xsplit)
         seed <- as.integer( seed %% (2^31-1) )
 
-	return(seed)
-
+	if(set){
+		set.seed(seed)
+		return(invisible(seed))
+	} else {
+		return(seed)
+	}
 }
