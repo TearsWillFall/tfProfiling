@@ -77,7 +77,7 @@ tfProfiling::install_required_tools()
 Or, alternatively.
 
 ```
-library("ULPwgs")
+library("rfProfiling")
 install_required_tools()
 ```
 
