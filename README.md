@@ -77,7 +77,7 @@ tfProfiling::install_required_tools()
 Or, alternatively.
 
 ```
-library("rfProfiling")
+library("tfProfiling")
 install_required_tools()
 ```
 
