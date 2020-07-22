@@ -152,8 +152,8 @@ accessibility_score=function(data="",output_dir="",plot=TRUE){
       name=cov_data$TF[1]
     }
 
-    tf_name=strsplit(name,"_")[[2]]
-    sample_name=strsplit(name,"_")[[1]]
+    tf_name=strsplit(name,"_")[[1]][2]
+    sample_name=strsplit(name,"_")[[1]][1]
 
 
     print(paste("Estimating",tf_name,"Accesibility Score for",sample_name))
