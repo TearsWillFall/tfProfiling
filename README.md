@@ -10,11 +10,13 @@ tfProfiling enhances the process of analyzing TFs profiles in cfDNA data by prov
 
 ![Workflow for tfProfiling](https://github.com/TearsWillFall/tfProfiling/blob/master/Graph.png?raw=true)
 
-
+**Examples:**
 
 ![Coverage](https://github.com/TearsWillFall/tfProfiling/blob/master/examples/SRR11742859_CTCF.17862TFBS.S1000-E1000.png?raw=true)
 
 ![Frequency](https://github.com/TearsWillFall/tfProfiling/blob/master/examples/SRR11742859_CTCF.17862TFBS.S1000-E1000.FREQUENCY.png?raw=true)
+
+
 
 **Tools:**
 * [bedtools](https://github.com/arq5x/bedtools2): Bedtools utilities are a swiss-army knife of tools for a wide-range of genomics analysis tasks
