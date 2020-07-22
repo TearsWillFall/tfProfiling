@@ -4,12 +4,14 @@
 \alias{accessibility_score}
 \title{Estimates the unranked Accesibility score for TFBS}
 \usage{
-accessibility_score(data = "", output_dir = "")
+accessibility_score(data = "", output_dir = "", plot = TRUE)
 }
 \arguments{
 \item{data}{DATA.FRAME with data or Path to TXT file}
 
-\item{output_dir}{Directory to output results.}
+\item{output_dir}{Directory to output results. If not provided then outputs in current directory}
+
+\item{plot}{Create a plot with frequency data. Default True.}
 }
 \description{
 This function takes a DATA.FRAME/ TXT file with the TFBS coverage data and

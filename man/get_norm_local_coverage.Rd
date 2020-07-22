@@ -11,7 +11,10 @@ get_norm_local_coverage(pos = "", chr = "", norm_log2 = "")
 
 \item{chr}{Chromosome}
 
-\item{norm_log2}{Data.frame with normalized local coverage}
+\item{norm_log2}{DATA.FRAME with normalized local coverage}
+}
+\value{
+A double with the local coverage
 }
 \description{
 This function takes normalized data for local coverage as input,

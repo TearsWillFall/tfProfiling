@@ -11,6 +11,9 @@ get_mean_and_conf_intervals(cov_data = "", CI = 0.95)
 
 \item{data}{LIST of DATA.FRAMES with the data}
 }
+\value{
+A DATA.FRAME with the mean coverage values and CI
+}
 \description{
 This function takes a LIST of DATA.FRAMES as input(each DATA.FRAME for each TFBS), and returns a DATA.FRAME
 with the mean and confidence intervals for the positions relative to them

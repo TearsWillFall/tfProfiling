@@ -2,7 +2,7 @@
 #'
 #' This function takes a BED file with TFBS, a BAM file with an aligned sequence and a TXT file with the normalized
 #' local coverage values for CNA, and outputs the corrected mean depth coverage values around TFBS, as well as
-#' generates a pdf with a plot for them. For better understanding check: https://www.nature.com/articles/s41467-019-12714-4
+#' generates a PDF with a plot for them. For better understanding check: https://www.nature.com/articles/s41467-019-12714-4
 #'
 #'
 #' @param bin_path Path to binary. Default tools/bedtools2/bin/bedtools
@@ -17,12 +17,14 @@
 #' @param max_regions Max number of TFBS to analyze. Default 100000
 #' @param mapq Min quality of mapping reads. Default 0
 #' @param threads Number of threads. Default 1
-#' @param verbose Enables progress messages. Default False.
-#' @param output_dir Directory to output results.
+#' @param verbose Enables progress messages. Default False
+#' @param output_dir Directory to output results. If not provided then outputs in current directory
+#' @param plot Create a plot with coverage data. Default True.
+#' @return A DATA.FRAME with coverage data
 #' @export
 
 
-analyze_tfbs_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bin_path2="tools/samtools/samtools",bed="",bam="",tfbs_start=1000,tfbs_end=1000,mean_cov="",norm="",threads=1,cov_limit=1000,max_regions=100000,mapq=0,verbose=FALSE,output_dir=""){
+analyze_tfbs_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bin_path2="tools/samtools/samtools",bed="",bam="",tfbs_start=1000,tfbs_end=1000,mean_cov="",norm="",threads=1,cov_limit=1000,max_regions=100000,mapq=0,verbose=FALSE,output_dir="",plot=TRUE){
   tictoc::tic("Analysis time")
 
 
@@ -103,14 +105,17 @@ analyze_tfbs_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bi
   print("Calculating Mean Depth Coverage Around TFBS")
   coverage_list=calculate_coverage_tfbs(bin_path=bin_path2,ref_data=ref_data,bam=bam,norm_log2=norm_log2,tfbs_start=tfbs_start,tfbs_end=tfbs_end,cov_limit=cov_limit,output_dir=output_dir,mapq=mapq,tf_name=tf_name,sample_name=sample_name,threads=threads,mean_cov=mean_cov)
   log_data=get_mean_and_conf_intervals(cov_data=coverage_list)
+  log_data=cbind(TF=paste0(sample_name,"_",tf_name),log_data)
 
   out_file=paste0(output_dir,"/",sample_name,"_",tf_name,".",max(log_data$TFBS_ANALYZED),"TFBS.S",tfbs_start,"-E",tfbs_end,".tss")
   write.table(log_data,quote=FALSE,row.names=FALSE,out_file)
+  if(plot){
+    print("Generating plots")
+    tictoc::tic("Generation time")
+    plot_motif_coverage(log_data,tf_name=tf_name,sample_name=sample_name,output_dir=output_dir)
+    tictoc::toc()
+  }
 
-  print("Generating plots")
-  tictoc::tic("Generation time")
-  plot_motif_coverage(log_data,tf_name=tf_name,sample_name=sample_name,output_dir=output_dir)
-  tictoc::toc()
 
   print(paste("Analysis finished for", tf_name))
   tictoc::toc()
@@ -128,14 +133,15 @@ analyze_tfbs_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bi
 #' the local biases the Savitzky-Golay filter is used.
 
 #' @param data DATA.FRAME with data or Path to TXT file
-#' @param output_dir Directory to output results.
+#' @param output_dir Directory to output results. If not provided then outputs in current directory
+#' @param plot Create a plot with frequency data. Default True.
 #' @export
 
 
 
-accessibility_score=function(data="",output_dir="",name=""){
+accessibility_score=function(data="",output_dir="",plot=TRUE){
 
-  )
+
     tictoc::tic("Calculation time")
 
     if(!is.data.frame(data)){
@@ -143,9 +149,14 @@ accessibility_score=function(data="",output_dir="",name=""){
       name=ULPwgs::get_sample_name(data)
     }else{
       cov_data=data
+      name=cov_data$TF[1]
     }
 
-    print(paste("Estimating Accesibility Score for", name))
+    tf_name=strsplit(name,"_")[[2]]
+    sample_name=strsplit(name,"_")[[1]]
+
+
+    print(paste("Estimating",tf_name,"Accesibility Score for",sample_name))
 
     sep="/"
 
@@ -168,7 +179,7 @@ accessibility_score=function(data="",output_dir="",name=""){
     median_peak_distance = median(peak_distance$PEAK_DISTANCE)
 
 
-    stats=data.frame(TF=name,MEAN_NUMBER_TFBS_ANALYZED=n,RANGE=range,MEAN_PEAK_DISTANCE=mean_peak_distance,MEDIAN_PEAK_DISTANCE=median_peak_distance)
+    stats=data.frame(TF=cov_data$TF,MEAN_NUMBER_TFBS_ANALYZED=n,RANGE=range,MEAN_PEAK_DISTANCE=mean_peak_distance,MEDIAN_PEAK_DISTANCE=median_peak_distance)
     info=list(COV_DATA=cov_data,STATS=stats)
     tictoc::toc()
 
@@ -192,9 +203,10 @@ accessibility_score=function(data="",output_dir="",name=""){
     cat(paste("#### PEAK_DISTANCE \n"),file=out_file,append=TRUE)
     write.table(peak_distance,file=out_file,append=TRUE,sep="\t",quote=FALSE,row.names=FALSE,col.names=TRUE)
 
-    tictoc::tic("Generating Plot")
-    plot_freq_decomposition(info,output_dir)
-    tictoc::tic()
-
-    return(info)
+    if(plot){
+      print("Generating plots")
+      tictoc::tic("Generation time")
+      plot_freq_decomposition(info,output_dir)
+      tictoc::tic()
+    }
   }

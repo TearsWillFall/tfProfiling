@@ -4,7 +4,7 @@
 #' generates a plot for it.
 #'
 #' @param data LIST with data or Path to TXT file with it
-#' @param output_dir Directory to output results.
+#' @param output_dir Directory to output results.  If not provided then outputs in current directory
 #' @export
 #' @import ggplot2
 

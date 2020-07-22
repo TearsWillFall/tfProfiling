@@ -18,7 +18,8 @@ analyze_tfbs_around_position(
   max_regions = 1e+05,
   mapq = 0,
   verbose = FALSE,
-  output_dir = ""
+  output_dir = "",
+  plot = TRUE
 )
 }
 \arguments{
@@ -46,12 +47,17 @@ analyze_tfbs_around_position(
 
 \item{mapq}{Min quality of mapping reads. Default 0}
 
-\item{verbose}{Enables progress messages. Default False.}
+\item{verbose}{Enables progress messages. Default False}
 
-\item{output_dir}{Directory to output results.}
+\item{output_dir}{Directory to output results. If not provided then outputs in current directory}
+
+\item{plot}{Create a plot with coverage data. Default True.}
+}
+\value{
+A DATA.FRAME with coverage data
 }
 \description{
 This function takes a BED file with TFBS, a BAM file with an aligned sequence and a TXT file with the normalized
 local coverage values for CNA, and outputs the corrected mean depth coverage values around TFBS, as well as
-generates a pdf with a plot for them. For better understanding check: https://www.nature.com/articles/s41467-019-12714-4
+generates a PDF with a plot for them. For better understanding check: https://www.nature.com/articles/s41467-019-12714-4
 }

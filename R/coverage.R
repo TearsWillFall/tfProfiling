@@ -5,7 +5,7 @@
 #' @param bin_path Path to binary. Default tools/bedtools2/bin/bedtools
 #' @param bam Path to BAM file.
 #' @param verbose Enables progress messages. Default False.
-#' @param output_dir Directory to output results.
+#' @param output_dir Directory to output results. If not provided then outputs in current directory
 #' @export
 
 
@@ -41,7 +41,8 @@ calculate_genowide_coverage=function(bin_path="tools/bedtools2/bin/bedtools",bam
 #'
 #' @param pos Genomic position
 #' @param chr Chromosome
-#' @param norm_log2 Data.frame with normalized local coverage
+#' @param norm_log2 DATA.FRAME with normalized local coverage
+#' @return A double with the local coverage
 #' @export
 
 
@@ -62,6 +63,7 @@ get_norm_local_coverage=function(pos="",chr="",norm_log2=""){
 #'
 #' @param data LIST of DATA.FRAMES with the data
 #' @param CI Confidence Interval
+#' @return A DATA.FRAME with the mean coverage values and CI
 #' @export
 
 get_mean_and_conf_intervals=function(cov_data="",CI=0.95){
@@ -91,6 +93,7 @@ get_mean_and_conf_intervals=function(cov_data="",CI=0.95){
 #' @param region Region for which to get mean coverage. Default genome
 #' @param sample_name Sample name
 #' @param save Save as TXT. Default TRUE
+#' @return A double with the mean genome coverage
 #' @export
 
 
@@ -118,8 +121,8 @@ get_mean_coverage=function(file="",output_dir="",region="genome",sample_name="",
 #' Calculate Mean Coverage Depth around TFBS
 #'
 #' This function takes a DATA.FRAME with TFBS positions, a BAM file with the sequence to analyze, a mean genome wide coverage,
-#' local coverage values for CNA, and outputs the corrected mean depth coverage values around TFBS and
-#' a tfbs file with them. For better understanding check: https://www.nature.com/articles/s41467-019-12714-4
+#' local coverage values for CNA, and outputs the corrected depth coverage values around TFBS and generates
+#' a TSS file with them. For better understanding check: https://www.nature.com/articles/s41467-019-12714-4
 #'
 #'
 #' @param bin_path Path to binary. Default tools/samtools/samtools
@@ -135,7 +138,8 @@ get_mean_coverage=function(file="",output_dir="",region="genome",sample_name="",
 #' @param max_regions Max number of TFBS to analyze. Default 100000
 #' @param mapq Min quality of mapping reads. Default 0
 #' @param threads Number of threads. Default 1
-#' @param output_dir Directory to output results
+#' @param output_dir Directory to output results. If not provided then outputs in current directory
+#' @return A list of DATA.FRAME with the coverage per base of each TFBS
 #' @export
 #' @import pbapply
 
@@ -172,6 +176,7 @@ calculate_coverage_tfbs=function(bin_path="tools/samtools/samtools",ref_data="",
   cl=parallel::makeCluster(threads)
   coverage_list=pbapply(X=tfbs_to_analyze,1,FUN=FUN,bin_path=bin_path,norm_log2=norm_log2,start=tfbs_start,end=tfbs_end,mean_cov=mean_cov,bam=bam,cov_limit=cov_limit,mapq=mapq,cl=cl)
   ## coverage_list=pbapply::pblapply(seq(1,nrow(tfbs_to_analyze),1),FUN=FUN,tfbs_data=tfbs_to_analyze,bin_path=bin_path,norm_log2=norm_log2,start=tfbs_start,end=tfbs_end,mean_cov=mean_cov,bam=bam,cov_limit=cov_limit,mapq=mapq,cl=cl)
+
   on.exit(parallel::stopCluster(cl))
   print(paste("TFBS analyzed:",nrow(tfbs_to_analyze)))
   print(paste("TFBS skipped:",nrow(ref_data)-nrow(tfbs_to_analyze)))

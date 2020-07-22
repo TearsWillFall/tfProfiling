@@ -18,7 +18,7 @@ calculate_genowide_coverage(
 
 \item{verbose}{Enables progress messages. Default False.}
 
-\item{output_dir}{Directory to output results.}
+\item{output_dir}{Directory to output results. If not provided then outputs in current directory}
 }
 \description{
 This function takes a BAM file and generates a TXT file with its genome-wide coverage

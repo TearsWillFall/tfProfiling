@@ -7,9 +7,9 @@
 plot_freq_decomposition(data = "", output_dir = "")
 }
 \arguments{
-\item{data}{DATA.FRAME with data or Path to TXT file}
+\item{data}{LIST with data or Path to TXT file with it}
 
-\item{output_dir}{Directory to output results.}
+\item{output_dir}{Directory to output results.  If not provided then outputs in current directory}
 }
 \description{
 This function takes a DATA.FRAME/ TXT file with the frequency data of the TFBS coverage and

@@ -23,6 +23,9 @@ get_mean_coverage(
 
 \item{save}{Save as TXT. Default TRUE}
 }
+\value{
+A double with the mean genome coverage
+}
 \description{
 This function takes a TXT file with genome-wide ocverage as input and returns the mean genome coverage
 }

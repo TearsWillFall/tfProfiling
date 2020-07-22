@@ -45,12 +45,15 @@ calculate_coverage_tfbs(
 
 \item{threads}{Number of threads. Default 1}
 
-\item{output_dir}{Directory to output results}
+\item{output_dir}{Directory to output results. If not provided then outputs in current directory}
 
 \item{max_regions}{Max number of TFBS to analyze. Default 100000}
 }
+\value{
+A list of DATA.FRAME with the coverage per base of each TFBS
+}
 \description{
 This function takes a DATA.FRAME with TFBS positions, a BAM file with the sequence to analyze, a mean genome wide coverage,
-local coverage values for CNA, and outputs the corrected mean depth coverage values around TFBS and
-a tfbs file with them. For better understanding check: https://www.nature.com/articles/s41467-019-12714-4
+local coverage values for CNA, and outputs the corrected depth coverage values around TFBS and generates
+a TSS file with them. For better understanding check: https://www.nature.com/articles/s41467-019-12714-4
 }
