@@ -115,8 +115,8 @@ analyze_tfbs_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bi
   print(paste("Analysis finished for", tf_name))
   tictoc::toc()
   print("######################################################")
-  rm(list = ls())
-  gc()
+
+  return(log_data)
 }
 
 
@@ -135,6 +135,7 @@ analyze_tfbs_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bi
 
 accessibility_score=function(data="",output_dir="",name=""){
 
+  )
     tictoc::tic("Calculation time")
 
     if(!is.data.frame(data)){
@@ -144,6 +145,7 @@ accessibility_score=function(data="",output_dir="",name=""){
       cov_data=data
     }
 
+    print(paste("Estimating Accesibility Score for", name))
 
     sep="/"
 
@@ -189,6 +191,10 @@ accessibility_score=function(data="",output_dir="",name=""){
     cat("\n",file=out_file,append=TRUE)
     cat(paste("#### PEAK_DISTANCE \n"),file=out_file,append=TRUE)
     write.table(peak_distance,file=out_file,append=TRUE,sep="\t",quote=FALSE,row.names=FALSE,col.names=TRUE)
+
+    tictoc::tic("Generating Plot")
+    plot_freq_decomposition(info,output_dir)
+    tictoc::tic()
 
     return(info)
   }
