@@ -27,9 +27,20 @@
 
 analyze_tfs=function(bin_path="tools/bedtools2/bin/bedtools",bin_path2="tools/samtools/samtools",bed_dir="",tfs="",bam="",tfbs_start=1000,tfbs_end=1000,mean_cov="",norm="",threads=1,cov_limit=1000,max_regions=100000,mapq=0,verbose=FALSE,output_dir="",plot=TRUE){
 
+
+
+
 tictoc::tic("Analysis time")
 
 sample_name=ULPwgs::get_sample_name(bam)
+
+sep="/"
+
+if(output_dir==""){
+  sep=""
+}
+
+output_dir=paste0(output_dir,sep,sample_name)
 
 print(paste("Analyzing sample ",sample_name))
 
@@ -53,12 +64,24 @@ if (is.numeric(tfs)){
   }
 }
 
+print("=========================================================")
 
 FUN=function(bed,bin_path,bin_path2,bam,tfbs_start,tfbs_end,mean_cov,norm,threads,cov_limit,max_regions,mapq,verbose,output_dir,plot){
   accessibility_score(analyze_tfbs_around_position(bin_path=bin_path,bin_path2=bin_path2,bam=bam,bed=bed,norm=norm,threads=threads,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,plot=plot,mapq=mapq,cov_limit=cov_limit,mean_cov=mean_cov,max_regions=max_regions,verbose=verbose),output_dir=output_dir,verbose=verbose)
 }
 
-mapply(bed_files,FUN=FUN,bin_path=bin_path,bin_path2=bin_path2,bam=bam,norm=norm,threads=threads,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,plot=plot,mapq=mapq,cov_limit=cov_limit,mean_cov=mean_cov,max_regions=max_regions,verbose=verbose)
+results=mapply(bed_files,FUN=FUN,bin_path=bin_path,bin_path2=bin_path2,bam=bam,norm=norm,threads=threads,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,plot=plot,mapq=mapq,cov_limit=cov_limit,mean_cov=mean_cov,max_regions=max_regions,verbose=verbose)
+
+FUN=function(x,data){
+  dat=data[[x]]
+  return(dat[2])
+}
+all_stats=lapply(seq(1:length(results)),FUN=FUN,data=results)
+all_stats=suppressMessages(all_stats %>% dplyr::bind_rows())
+
+out_file=paste0(output_dir,"/",sample_name,".ALL.ANALYZED.TFS.STATS.txt")
+write.table(all_stats,quote=FALSE,row.names=FALSE,out_file)
+
 
 tictoc::toc()
 
@@ -271,11 +294,13 @@ accessibility_score=function(data="",output_dir="",plot=TRUE,verbose=FALSE){
     cat("\n",file=out_file,append=TRUE)
     cat(paste("#### PEAK_DISTANCE \n"),file=out_file,append=TRUE)
     write.table(peak_distance,file=out_file,append=TRUE,sep="\t",quote=FALSE,row.names=FALSE,col.names=TRUE)
-
+    options(warn = 0)
     if(plot){
       print("Generating plots")
       tictoc::tic("Generation time")
       plot_freq_decomposition(info,output_dir)
       tictoc::tic()
     }
+  print("-------------------------------------------------")
+  return(info)
   }
