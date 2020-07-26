@@ -28,6 +28,9 @@
 analyze_tfs=function(bin_path="tools/bedtools2/bin/bedtools",bin_path2="tools/samtools/samtools",bed_dir="",tfs="",bam="",tfbs_start=1000,tfbs_end=1000,mean_cov="",norm="",threads=1,cov_limit=1000,max_regions=100000,mapq=0,verbose=FALSE,output_dir="",plot=TRUE){
 
 
+  if(output_dir==""){
+    sep=""
+  }
 
 
 tictoc::tic("Analysis time")
@@ -36,11 +39,7 @@ sample_name=ULPwgs::get_sample_name(bam)
 
 sep="/"
 
-if(output_dir==""){
-  sep=""
-}
 
-output_dir=paste0(output_dir,sep,sample_name)
 
 print(paste("Analyzing sample ",sample_name))
 
@@ -78,6 +77,8 @@ FUN=function(x,data){
 }
 all_stats=lapply(seq(1:length(results)),FUN=FUN,data=results)
 all_stats=suppressMessages(all_stats %>% dplyr::bind_rows())
+
+output_dir=paste0(output_dir,sep,sample_name)
 
 out_file=paste0(output_dir,"/",sample_name,".ALL.ANALYZED.TFS.STATS.txt")
 write.table(all_stats,quote=FALSE,row.names=FALSE,out_file)
