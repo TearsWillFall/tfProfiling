@@ -270,7 +270,7 @@ accessibility_score=function(data="",output_dir="",plot=TRUE,verbose=FALSE){
 
     stats=data.frame(TF=cov_data$TF,MEAN_NUMBER_TFBS_ANALYZED=n,RANGE=range,MEAN_PEAK_DISTANCE=mean_peak_distance,MEDIAN_PEAK_DISTANCE=median_peak_distance)
     info=list(COV_DATA=cov_data,STATS=stats)
-    tictoc::toc()
+
 
     output_dir=paste0(output_dir,sep,sample_name,"/",tf_name)
     out_file=paste0(output_dir,"/",name,".",max(cov_data$TFBS_ANALYZED),"TFBS.S",abs(min(cov_data$POSITION_RELATIVE_TO_TFBS)),"-E",max(cov_data$POSITION_RELATIVE_TO_TFBS),".FREQUENCY.txt")
@@ -299,6 +299,7 @@ accessibility_score=function(data="",output_dir="",plot=TRUE,verbose=FALSE){
       plot_freq_decomposition(info,output_dir)
       tictoc::tic()
     }
+      tictoc::toc()
   print("-------------------------------------------------")
   return(info)
   }
