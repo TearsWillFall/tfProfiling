@@ -98,7 +98,7 @@ analyze_tfbs_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bi
 
 
   options(scipen=999)
-  ref_data=read.table(bed)
+  ref_data=read.table(bed,comment.char="")
   sample_name=ULPwgs::get_sample_name(bam)
   tf_name=ULPwgs::get_sample_name(bed)
 
