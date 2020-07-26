@@ -263,7 +263,7 @@ accessibility_score=function(data="",output_dir="",plot=TRUE,verbose=FALSE){
     median_peak_distance = median(peak_distance$PEAK_DISTANCE)
 
 
-    stats=data.frame(TF=cov_data$TF,MEAN_NUMBER_TFBS_ANALYZED=n,RANGE=range,MEAN_PEAK_DISTANCE=mean_peak_distance,MEDIAN_PEAK_DISTANCE=median_peak_distance)
+    stats=data.frame(TF=cov_data$TF[1],MEAN_NUMBER_TFBS_ANALYZED=n,RANGE=range,MEAN_PEAK_DISTANCE=mean_peak_distance,MEDIAN_PEAK_DISTANCE=median_peak_distance)
     info=list(COV_DATA=cov_data,STATS=stats)
 
 
