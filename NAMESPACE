@@ -3,6 +3,7 @@
 export("%>%")
 export(accessibility_score)
 export(analyze_tfbs_around_position)
+export(analyze_tfs)
 export(calculate_coverage_tfbs)
 export(calculate_genowide_coverage)
 export(char2seed)

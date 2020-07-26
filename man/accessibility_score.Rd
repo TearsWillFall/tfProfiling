@@ -4,7 +4,7 @@
 \alias{accessibility_score}
 \title{Estimates the unranked Accesibility score for TFBS}
 \usage{
-accessibility_score(data = "", output_dir = "", plot = TRUE)
+accessibility_score(data = "", output_dir = "", plot = TRUE, verbose = FALSE)
 }
 \arguments{
 \item{data}{DATA.FRAME with data or Path to TXT file}

@@ -4,7 +4,7 @@
 \alias{char2seed}
 \title{Generate seed from non-symbolic characters}
 \usage{
-char2seed(x)
+char2seed(x, set = TRUE)
 }
 \arguments{
 \item{x}{A string}
@@ -13,5 +13,5 @@ char2seed(x)
 A number
 }
 \description{
-This function takes a string as input and transforms non-symbolic characters into a number
+This function takes a string as input and transforms non-symbolic characters into a randomizer seed
 }

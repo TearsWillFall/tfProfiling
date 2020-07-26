@@ -1,3 +1,64 @@
+#' Analyze TFs for a sample
+#'
+#' This function takes the path to the directory with BED files for each TF, a BAM file with an aligned sequence and a TXT file with the normalized
+#' local coverage values for CNA, and estimates the corrected mean depth coverage values around TFBS, as well as the accessibilty scores for them.
+#' For better understanding check: https://www.nature.com/articles/s41467-019-12714-4
+#'
+#'
+#' @param bin_path Path to binary. Default tools/bedtools2/bin/bedtools
+#' @param bin_path2 Path to secondary binary. Default tools/samtools/samtools
+#' @param bed_dir Path to directory with BED files for TFBS
+#' @param tfs Number of TFs to analyze or a list with TFs to analyze. Default none will analyze all TFs in BED directory.
+#' @param bam Path to BAM file
+#' @param tfbs_start Number of bases to analyze forward from TFBS central point. Default 1000
+#' @param tfbs_end Number of bases to analyze  backward from TFBS central point. Default 1000
+#' @param mean_cov Mean genome wide coverage. If not provided it will be estimated.
+#' @param norm Path to TXT file with normalized local coverage
+#' @param cov_limit Max base depth. Default 1000
+#' @param max_regions Max number of TFBS to analyze. Default 100000
+#' @param mapq Min quality of mapping reads. Default 0
+#' @param threads Number of threads. Default 1
+#' @param verbose Enables progress messages. Default False
+#' @param output_dir Directory to output results. If not provided then outputs in current directory
+#' @param plot Create plots. Default True.
+#' @return A DATA.FRAME with coverage data
+#' @export
+
+
+analyze_tfs=function(bin_path="tools/bedtools2/bin/bedtools",bin_path2="tools/samtools/samtools",bed_dir="",tfs="",bam="",tfbs_start=1000,tfbs_end=1000,mean_cov="",norm="",threads=1,cov_limit=1000,max_regions=100000,mapq=0,verbose=FALSE,output_dir="",plot=TRUE){
+tictoc::tic("Analysis time")
+
+sample_name=ULPwgs::get_sample_name(bam)
+tf_name=ULPwgs::get_sample_name(bed)
+
+print(paste("Analyzing sample ",sample_name))
+
+
+bed_files=list.files(bed_dir,full.names=TRUE)
+bed_files=bed_files[grepl(".bed",bed_files)]
+if (is.numeric(tfs)){
+  if (tfs<length(bed_files)){
+  print(paste(length(bed_files),"TFs in total"))
+  print(paste("Total TFs > Number of TFs to analyze",paste0("(",tfs,")")))
+  print(paste("Random sampling",tfs,"TFs from all TFs with seed",char2seed(tf_name,set=FALSE)))
+  char2seed(bed_dir)
+  bed_files=sample(bed_files,tfs)
+    }
+}else if(is.vector(tfs)){
+  bed_files=bed_files[tfs]
+}
+
+FUN=function(bed,bin_path,bin_path2,bam,tfbs_start,tfbs_end,mean_cov,norm,threads,cov_limit,max_regions,mapq,verbose,output_dir,plot,sample_name,tf_name){
+  accessibility_score(analyze_tfbs_around_position(bin_path=bin_path,bin_path2=bin_path2,bam=bam,bed=bed,norm=norm,threads=threads,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,plot=plot,mapq=mapq,cov_limit=cov_limit,mean_cov=mean_cov,max_regions=max_regions,verbose=verbose),output_dir=output_dir,verbose=verbose)
+}
+
+mapply(bed_files,FUN=FUN,bin_path=bin_path,bin_path2=bin_path2,bam=bam,norm=norm,threads=threads,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,plot=plot,mapq=mapq,cov_limit=cov_limit,mean_cov=mean_cov,max_regions=max_regions,sample_name=sample_name,tf_name=tf_name,verbose=verbose)
+
+tictoc::toc()
+
+}
+
+
 #' Analyze Mean Coverage Depth around TFBS
 #'
 #' This function takes a BED file with TFBS, a BAM file with an aligned sequence and a TXT file with the normalized
@@ -23,6 +84,8 @@
 #' @return A DATA.FRAME with coverage data
 #' @export
 
+
+### ////TO DO IMPLEMENT verbose to the rest of the functions
 
 analyze_tfbs_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bin_path2="tools/samtools/samtools",bed="",bam="",tfbs_start=1000,tfbs_end=1000,mean_cov="",norm="",threads=1,cov_limit=1000,max_regions=100000,mapq=0,verbose=FALSE,output_dir="",plot=TRUE){
   tictoc::tic("Analysis time")
@@ -139,7 +202,7 @@ analyze_tfbs_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bi
 
 
 
-accessibility_score=function(data="",output_dir="",plot=TRUE){
+accessibility_score=function(data="",output_dir="",plot=TRUE,verbose=FALSE){
 
 
     tictoc::tic("Calculation time")
@@ -183,7 +246,7 @@ accessibility_score=function(data="",output_dir="",plot=TRUE){
     info=list(COV_DATA=cov_data,STATS=stats)
     tictoc::toc()
 
-    out_file=paste0(output_dir,sep,name,".",max(cov_data$TFBS_ANALYZED),"TFBS.S",abs(min(cov_data$POSITION_RELATIVE_TO_TFBS)),"-E",max(cov_data$POSITION_RELATIVE_TO_TFBS),".FREQUENCY.txt")
+    out_file=paste0(output_dir,sep,sample_name,"/",tf_name,name,".",max(cov_data$TFBS_ANALYZED),"TFBS.S",abs(min(cov_data$POSITION_RELATIVE_TO_TFBS)),"-E",max(cov_data$POSITION_RELATIVE_TO_TFBS),".FREQUENCY.txt")
 
     ## Generate LOG with data
     options(warn = -1)
