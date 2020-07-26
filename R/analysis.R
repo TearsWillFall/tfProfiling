@@ -275,7 +275,8 @@ accessibility_score=function(data="",output_dir="",plot=TRUE,verbose=FALSE){
     info=list(COV_DATA=cov_data,STATS=stats)
     tictoc::toc()
 
-    out_file=paste0(output_dir,sep,sample_name,"/",tf_name,name,".",max(cov_data$TFBS_ANALYZED),"TFBS.S",abs(min(cov_data$POSITION_RELATIVE_TO_TFBS)),"-E",max(cov_data$POSITION_RELATIVE_TO_TFBS),".FREQUENCY.txt")
+    output_dir=paste0(output_dir,sep,sample_name,"/",tf_name)
+    out_file=paste0(output_dir,"/",name,".",max(cov_data$TFBS_ANALYZED),"TFBS.S",abs(min(cov_data$POSITION_RELATIVE_TO_TFBS)),"-E",max(cov_data$POSITION_RELATIVE_TO_TFBS),".FREQUENCY.txt")
 
     ## Generate LOG with data
     options(warn = -1)
