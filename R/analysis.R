@@ -27,7 +27,7 @@
 
 analyze_tfs=function(bin_path="tools/bedtools2/bin/bedtools",bin_path2="tools/samtools/samtools",bed_dir="",tfs="",bam="",tfbs_start=1000,tfbs_end=1000,mean_cov="",norm="",threads=1,cov_limit=1000,max_regions=100000,mapq=0,verbose=FALSE,output_dir="",plot=TRUE){
 
-
+  sep="/"
   if(output_dir==""){
     sep=""
   }
@@ -36,10 +36,6 @@ analyze_tfs=function(bin_path="tools/bedtools2/bin/bedtools",bin_path2="tools/sa
 tictoc::tic("Analysis time")
 
 sample_name=ULPwgs::get_sample_name(bam)
-
-sep="/"
-
-
 
 print(paste("Analyzing sample ",sample_name))
 
