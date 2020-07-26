@@ -40,7 +40,7 @@ if (is.numeric(tfs)){
   if (tfs<length(bed_files)){
   print(paste(length(bed_files),"TFs in total"))
   print(paste("Total TFs > Number of TFs to analyze",paste0("(",tfs,")")))
-  print(paste("Random sampling",tfs,"TFs from all TFs with seed",char2seed(tf_name,set=FALSE)))
+  print(paste("Random sampling",tfs,"TFs from all TFs with seed",char2seed(bed_dir,set=FALSE)))
   char2seed(bed_dir)
   bed_files=sample(bed_files,tfs)
     }
