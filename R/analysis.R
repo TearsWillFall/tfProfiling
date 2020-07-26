@@ -52,11 +52,11 @@ if (is.numeric(tfs)){
 }
 
 
-FUN=function(bed,bin_path,bin_path2,bam,tfbs_start,tfbs_end,mean_cov,norm,threads,cov_limit,max_regions,mapq,verbose,output_dir,plot,sample_name,tf_name){
+FUN=function(bed,bin_path,bin_path2,bam,tfbs_start,tfbs_end,mean_cov,norm,threads,cov_limit,max_regions,mapq,verbose,output_dir,plot){
   accessibility_score(analyze_tfbs_around_position(bin_path=bin_path,bin_path2=bin_path2,bam=bam,bed=bed,norm=norm,threads=threads,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,plot=plot,mapq=mapq,cov_limit=cov_limit,mean_cov=mean_cov,max_regions=max_regions,verbose=verbose),output_dir=output_dir,verbose=verbose)
 }
 
-mapply(bed_files,FUN=FUN,bin_path=bin_path,bin_path2=bin_path2,bam=bam,norm=norm,threads=threads,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,plot=plot,mapq=mapq,cov_limit=cov_limit,mean_cov=mean_cov,max_regions=max_regions,sample_name=sample_name,tf_name=ULPwgs::get_sample_name(bed),verbose=verbose)
+mapply(bed_files,FUN=FUN,bin_path=bin_path,bin_path2=bin_path2,bam=bam,norm=norm,threads=threads,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,plot=plot,mapq=mapq,cov_limit=cov_limit,mean_cov=mean_cov,max_regions=max_regions,verbose=verbose)
 
 tictoc::toc()
 
