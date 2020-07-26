@@ -26,10 +26,10 @@
 
 
 analyze_tfs=function(bin_path="tools/bedtools2/bin/bedtools",bin_path2="tools/samtools/samtools",bed_dir="",tfs="",bam="",tfbs_start=1000,tfbs_end=1000,mean_cov="",norm="",threads=1,cov_limit=1000,max_regions=100000,mapq=0,verbose=FALSE,output_dir="",plot=TRUE){
+
 tictoc::tic("Analysis time")
 
 sample_name=ULPwgs::get_sample_name(bam)
-tf_name=ULPwgs::get_sample_name(bed)
 
 print(paste("Analyzing sample ",sample_name))
 
@@ -45,14 +45,18 @@ if (is.numeric(tfs)){
   bed_files=sample(bed_files,tfs)
     }
 }else if(is.vector(tfs)){
-  bed_files=bed_files[tfs]
+  bed_files=bed_files[grepl(paste(tfs,collapse="|"),bed_files)]
+  if (length(bed_files)<length(tfs)){
+    warning("Number of TFs to analyze > Number of TFs listed. Perhaps the TFs names provided are too unspecific?")
+  }
 }
+
 
 FUN=function(bed,bin_path,bin_path2,bam,tfbs_start,tfbs_end,mean_cov,norm,threads,cov_limit,max_regions,mapq,verbose,output_dir,plot,sample_name,tf_name){
   accessibility_score(analyze_tfbs_around_position(bin_path=bin_path,bin_path2=bin_path2,bam=bam,bed=bed,norm=norm,threads=threads,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,plot=plot,mapq=mapq,cov_limit=cov_limit,mean_cov=mean_cov,max_regions=max_regions,verbose=verbose),output_dir=output_dir,verbose=verbose)
 }
 
-mapply(bed_files,FUN=FUN,bin_path=bin_path,bin_path2=bin_path2,bam=bam,norm=norm,threads=threads,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,plot=plot,mapq=mapq,cov_limit=cov_limit,mean_cov=mean_cov,max_regions=max_regions,sample_name=sample_name,tf_name=tf_name,verbose=verbose)
+mapply(bed_files,FUN=FUN,bin_path=bin_path,bin_path2=bin_path2,bam=bam,norm=norm,threads=threads,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,plot=plot,mapq=mapq,cov_limit=cov_limit,mean_cov=mean_cov,max_regions=max_regions,sample_name=sample_name,tf_name=ULPwgs::get_sample_name(bed),verbose=verbose)
 
 tictoc::toc()
 
