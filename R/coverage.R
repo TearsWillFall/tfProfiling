@@ -175,7 +175,7 @@ calculate_coverage_tfbs=function(bin_path="tools/samtools/samtools",ref_data="",
   if(!(nrow(cov_data)==(start+end+1))){
     fix=-start:end
     fix=data.frame(pos_relative_to_tfbs=unique(cov_data$pos_relative_to_tfbs,fix))
-    cov_data=plyr::rbind.fill(cov_data,fix) %>% dplyr::arrange(pos_relative_to_tfbs)
+    cov_data=rbind(cov_data,fix,fill=TRUE) %>% dplyr::arrange(pos_relative_to_tfbs)
   }
   return(cov_data)
   }
