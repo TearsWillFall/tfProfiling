@@ -170,7 +170,24 @@ calculate_coverage_tfbs=function(bin_path="tools/samtools/samtools",ref_data="",
 
   cov_data=cbind(cov_data,strand=tfbs_data[5])
 
-  return(cov_data %>% dplyr::mutate(cor_cov=cov/as.numeric(mean_cov))  %>% dplyr::mutate(norm_cor_cov=dplyr::if_else(cor_cov<cov_limit,cor_cov/norm_cov,NA),pos_relative_to_tfbs=dplyr::if_else(strand=="+",pos-as.numeric(tfbs_data[5]),-(pos-as.numeric(tfbs_data[5])))) %>% dplyr::arrange(pos_relative_to_tfbs))
+
+  cov_data=cov_data %>% dplyr::mutate(cor_cov=cov/as.numeric(mean_cov))  %>% dplyr::mutate(norm_cor_cov=if_else(cor_cov<cov_limit,cor_cov/norm_cov,NA),pos_relative_to_tfbs=dplyr::if_else(strand=="+",pos-as.numeric(tfbs_data[5]),-(pos-as.numeric(tfbs_data[5])))) %>% dplyr::arrange(pos_relative_to_tfbs)
+  if(nrow(cov_data)==(start+end+1)){
+    return(cov_data)
+  }else{
+  if(!cov_data$pos_relative_to_tfbs[1]==-start){
+    missing=-start-cov_data$pos_relative_to_tfbs[1]
+    bind=data.frame(chr=tfbs_data[1],pos=seq(cov_data$pos[1]-missing,cov_data$pos[1]-1,1),cov=NA,strand=tfbs_data[5],cor_cov=NA,norm_cor_cov=NA,pos_relative_to_tfbs=seq(cov_data$pos_relative_to_tfbs[1]-missing,cov_data$pos_relative_to_tfbs[1]-1))
+    cov_data=rbind(bind,cov_data)
+  }else if(!cov_data$pos_relative_to_tfbs[length(cov_data$pos_relative_to_tfb)]==end){
+    missing=end-cov_data$pos_relative_to_tfbs[length(cov_data$pos_relative_to_tfb)]
+    bind=data.frame(chr=tfbs_data[1],pos=seq(cov_data$pos[length(cov_data$pos_relative_to_tfb)]-missing,cov_data$pos[length(cov_data$pos_relative_to_tfb)]+1,1),cov=NA,strand=tfbs_data[5],cor_cov=NA,norm_cor_cov=NA,pos_relative_to_tfbs=seq(cov_data$pos_relative_to_tfbs[length(cov_data$pos_relative_to_tfb)]-missing,cov_data$pos_relative_to_tfbs[length(cov_data$pos_relative_to_tfb)]+1))
+    cov_data=rbind(cov_data,bind)
+  }
+  print(cov_data)
+  return(cov_data)
+  }
+
   }
   cl=parallel::makeCluster(threads)
   coverage_list=pbapply(X=tfbs_to_analyze,1,FUN=FUN,bin_path=bin_path,norm_log2=norm_log2,start=tfbs_start,end=tfbs_end,mean_cov=mean_cov,bam=bam,cov_limit=cov_limit,mapq=mapq,cl=cl)
