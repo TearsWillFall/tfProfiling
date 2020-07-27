@@ -72,10 +72,16 @@ all_stats=suppressMessages(all_stats %>% dplyr::bind_rows())
 output_dir=paste0(output_dir,sep,sample_name)
 
 out_file=paste0(output_dir,"/",sample_name,".ALL.ANALYZED.TFS.STATS.txt")
-write.table(all_stats,quote=FALSE,row.names=FALSE,out_file)
-
 
 tictoc::toc()
+if (file.exists()){
+  write.table(all_stats,quote=FALSE,row.names=FALSE,out_file,append=TRUE,col.names=FALSE)
+
+}else{
+  write.table(all_stats,quote=FALSE,row.names=FALSE,out_file)
+}
+
+
 
 }
 
