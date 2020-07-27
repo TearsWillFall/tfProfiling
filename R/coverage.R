@@ -177,12 +177,12 @@ calculate_coverage_tfbs=function(bin_path="tools/samtools/samtools",ref_data="",
   }else{
   if(!cov_data$pos_relative_to_tfbs[1]==-start){
     missing=-start-cov_data$pos_relative_to_tfbs[1]
-    bind=data.frame(chr=tfbs_data[1],pos=seq(cov_data$pos[1]-missing,cov_data$pos[1]-1,1),cov=NA,strand=tfbs_data[5],cor_cov=NA,norm_cor_cov=NA,pos_relative_to_tfbs=seq(cov_data$pos_relative_to_tfbs[1]-missing,cov_data$pos_relative_to_tfbs[1]-1))
+    bind=data.frame(chr=tfbs_data[1],pos=(cov_data$pos[1]-missing):(cov_data$pos[1]-1),cov=NA,strand=tfbs_data[5],cor_cov=NA,norm_cor_cov=NA,pos_relative_to_tfbs=(cov_data$pos_relative_to_tfbs[1]-missing):(cov_data$pos_relative_to_tfbs[1]-1))
     print(bind)
     cov_data=rbind(bind,cov_data)
   }else if(!cov_data$pos_relative_to_tfbs[length(cov_data$pos_relative_to_tfb)]==end){
     missing=end-cov_data$pos_relative_to_tfbs[length(cov_data$pos_relative_to_tfb)]
-    bind=data.frame(chr=tfbs_data[1],pos=seq(cov_data$pos[length(cov_data$pos_relative_to_tfb)]+1,cov_data$pos[length(cov_data$pos_relative_to_tfb)]+missing,1),cov=NA,strand=tfbs_data[5],cor_cov=NA,norm_cor_cov=NA,pos_relative_to_tfbs=seq(cov_data$pos_relative_to_tfbs[length(cov_data$pos_relative_to_tfb)]+1,cov_data$pos_relative_to_tfbs[length(cov_data$pos_relative_to_tfb)]+missing))
+    bind=data.frame(chr=tfbs_data[1],pos=(cov_data$pos[length(cov_data$pos_relative_to_tfb)]+1):(cov_data$pos[length(cov_data$pos_relative_to_tfb)]+missing,1),cov=NA,strand=tfbs_data[5],cor_cov=NA,norm_cor_cov=NA,pos_relative_to_tfbs=(cov_data$pos_relative_to_tfbs[length(cov_data$pos_relative_to_tfb)]+1):(cov_data$pos_relative_to_tfbs[length(cov_data$pos_relative_to_tfb)]+missing))
     print(bind)
     cov_data=rbind(cov_data,bind)
   }
