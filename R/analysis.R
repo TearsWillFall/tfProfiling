@@ -74,7 +74,7 @@ output_dir=paste0(output_dir,sep,sample_name)
 out_file=paste0(output_dir,"/",sample_name,".ALL.ANALYZED.TFS.STATS.txt")
 
 tictoc::toc()
-if (file.exists()){
+if (file.exists(out_file)){
   write.table(all_stats,quote=FALSE,row.names=FALSE,out_file,append=TRUE,col.names=FALSE)
 
 }else{
