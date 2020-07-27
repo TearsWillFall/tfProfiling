@@ -168,6 +168,9 @@ calculate_coverage_tfbs=function(bin_path="tools/samtools/samtools",ref_data="",
     norm_cov=0.001
   }
 
+
+
+
   if(!(nrow(cov_data)==(start+end+1))){
     fix=(as.numeric(tfbs_data[5])-start):(as.numeric(tfbs_data[5])+end)
     fix=data.frame(chr=tfbs_data[1],pos=unique(c(fix,cov_data$pos)))
