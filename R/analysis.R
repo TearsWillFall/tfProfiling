@@ -33,7 +33,7 @@ analyze_tfs=function(bin_path="tools/bedtools2/bin/bedtools",bin_path2="tools/sa
   }
 
 
-tictoc::tic("Analysis time")
+tictoc::tic("Time")
 
 sample_name=ULPwgs::get_sample_name(bam)
 
@@ -73,7 +73,7 @@ output_dir=paste0(output_dir,sep,sample_name)
 
 out_file=paste0(output_dir,"/",sample_name,".ALL.ANALYZED.TFS.STATS.txt")
 
-tictoc::toc()
+
 if (file.exists(out_file)){
   write.table(all_stats,quote=FALSE,row.names=FALSE,out_file,append=TRUE,col.names=FALSE)
 
@@ -81,6 +81,7 @@ if (file.exists(out_file)){
   write.table(all_stats,quote=FALSE,row.names=FALSE,out_file)
 }
 
+tictoc::toc()
 
 
 }
@@ -236,7 +237,7 @@ accessibility_score=function(data="",output_dir="",plot=TRUE,verbose=FALSE){
 
     if(!is.data.frame(data)){
       cov_data=read.table(data,header=TRUE)
-      name=ULPwgs::get_sample_name(data)
+      name=cov_data$TF[1]
     }else{
       cov_data=data
       name=cov_data$TF[1]
@@ -303,4 +304,29 @@ accessibility_score=function(data="",output_dir="",plot=TRUE,verbose=FALSE){
   tictoc::toc()
   print("-------------------------------------------------")
   return(stats)
+  }
+
+
+rank_accessibility=function(data="",verbose=FALSE,output_dir=""){
+
+  stats_data=read.table(data,header=TRUE)
+  sample_name=ULPwgs::get_sample_name(data)
+
+
+  print(paste("Ranking Accesibility Score for",sample_name))
+
+  sep="/"
+
+  if(output_dir==""){
+    sep=""
+  }
+
+  output_dir=paste0(output_dir,sep,sample_name)
+
+  out_file=paste0(output_dir,"/",sample_name,".RANKED.ACCESSIBILITY.SCORE.txt")
+
+  results=data.frame(TF=data$TF,RANGE=data$RANGE,RANK=rank(data$RANGE)/length(data$RANGE))
+
+  write.table(results,quote=FALSE,row.names=FALSE,out_file)
+
   }
