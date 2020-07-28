@@ -310,7 +310,7 @@ accessibility_score=function(data="",output_dir="",plot=TRUE,verbose=FALSE){
 
 #' Ranks the Accessibility Score for all the TFs
 #'
-#' This function takes a path to a TXT file with the accessibility scores of all the TFs analyzed
+#' This function takes a path to a TXT file with the accessibility scores of all the TFs analyzed and ranks them.
 
 #' @param data Path to TXT file
 #' @param output_dir Directory to output results. If not provided then outputs in current directory
