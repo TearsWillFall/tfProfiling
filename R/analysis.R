@@ -320,7 +320,7 @@ accessibility_score=function(data="",output_dir="",plot=TRUE,verbose=FALSE){
 
 rank_accessibility=function(data="",output_dir="",verbose=FALSE){
 
-  stats_data=read.table(data,header=TRUE)
+  stats_data=read.table(data,header=TRUE,comment.char="")
   sample_name=ULPwgs::get_sample_name(data)
 
 
