@@ -317,7 +317,7 @@ accessibility_score=function(data="",output_dir="",plot=TRUE,verbose=FALSE){
 #' @param verbose Enables progress messages. Default FALSE
 #' @export
 
-
+data="~/Rep/SRR11742859/SRR11742859.ALL.ANALYZED.TFS.STATS.txt"
 rank_accessibility=function(data="",output_dir="",verbose=FALSE){
 
   stats_data=read.table(data,header=TRUE,comment.char="")
@@ -332,11 +332,13 @@ rank_accessibility=function(data="",output_dir="",verbose=FALSE){
     sep=""
   }
 
+  results=data.frame(TF=stats_data$TF,RANGE=stats_data$RANGE,RANK=rank(stats_data$RANGE)/length(stats_data$RANGE))
+
   output_dir=paste0(output_dir,sep,sample_name)
 
   out_file=paste0(output_dir,"/",sample_name,".RANKED.ACCESSIBILITY.SCORE.txt")
 
-  results=data.frame(TF=data$TF,RANGE=data$RANGE,RANK=rank(data$RANGE)/length(data$RANGE))
+
 
   write.table(results,quote=FALSE,row.names=FALSE,out_file)
 
