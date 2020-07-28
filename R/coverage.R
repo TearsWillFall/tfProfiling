@@ -4,7 +4,7 @@
 #'
 #' @param bin_path Path to binary. Default tools/bedtools2/bin/bedtools
 #' @param bam Path to BAM file.
-#' @param verbose Enables progress messages. Default False.
+#' @param verbose Enables progress messages. Default FALSE.
 #' @param output_dir Directory to output results. If not provided then outputs in current directory
 #' @export
 

@@ -11,7 +11,9 @@ accessibility_score(data = "", output_dir = "", plot = TRUE, verbose = FALSE)
 
 \item{output_dir}{Directory to output results. If not provided then outputs in current directory}
 
-\item{plot}{Create a plot with frequency data. Default True.}
+\item{plot}{Create a plot with frequency data. Default TRUE.}
+
+\item{verbose}{Enables progress messages. Default FALSE}
 }
 \description{
 This function takes a DATA.FRAME/ TXT file with the TFBS coverage data and

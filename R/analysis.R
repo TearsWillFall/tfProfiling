@@ -18,9 +18,9 @@
 #' @param max_regions Max number of TFBS to analyze. Default 100000
 #' @param mapq Min quality of mapping reads. Default 0
 #' @param threads Number of threads. Default 1
-#' @param verbose Enables progress messages. Default False
+#' @param verbose Enables progress messages. Default FALSE
 #' @param output_dir Directory to output results. If not provided then outputs in current directory
-#' @param plot Create plots. Default True.
+#' @param plot Create plots. Default TRUE.
 #' @return A DATA.FRAME with coverage data
 #' @export
 
@@ -106,9 +106,9 @@ tictoc::toc()
 #' @param max_regions Max number of TFBS to analyze. Default 100000
 #' @param mapq Min quality of mapping reads. Default 0
 #' @param threads Number of threads. Default 1
-#' @param verbose Enables progress messages. Default False
+#' @param verbose Enables progress messages. Default FALSE
 #' @param output_dir Directory to output results. If not provided then outputs in current directory
-#' @param plot Create a plot with coverage data. Default True.
+#' @param plot Create a plot with coverage data. Default TRUE.
 #' @return A DATA.FRAME with coverage data
 #' @export
 
@@ -225,7 +225,8 @@ analyze_tfbs_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bi
 
 #' @param data DATA.FRAME with data or Path to TXT file
 #' @param output_dir Directory to output results. If not provided then outputs in current directory
-#' @param plot Create a plot with frequency data. Default True.
+#' @param plot Create a plot with frequency data. Default TRUE.
+#' @param verbose Enables progress messages. Default FALSE
 #' @export
 
 
@@ -307,7 +308,17 @@ accessibility_score=function(data="",output_dir="",plot=TRUE,verbose=FALSE){
   }
 
 
-rank_accessibility=function(data="",verbose=FALSE,output_dir=""){
+#' Ranks the Accessibility Score for all the TFs
+#'
+#' This function takes a path to a TXT file with the accessibility scores of all the TFs analyzed
+
+#' @param data Path to TXT file
+#' @param output_dir Directory to output results. If not provided then outputs in current directory
+#' @param verbose Enables progress messages. Default FALSE
+#' @export
+
+
+rank_accessibility=function(data="",output_dir="",verbose=FALSE){
 
   stats_data=read.table(data,header=TRUE)
   sample_name=ULPwgs::get_sample_name(data)

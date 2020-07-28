@@ -50,11 +50,11 @@ analyze_tfs(
 
 \item{mapq}{Min quality of mapping reads. Default 0}
 
-\item{verbose}{Enables progress messages. Default False}
+\item{verbose}{Enables progress messages. Default FALSE}
 
 \item{output_dir}{Directory to output results. If not provided then outputs in current directory}
 
-\item{plot}{Create plots. Default True.}
+\item{plot}{Create plots. Default TRUE.}
 }
 \value{
 A DATA.FRAME with coverage data

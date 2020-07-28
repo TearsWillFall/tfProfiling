@@ -47,11 +47,11 @@ analyze_tfbs_around_position(
 
 \item{mapq}{Min quality of mapping reads. Default 0}
 
-\item{verbose}{Enables progress messages. Default False}
+\item{verbose}{Enables progress messages. Default FALSE}
 
 \item{output_dir}{Directory to output results. If not provided then outputs in current directory}
 
-\item{plot}{Create a plot with coverage data. Default True.}
+\item{plot}{Create a plot with coverage data. Default TRUE.}
 }
 \value{
 A DATA.FRAME with coverage data

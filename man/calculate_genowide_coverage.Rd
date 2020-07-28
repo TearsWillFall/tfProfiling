@@ -16,7 +16,7 @@ calculate_genowide_coverage(
 
 \item{bam}{Path to BAM file.}
 
-\item{verbose}{Enables progress messages. Default False.}
+\item{verbose}{Enables progress messages. Default FALSE.}
 
 \item{output_dir}{Directory to output results. If not provided then outputs in current directory}
 }
