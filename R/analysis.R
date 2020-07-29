@@ -332,7 +332,7 @@ rank_accessibility=function(data="",output_dir="",verbose=FALSE){
     sep=""
   }
 
-  results=data.frame(TF=stats_data$TF,RANGE=stats_data$RANGE,RANK=rank(stats_data$RANGE)/length(unique(stats_data$RANGE)))
+  results=data.frame(TF=stats_data$TF,RANGE=stats_data$RANGE,RANK=rank(stats_data$RANGE)/max(stats_data$RANGE))
 
   output_dir=paste0(output_dir,sep,sample_name)
 
