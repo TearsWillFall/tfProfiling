@@ -14,5 +14,5 @@ rank_accessibility(data = "", output_dir = "", verbose = FALSE)
 \item{verbose}{Enables progress messages. Default FALSE}
 }
 \description{
-This function takes a path to a TXT file with the accessibility scores of all the TFs analyzed
+This function takes a path to a TXT file with the accessibility scores of all the TFs analyzed and ranks them.
 }
