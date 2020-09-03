@@ -199,7 +199,7 @@ analyze_tfbs_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bi
     warning("NAs found substituted with 0s")
     norm_log2[is.na(norm_log2)]=0
   }
-
+  print(norm_log2)
 
   # Calculate Mean Depth Coverage Around TFBS
 
