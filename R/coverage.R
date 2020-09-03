@@ -170,7 +170,6 @@ calculate_coverage_tfbs=function(bin_path="tools/samtools/samtools",ref_data="",
 
 
 
-
   if(!(nrow(cov_data)==(start+end+1))){
     fix=(as.numeric(tfbs_data[5])-start):(as.numeric(tfbs_data[5])+end)
 
@@ -187,6 +186,7 @@ calculate_coverage_tfbs=function(bin_path="tools/samtools/samtools",ref_data="",
   ## coverage_list=pbapply::pblapply(seq(1,nrow(tfbs_to_analyze),1),FUN=FUN,tfbs_data=tfbs_to_analyze,bin_path=bin_path,norm_log2=norm_log2,start=tfbs_start,end=tfbs_end,mean_cov=mean_cov,bam=bam,cov_limit=cov_limit,mapq=mapq,cl=cl)
 
   on.exit(parallel::stopCluster(cl))
+  on.exit(Rmpi::mpi.quit())
   print(paste("TFBS analyzed:",nrow(tfbs_to_analyze)))
   print(paste("TFBS skipped:",nrow(ref_data)-nrow(tfbs_to_analyze)))
 
