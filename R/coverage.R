@@ -182,7 +182,7 @@ calculate_coverage_tfbs=function(bin_path="tools/samtools/samtools",ref_data="",
 
   return(cov_data)
   }
-  cl=parallel::makeCluster(threads)
+  cl=parallel::makeCluster(threads,type="MPI")
   coverage_list=pbapply(X=tfbs_to_analyze,1,FUN=FUN,bin_path=bin_path,norm_log2=norm_log2,start=tfbs_start,end=tfbs_end,mean_cov=mean_cov,bam=bam,cov_limit=cov_limit,mapq=mapq,cl=cl)
   ## coverage_list=pbapply::pblapply(seq(1,nrow(tfbs_to_analyze),1),FUN=FUN,tfbs_data=tfbs_to_analyze,bin_path=bin_path,norm_log2=norm_log2,start=tfbs_start,end=tfbs_end,mean_cov=mean_cov,bam=bam,cov_limit=cov_limit,mapq=mapq,cl=cl)
 
