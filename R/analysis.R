@@ -205,11 +205,14 @@ analyze_tfbs_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bi
 
   print("Calculating Mean Depth Coverage Around TFBS")
   coverage_list=calculate_coverage_tfbs(bin_path=bin_path2,ref_data=ref_data,bam=bam,norm_log2=norm_log2,tfbs_start=tfbs_start,tfbs_end=tfbs_end,cov_limit=cov_limit,output_dir=output_dir,mapq=mapq,tf_name=tf_name,sample_name=sample_name,threads=threads,mean_cov=mean_cov)
+
   log_data=get_mean_and_conf_intervals(cov_data=coverage_list)
   log_data=cbind(TF=paste0(sample_name,"_",tf_name),log_data)
 
   out_file=paste0(output_dir,"/",sample_name,"_",tf_name,".",max(log_data$TFBS_ANALYZED),"TFBS.S",tfbs_start,"-E",tfbs_end,".tss")
+
   write.table(log_data,quote=FALSE,row.names=FALSE,out_file)
+  write.table(coverage_list,quote=FALSE,row.names=FALSE,paste0(out_file,".bug"))
   if(plot){
     print("Generating plots")
     tictoc::tic("Generation time")
@@ -253,7 +256,7 @@ accessibility_score=function(data="",output_dir="",plot=TRUE,verbose=FALSE){
       cov_data=data
       name=as.character(cov_data$TF[1])
     }
-    
+
     tf_name=strsplit(name,"_")[[1]][length(strsplit(name,"_")[[1]])]
     sample_name=paste0(strsplit(name,"_")[[1]][-length(strsplit(name,"_")[[1]])],collapse="_")
 
