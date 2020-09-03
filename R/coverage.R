@@ -48,7 +48,13 @@ calculate_genowide_coverage=function(bin_path="tools/bedtools2/bin/bedtools",bam
 get_norm_local_coverage=function(pos="",chr="",norm_log2=""){
    norm=norm_log2[norm_log2$chr==chr & pos>norm_log2$start & pos<norm_log2$end,]$log2
    if(!length(norm)==0){
-     return(norm^2)
+     norm=as.numeric(norm^2)
+     if (norm==0){
+       return(0.0001)
+     }
+     else{
+       return(norm)
+     }
    }else{
      return (1)
    }
@@ -164,9 +170,6 @@ calculate_coverage_tfbs=function(bin_path="tools/samtools/samtools",ref_data="",
   cov_data=read.csv(text=system(paste(bin_path,"depth -a -Q",mapq, "-r",paste0(tfbs_data[1],":",as.numeric(tfbs_data[5])-start,"-",as.numeric(tfbs_data[5])+end),bam),intern=TRUE),header=FALSE,sep="\t")
   colnames(cov_data)=c("chr","pos","cov")
   norm_cov=get_norm_local_coverage(pos=tfbs_data[5],chr=tfbs_data[1],norm_log2=norm_log2)
-  if (norm_cov==0){
-    norm_cov=0.001
-  }
 
 
   if(!(nrow(cov_data)==(start+end+1))){
@@ -176,7 +179,7 @@ calculate_coverage_tfbs=function(bin_path="tools/samtools/samtools",ref_data="",
     cov_data=dplyr::bind_rows(cov_data,fix) %>% dplyr::arrange(pos)
   }
   cov_data=cbind(cov_data,strand=tfbs_data[4])
-  cov_data=cov_data %>% dplyr::mutate(cor_cov=as.numeric(cov)/as.numeric(mean_cov))  %>% dplyr::mutate(pos=as.numeric(tfbs_data[5]),chr=as.numeric(tfbs_data[1]),norm_cor_cov=ifelse(cor_cov<cov_limit,cor_cov/as.numeric(norm_cov),NA),pos_relative_to_tfbs=dplyr::if_else(strand=="+",pos-as.numeric(tfbs_data[5]),-(pos-as.numeric(tfbs_data[5])))) %>% dplyr::arrange(pos_relative_to_tfbs)
+  cov_data=cov_data %>% dplyr::mutate(cor_cov=as.numeric(cov)/as.numeric(mean_cov))  %>% dplyr::mutate(norm_cor_cov=ifelse(cor_cov<cov_limit,cor_cov/as.numeric(norm_cov),NA),pos_relative_to_tfbs=dplyr::if_else(strand=="+",pos-as.numeric(tfbs_data[5]),-(pos-as.numeric(tfbs_data[5])))) %>% dplyr::arrange(pos_relative_to_tfbs)
 
   return(cov_data)
   }
