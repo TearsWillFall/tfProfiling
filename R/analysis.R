@@ -253,7 +253,7 @@ accessibility_score=function(data="",output_dir="",plot=TRUE,verbose=FALSE){
       cov_data=data
       name=as.character(cov_data$TF[1])
     }
-    name="any_ts_sd"
+    
     tf_name=strsplit(name,"_")[[1]][length(strsplit(name,"_")[[1]])]
     sample_name=paste0(strsplit(name,"_")[[1]][-length(strsplit(name,"_")[[1]])],collapse="_")
 
