@@ -122,7 +122,15 @@ analyze_tfbs_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bi
 
 
   options(scipen=999)
+
+  chr_check=system(paste(bin_path,"view",bam," | head -n 1 | awk -F \"\t\" '{print $3}'"),intern=TRUE)
+
   ref_data=read.table(bed,comment.char="")
+  if (!grepl("chr",chr_check)){
+    ref_data[,1]=gsub("chr","",ref_data[,1])
+  }
+
+
   sample_name=ULPwgs::get_sample_name(bam)
   tf_name=ULPwgs::get_sample_name(bed)
 
