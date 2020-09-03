@@ -123,7 +123,7 @@ analyze_tfbs_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bi
 
   options(scipen=999)
 
-  chr_check=system(paste(bin_path,"view",bam," | head -n 1 | awk -F \"\t\" '{print $3}'"),intern=TRUE)
+  chr_check=system(paste(bin_path2,"view",bam," | head -n 1 | awk -F \"\t\" '{print $3}'"),intern=TRUE)
 
   ref_data=read.table(bed,comment.char="")
   if (!grepl("chr",chr_check)){
