@@ -248,10 +248,10 @@ accessibility_score=function(data="",output_dir="",plot=TRUE,verbose=FALSE){
 
     if(!is.data.frame(data)){
       cov_data=read.table(data,header=TRUE)
-      name=cov_data$TF[1]
+      name=as.character(cov_data$TF[1])
     }else{
       cov_data=data
-      name=cov_data$TF[1]
+      name=as.character(cov_data$TF[1])
     }
 
     tf_name=strsplit(name,"__")[[1]][2]
