@@ -51,8 +51,10 @@ if (is.numeric(tfs)){
   char2seed(bed_dir)
   bed_files=sample(bed_files,tfs)
   options(warn=0)
-    }
-}else if(is.vector(tfs)){
+}else{
+  bed_files
+}
+}else if(is.vector(tfs)&& !tfs==""){
   bed_files=bed_files[grepl(paste(tfs,collapse="|"),bed_files)]
   if (length(bed_files)<length(tfs)){
     warning("Number of TFs to analyze > Number of TFs listed. Perhaps the TFs names provided are too unspecific?")
