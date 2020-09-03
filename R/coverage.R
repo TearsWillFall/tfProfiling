@@ -100,7 +100,7 @@ get_mean_coverage=function(file="",output_dir="",region="genome",sample_name="",
 
 
   data=read.table(file)
-  data=data %>% dplyr::mutate(tot_bases=(V2*V3)) %>% dplyr::group_by(V1) %>% dplyr::summarise(cnt=dplyr::n(),avg_cov=sum(tot_bases)/max(V4), .groups = 'drop') %>% as.data.frame()
+  data=data %>% dplyr::mutate(tot_bases=(as.numeric(V2)*as.numeric(V3))) %>% dplyr::group_by(V1) %>% dplyr::summarise(cnt=dplyr::n(),avg_cov=sum(tot_bases)/max(V4), .groups = 'drop') %>% as.data.frame()
 
   if (save){
     sep="/"
