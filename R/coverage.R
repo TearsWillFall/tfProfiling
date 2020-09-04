@@ -169,7 +169,7 @@ calculate_coverage_tfbs=function(bin_path="tools/samtools/samtools",ref_data="",
 
   cov_data=read.csv(text=system(paste(bin_path,"depth -a -Q",mapq, "-r",paste0(tfbs_data[1],":",as.numeric(tfbs_data[5])-start,"-",as.numeric(tfbs_data[5])+end),bam),intern=TRUE),header=FALSE,sep="\t")
   colnames(cov_data)=c("chr","pos","cov")
-  norm_cov=get_norm_local_coverage(pos=tfbs_data[5],chr=tfbs_data[1],norm_log2=norm_log2)
+  norm_cov=get_norm_local_coverage(pos=as.numeric(tfbs_data[5]),chr=as.numeric(tfbs_data[1]),norm_log2=norm_log2)
 
   if(!(nrow(cov_data)==(start+end+1))){
     fix=(as.numeric(tfbs_data[5])-start):(as.numeric(tfbs_data[5])+end)
