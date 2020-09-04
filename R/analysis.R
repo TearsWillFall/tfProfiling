@@ -196,8 +196,8 @@ analyze_tfbs_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bi
   norm_log2=read.table(norm,header=TRUE)
   colnames(norm_log2)=c("chr","start","end","log2")
   if(any(is.na(norm_log2))){
-    warning("NAs found substituted with 0s")
-    norm_log2[is.na(norm_log2)]=0
+    warning("NAs found substituted with 1s")
+    norm_log2[is.na(norm_log2)]=1
   }
   print(norm_log2)
 
