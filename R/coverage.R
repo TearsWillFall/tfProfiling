@@ -47,8 +47,7 @@ calculate_genowide_coverage=function(bin_path="tools/bedtools2/bin/bedtools",bam
 
 get_norm_local_coverage=function(pos="",chr="",norm_log2=""){
    norm=as.numeric(norm_log2[norm_log2$chr==chr & pos>norm_log2$start & pos<norm_log2$end,]$log2)
-   stop(paste0(norm,pos,chr,sep="/"))
-   if(!is.na(norm)){
+   if(!length(norm)==0){
      norm=norm^2
      if (norm==0){
        return(norm=as.numeric(0.0001))
@@ -151,7 +150,7 @@ get_mean_coverage=function(file="",output_dir="",region="genome",sample_name="",
 
 calculate_coverage_tfbs=function(bin_path="tools/samtools/samtools",ref_data="",bam="",sample_name="",tf_name="",mean_cov="",norm_log2="",tfbs_start=1000,tfbs_end=1000,cov_limit=1000,mapq=0,threads=1,output_dir=""){
 
-  ref_data=data.frame(chr=ref_data[,1],start=ref_data[,2],end=ref_data[,3],strand=ref_data[,which(ref_data[1,]=="+" |ref_data[1,]=="-")],pos=as.integer((ref_data[,3]+ref_data[,2])/2))
+  ref_data=data.frame(chr=ref_data[,1],start=ref_data[,2],end=ref_data[,3],strand=ref_data[,which(ref_data[1,]=="+" | ref_data[1,]=="-")],pos=as.integer((ref_data[,3]+ref_data[,2])/2))
 
 
   tfbs_to_analyze=ref_data
@@ -170,7 +169,7 @@ calculate_coverage_tfbs=function(bin_path="tools/samtools/samtools",ref_data="",
 
   cov_data=read.csv(text=system(paste(bin_path,"depth -a -Q",mapq, "-r",paste0(tfbs_data[1],":",as.numeric(tfbs_data[5])-start,"-",as.numeric(tfbs_data[5])+end),bam),intern=TRUE),header=FALSE,sep="\t")
   colnames(cov_data)=c("chr","pos","cov")
-  norm_cov=get_norm_local_coverage(pos=as.numeric(tfbs_data[5]),chr=as.numeric(tfbs_data[1]),norm_log2=norm_log2)
+  norm_cov=get_norm_local_coverage(pos=as.numeric(tfbs_data[5]),chr=tfbs_data[1],norm_log2=norm_log2)
 
   if(!(nrow(cov_data)==(start+end+1))){
     fix=(as.numeric(tfbs_data[5])-start):(as.numeric(tfbs_data[5])+end)
