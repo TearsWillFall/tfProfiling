@@ -212,7 +212,6 @@ analyze_tfbs_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bi
   out_file=paste0(output_dir,"/",sample_name,"_",tf_name,".",max(log_data$TFBS_ANALYZED),"TFBS.S",tfbs_start,"-E",tfbs_end,".tss")
 
   write.table(log_data,quote=FALSE,row.names=FALSE,out_file)
-  write.table(coverage_list,quote=FALSE,row.names=FALSE,paste0(out_file,".bug"))
   if(plot){
     print("Generating plots")
     tictoc::tic("Generation time")
