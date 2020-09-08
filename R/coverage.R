@@ -171,12 +171,7 @@ calculate_coverage_tfbs=function(bin_path="tools/samtools/samtools",ref_data="",
   colnames(cov_data)=c("chr","pos","cov")
   norm_cov=get_norm_local_coverage(pos=as.numeric(tfbs_data[5]),chr=tfbs_data[1],norm_log2=norm_log2)
 
-  if(!(nrow(cov_data)==(start+end+1))){
-    fix=(as.numeric(tfbs_data[5])-start):(as.numeric(tfbs_data[5])+end)
 
-    fix=data.frame(chr=tfbs_data[1],pos=fix[!fix==cov_data$pos])
-    cov_data=dplyr::bind_rows(cov_data,fix) %>% dplyr::arrange(pos)
-  }
   cov_data=cbind(cov_data,strand=tfbs_data[4])
   cov_data=cov_data %>% dplyr::mutate(cor_cov=as.numeric(cov)/as.numeric(mean_cov))  %>% dplyr::mutate(norm_cor_cov=cor_cov/as.numeric(norm_cov),pos_relative_to_tfbs=dplyr::if_else(strand=="+",pos-as.numeric(tfbs_data[5]),-(pos-as.numeric(tfbs_data[5])))) %>% dplyr::arrange(pos_relative_to_tfbs)
 
