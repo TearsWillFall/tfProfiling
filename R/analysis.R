@@ -346,7 +346,7 @@ rank_accessibility=function(data="",output_dir="",verbose=FALSE){
 
   results=data.frame(TF=stats_data$TF,RANGE=stats_data$RANGE,RANK=rank(stats_data$RANGE)/length(rank(stats_data$RANGE)))
 
-  output_dir=paste0(output_dir,sep,sample_name)
+
 
   out_file=paste0(output_dir,"/",sample_name,".RANKED.ACCESSIBILITY.SCORE.txt")
 
