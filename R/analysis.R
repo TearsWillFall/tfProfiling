@@ -348,7 +348,7 @@ rank_accessibility=function(data="",output_dir="",verbose=FALSE){
 
 
 
-  out_file=paste0(output_dir,"/",sample_name,".RANKED.ACCESSIBILITY.SCORE.txt")
+  out_file=paste0(output_dir,sep,sample_name,".RANKED.ACCESSIBILITY.SCORE.txt")
 
 
 
