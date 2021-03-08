@@ -51,7 +51,7 @@ get_norm_local_coverage=function(pos="",chr="",norm_log2=""){
      norm=2**norm
      if (norm==0){
        return(0.001)
-     }else if(norm=NA){
+     }else if(norm==NA){
        return(1)
      }
      else{
