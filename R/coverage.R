@@ -48,17 +48,11 @@ calculate_genowide_coverage=function(bin_path="tools/bedtools2/bin/bedtools",bam
 get_norm_local_coverage=function(pos="",chr="",norm_log2=""){
    norm=as.numeric(norm_log2[norm_log2$chr==chr & pos>norm_log2$start & pos<norm_log2$end,]$log2)
    if(!length(norm)==0){
-     norm=norm^2
-     if (norm==0){
-       return(norm=as.numeric(0.0001))
-     }
-     else{
-       return(norm)
-     }
+     norm=2**norm
+     return(norm)
    }else{
      return (1)
    }
-
 }
 
 #' Calculate mean and confidence intervals for positions relative to TFBSs
@@ -150,14 +144,11 @@ get_mean_coverage=function(file="",output_dir="",region="genome",sample_name="",
 
 calculate_coverage_tfbs=function(bin_path="tools/samtools/samtools",ref_data="",bam="",sample_name="",tf_name="",mean_cov="",norm_log2="",tfbs_start=1000,tfbs_end=1000,cov_limit=1000,mapq=0,threads=1,output_dir=""){
 
-  ref_data=data.frame(chr=ref_data[,1],start=ref_data[,2],end=ref_data[,3],strand=ref_data[,which(ref_data[1,]=="+" | ref_data[1,]=="-")],pos=as.integer((ref_data[,3]+ref_data[,2])/2))
-
-
+  ref_data=data.frame(chr=ref_data[,1],start=ref_data[,2],end=ref_data[,3],strand=ref_data[,which(ref_data[1,]=="+" | ref_data[1,]=="-")],pos=as.numeric((ref_data[,3]+ref_data[,2])/2))
   tfbs_to_analyze=ref_data
 
   ## Filter for overlapping TFBS or duplicated TFBS to save time
-
-  tfbs_to_analyze=tfbs_to_analyze %>% dplyr::filter(!grepl("_",chr),pos-tfbs_start>1) %>% dplyr::distinct(chr, pos, .keep_all = TRUE)
+  tfbs_to_analyze=tfbs_to_analyze %>% dplyr::filter(!grepl("_",chr),(pos-start)<1) %>% dplyr::distinct(chr, pos, .keep_all = TRUE)
 
   FUN=function(x,bin_path,norm_log2,start,end,mean_cov,bam,cov_limit,mapq){
   tfbs_data=t(x)
