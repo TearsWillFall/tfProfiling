@@ -47,7 +47,7 @@ calculate_genowide_coverage=function(bin_path="tools/bedtools2/bin/bedtools",bam
 
 get_norm_local_coverage=function(pos="",chr="",norm_log2=""){
    norm=as.numeric(norm_log2[norm_log2$chr==chr & pos>norm_log2$start & pos<norm_log2$end,]$log2)
-   if(!length(norm)==0){
+   if(!length(norm)==0|!norm==NA){
      norm=2**norm
      if (norm==0){
        return(0.001)
