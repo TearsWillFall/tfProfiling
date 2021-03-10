@@ -422,7 +422,7 @@ analyze_MR_tfs=function(bin_path="tools/samtools/samtools",bin_path2="tools/Pile
     print("=========================================================")
 
     FUN=function(x,bin_path,bin_path2,bam,tfbs_start,tfbs_end,mean_cov,norm,threads,cov_limit,max_regions,mapq,verbose,output_dir,plot){
-      methylation_score(analyze_tfbs_around_position(bin_path=bin_path,bin_path2=bin_path2,bam=bam,bed=bed_files[x],norm=norm,threads=threads,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,plot=plot,mapq=mapq,phred=phred,max_regions=max_regions,verbose=verbose,ref_genome=ref_genome,keep_strand=keep_strand,bin_width=bin_width),output_dir=output_dir,verbose=verbose)
+      methylation_score(analyze_MR_tfbs_around_position(bin_path=bin_path,bin_path2=bin_path2,bam=bam,bed=bed_files[x],norm=norm,threads=threads,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,plot=plot,mapq=mapq,phred=phred,max_regions=max_regions,verbose=verbose,ref_genome=ref_genome,keep_strand=keep_strand,bin_width=bin_width),output_dir=output_dir,verbose=verbose)
     }
 
     cl=parallel::makeCluster(threads,outfile=paste0(output_dir,sep,sample_name,".parallel.log"))
