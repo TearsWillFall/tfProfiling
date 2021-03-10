@@ -10,7 +10,7 @@
 #' @export
 
 
-plot_motif_coverage=function(data="",trend_line=TRUE,tf_name="",sample_name="",output_dir=""){
+plot_motif_MR=function(data="",trend_line=TRUE,tf_name="",sample_name="",output_dir=""){
   sep="/"
 
   if(output_dir==""){
