@@ -19,11 +19,12 @@
 #' @param bin_width Width of the the bins in which to group methylation data. Default 50.
 #' @param verbose Enables progress messages. Default FALSE
 #' @param output_dir Directory to output results. If not provided then outputs in current directory
+#' @param threads Number of threads to use. Default 1
 #' @return A list of DATA.FRAMEs with the methylation ratio per base and per bin_width with default bin_width 50
 #' @export
 #' @import pbapply
 
-calculate_MR_tfbs=function(bin_path="tools/PileOMeth/output/MethylDackel",ref_data="",bam="",sample_name="",tf_name="",ref_genome="",tfbs_start=1000,tfbs_end=1000,mapq=10,phred=5,output_dir="",keep_strand=TRUE,bin_width=50,verbose=FALSE){
+calculate_MR_tfbs=function(bin_path="tools/PileOMeth/output/MethylDackel",ref_data="",bam="",sample_name="",tf_name="",ref_genome="",tfbs_start=1000,tfbs_end=1000,mapq=10,phred=5,output_dir="",keep_strand=TRUE,bin_width=50,verbose=FALSE,threads=1){
 
 	sep="/"
   if(output_dir==""){
@@ -57,9 +58,9 @@ calculate_MR_tfbs=function(bin_path="tools/PileOMeth/output/MethylDackel",ref_da
 		strand="--keepStrand"
 	}
 	if (verbose){
-		print(paste(bin_path," extract ",ref_genome, bam,"-l ",paste0(output_dir,sep,sample_name,"_",tf_name,".bed.tmp")," -o ",out_file,strand," -q ",mapq," -p ",phred))
+		print(paste(bin_path," extract ",ref_genome, bam,"-l ",paste0(output_dir,sep,sample_name,"_",tf_name,".bed.tmp")," -o ",out_file,strand," -q ",mapq," -p ",phred," -@ nThreads ",threads))
 	}
-	system(paste(bin_path," extract ",ref_genome, bam,"-l ",paste0(output_dir,sep,sample_name,"_",tf_name,".bed.tmp")," -o ",out_file,strand," -q ",mapq," -p ",phred))
+	system(paste(bin_path," extract ",ref_genome, bam,"-l ",paste0(output_dir,sep,sample_name,"_",tf_name,".bed.tmp")," -o ",out_file,strand," -q ",mapq," -p ",phred," -@ nThreads ",threads))
 	system(paste0("rm ",paste0(output_dir,sep,sample_name,"_",tf_name,".bed.tmp")))
 	tfbs=read.table(paste0(out_file,"_CpG.bedGraph"),skip=1)
 	tfbs$pos=as.integer((tfbs$V2+tfbs$V3)/2)

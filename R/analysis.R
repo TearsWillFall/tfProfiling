@@ -370,10 +370,8 @@ rank_accessibility=function(data="",output_dir="",verbose=FALSE){
 #' @param bam Path to BAM file
 #' @param tfbs_start Number of bases to analyze forward from TFBS central point. Default 1000
 #' @param tfbs_end Number of bases to analyze  backward from TFBS central point. Default 1000
-#' @param mean_cov Mean genome wide coverage. If not provided it will be estimated.
-#' @param norm Path to TXT file with normalized local coverage
-#' @param cov_limit Max base depth. Default 1000
 #' @param max_regions Max number of TFBS to analyze. Default 100000
+#' @param mapq Min quality of mapping reads. Default 0
 #' @param mapq Min quality of mapping reads. Default 0
 #' @param threads Number of threads. Default 1
 #' @param verbose Enables progress messages. Default FALSE
@@ -424,7 +422,7 @@ analyze_MR_tfs=function(bin_path="tools/samtools/samtools",bin_path2="tools/Pile
       accessibility_score(analyze_tfbs_around_position(bin_path=bin_path,bin_path2=bin_path2,bam=bam,bed=bed,norm=norm,threads=threads,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,plot=plot,mapq=mapq,cov_limit=cov_limit,mean_cov=mean_cov,max_regions=max_regions,verbose=verbose),output_dir=output_dir,verbose=verbose)
     }
 
-  
+
     all_stats=mapply(bed_files,FUN=FUN,SIMPLIFY=FALSE,bin_path=bin_path,bin_path2=bin_path2,bam=bam,norm=norm,threads=threads,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,plot=plot,mapq=mapq,cov_limit=cov_limit,mean_cov=mean_cov,max_regions=max_regions,verbose=verbose)
 
     all_stats=suppressMessages(all_stats %>% dplyr::bind_rows())
@@ -469,13 +467,14 @@ analyze_MR_tfs=function(bin_path="tools/samtools/samtools",bin_path2="tools/Pile
 #' @param plot Create a plot with coverage data. Default TRUE.
 #' @param keep_strand Use strand information from BED files if available. Default TRUE.
 #' @param bin_width Width of the the bins in which to group methylation data. Default 50.
+#' @param threads Number of threads to use. Default 1.
 #' @return A DATA.FRAME with coverage data
 #' @export
 
 
   ### ////TO DO IMPLEMENT verbose to the rest of the functions
 
-analyze_MR_tfbs_around_position=function(bin_path="tools/samtools/samtools",bin_path2="tools/PileOMeth/output/MethylDackel",bed="",bam="",tfbs_start=1000,tfbs_end=1000,ref_genome="",max_regions=100000,mapq=10,phred=5,verbose=FALSE,output_dir="",plot=TRUE,keep_strand=TRUE,bin_width=50){
+analyze_MR_tfbs_around_position=function(bin_path="tools/samtools/samtools",bin_path2="tools/PileOMeth/output/MethylDackel",bed="",bam="",tfbs_start=1000,tfbs_end=1000,ref_genome="",max_regions=100000,mapq=10,phred=5,verbose=FALSE,output_dir="",plot=TRUE,keep_strand=TRUE,bin_width=50,threads=1){
 
     tictoc::tic("Analysis time")
 
@@ -528,7 +527,7 @@ analyze_MR_tfbs_around_position=function(bin_path="tools/samtools/samtools",bin_
 
     print("Calculating Mean Methylation Ratio Around TFBS")
 
-    log_data=calculate_MR_tfbs(bin_path=bin_path2,ref_data=ref_data,bam=bam,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,mapq=mapq,phred=phred,tf_name=tf_name,sample_name=sample_name,keep_strand=keep_strand,bin_width=bin_width,verbose=verbose,ref_genome=ref_genome)
+    log_data=calculate_MR_tfbs(bin_path=bin_path2,ref_data=ref_data,bam=bam,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,mapq=mapq,phred=phred,tf_name=tf_name,sample_name=sample_name,keep_strand=keep_strand,bin_width=bin_width,verbose=verbose,ref_genome=ref_genome,threads=threads)
     out_file=paste0(output_dir,"/",sample_name,"_",tf_name,".",max(log_data[[1]]$TFBS_ANALYZED),"TFBS.S",tfbs_start,"-E",tfbs_end,".",max(log_data[[1]]$BIN_WIDTH),".MR.tss")
     write.table(log_data[[1]],quote=FALSE,row.names=FALSE,out_file)
     out_file=paste0(output_dir,"/",sample_name,"_",tf_name,".",max(log_data[[2]]$TFBS_ANALYZED),"TFBS.S",tfbs_start,"-E",tfbs_end,".",max(log_data[[2]]$BIN_WIDTH),".MR.tss")
