@@ -20,7 +20,7 @@ plot_motif_MR=function(data="",trend_line=TRUE,tf_name="",sample_name="",output_
   pdf(out_file)
   p=ggplot2::ggplot(data,  ggplot2::aes(x=POSITION_RELATIVE_TO_TFBS,y=MEAN_MR))+
   ggplot2::geom_ribbon(ggplot2::aes(ymin=CI95_LOWER_BOUND, ymax=CI95_UPPER_BOUND), fill="red", alpha=0.1) +
-  ggplot2::ggtitle(label=paste(tf_name,"for sample",sample_name,"(",max(data$TFBS_ANALYZED),"TFBS analyzed)"),subtitle=max(data$BIN_WIDTH)) +
+  ggplot2::ggtitle(label=paste(tf_name,"for sample",sample_name,"(",max(data$TFBS_ANALYZED),"TFBS analyzed)"),subtitle=paste0("Bin-width=",max(data$BIN_WIDTH)," pb")) +
   ggplot2::theme_classic()
   if(trend_line){
       p=p+ggplot2::geom_line(col="red")+ ggplot2::geom_smooth(method = "loess", formula = y ~ x, size = 1)

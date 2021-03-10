@@ -528,9 +528,9 @@ analyze_MR_tfbs_around_position=function(bin_path="tools/samtools/samtools",bin_
     print("Calculating Mean Methylation Ratio Around TFBS")
 
     log_data=calculate_MR_tfbs(bin_path=bin_path2,ref_data=ref_data,bam=bam,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,mapq=mapq,phred=phred,tf_name=tf_name,sample_name=sample_name,keep_strand=keep_strand,bin_width=bin_width,verbose=verbose,ref_genome=ref_genome)
-    out_file=paste0(output_dir,"/",sample_name,"_",tf_name,".",max(log_data[[1]]$TFBS_ANALYZED),"TFBS.S",tfbs_start,"-E",tfbs_end,",",max(log_data[[1]]$BIN_WIDTH),".MR.tss")
+    out_file=paste0(output_dir,"/",sample_name,"_",tf_name,".",max(log_data[[1]]$TFBS_ANALYZED),"TFBS.S",tfbs_start,"-E",tfbs_end,".",max(log_data[[1]]$BIN_WIDTH),".MR.tss")
     write.table(log_data[[1]],quote=FALSE,row.names=FALSE,out_file)
-    out_file=paste0(output_dir,"/",sample_name,"_",tf_name,".",max(log_data[[2]]$TFBS_ANALYZED),"TFBS.S",tfbs_start,"-E",tfbs_end,",",max(log_data[[2]]$BIN_WIDTH),".MR.tss")
+    out_file=paste0(output_dir,"/",sample_name,"_",tf_name,".",max(log_data[[2]]$TFBS_ANALYZED),"TFBS.S",tfbs_start,"-E",tfbs_end,".",max(log_data[[2]]$BIN_WIDTH),".MR.tss")
     write.table(log_data[[2]],quote=FALSE,row.names=FALSE,out_file)
     if(plot){
       print("Generating plots")

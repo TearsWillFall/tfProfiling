@@ -4,7 +4,7 @@
 \alias{tmp_bed}
 \title{Generates a bed file with temp suffix}
 \usage{
-tmp_bed(chr = "", start = "", end = "", strand = "", name = "File")
+tmp_bed(chr = "", start = "", end = "", strand = "", name = "")
 }
 \arguments{
 \item{chr}{A vector with chromosome names}

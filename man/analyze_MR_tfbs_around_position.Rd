@@ -11,6 +11,7 @@ analyze_MR_tfbs_around_position(
   bam = "",
   tfbs_start = 1000,
   tfbs_end = 1000,
+  ref_genome = "",
   max_regions = 1e+05,
   mapq = 10,
   phred = 5,
@@ -33,6 +34,8 @@ analyze_MR_tfbs_around_position(
 \item{tfbs_start}{Number of bases to analyze forward from TFBS central point. Default 1000}
 
 \item{tfbs_end}{Number of bases to analyze  backward from TFBS central point. Default 1000}
+
+\item{ref_genome}{Path to reference genome FA file.}
 
 \item{max_regions}{Max number of TFBS to analyze. Default 100000}
 

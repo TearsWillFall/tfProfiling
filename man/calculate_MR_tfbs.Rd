@@ -10,13 +10,15 @@ calculate_MR_tfbs(
   bam = "",
   sample_name = "",
   tf_name = "",
+  ref_genome = "",
   tfbs_start = 1000,
   tfbs_end = 1000,
   mapq = 10,
   phred = 5,
   output_dir = "",
   keep_strand = TRUE,
-  bin_width = 50
+  bin_width = 50,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -29,6 +31,8 @@ calculate_MR_tfbs(
 \item{sample_name}{Sample name}
 
 \item{tf_name}{Transcription Factor name}
+
+\item{ref_genome}{Path to reference genome FA file.}
 
 \item{tfbs_start}{Number of bases to analyze forward from TFBS central point. Default 1000}
 
@@ -43,6 +47,8 @@ calculate_MR_tfbs(
 \item{keep_strand}{Use strand information from BED files if available. Default TRUE.}
 
 \item{bin_width}{Width of the the bins in which to group methylation data. Default 50.}
+
+\item{verbose}{Enables progress messages. Default FALSE}
 }
 \value{
 A list of DATA.FRAMEs with the methylation ratio per base and per bin_width with default bin_width 50
