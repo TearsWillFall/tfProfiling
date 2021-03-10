@@ -42,5 +42,5 @@ char2seed <- function(x,set=TRUE){
 
 tmp_bed=function(chr="",start="",end="",strand="",name="File"){
 	dat=data.frame(chr=chr,start=start,end=end,fill1=".",fill2=".",strand=strand)
-	write.table(paste0(name,".bed.tmp"),quotes=FALSE,col.names=FALSE,row.names=FALSE)
+	write.table(paste0(name,".bed.tmp"),quote=FALSE,col.names=FALSE,row.names=FALSE)
 }
