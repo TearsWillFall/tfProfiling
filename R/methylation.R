@@ -67,7 +67,7 @@ calculate_MR_tfbs=function(bin_path="tools/PileOMeth/output/MethylDackel",ref_da
 
 	# Generate per base mean methylation data across all TFBS
 	options(warn = -1)
-	merg_tfbs1=dplyr::left_join(ref_data,tfbs,by=c("chr","pos"))%>% dplyr::group_by(pos_relative_to_tfbs) %>%  dplyr::mutate( x_bins = ifelse(is.na(cut(pos_relative_to_tfbs, breaks = seq(-tfbs_end,tfbs_start,1),include.lowest=FALSE,labels=FALSE)),0,cut(pos_relative_to_tfbs, breaks = seq(-tfbs_end,tfbs_start,1),include.lowest=TRUE,labels=FALSE)))%>% dplyr::group_by(x_bins) %>%
+	merg_tfbs1=dplyr::left_join(ref_data,tfbs,by=c("chr","pos"))%>% dplyr::group_by(pos_relative_to_tfbs) %>%  dplyr::mutate( x_bins = ifelse(is.na(cut(pos_relative_to_tfbs, breaks = seq(-tfbs_end,tfbs_start,1),include.lowest=TRUE,labels=FALSE)),0,cut(pos_relative_to_tfbs, breaks = seq(-tfbs_end,tfbs_start,1),include.lowest=TRUE,labels=FALSE)))%>% dplyr::group_by(x_bins) %>%
 	dplyr::mutate(x_bins=as.integer((max(pos_relative_to_tfbs)+min(pos_relative_to_tfbs))/2)) %>%
 	dplyr::summarise(MEAN_MR=mean(MR,na.rm=TRUE),CI=qt(0.95,(sum(!is.na(MR))-1))*sd(MR,na.rm=TRUE)/sqrt(sum(!is.na(MR))),DATA_POINTS_ANALYZED=sum(!is.na(MR)))
 	merg_tfbs1= dplyr::rename(merg_tfbs1,POSITION_RELATIVE_TO_TFBS=x_bins) %>% dplyr::mutate(CI95_UPPER_BOUND=ifelse(MEAN_MR+CI>100,100,MEAN_MR+CI),CI95_LOWER_BOUND=ifelse(MEAN_MR-CI<0,0,MEAN_MR-CI),TFBS_ANALYZED=nrow(tfbs_to_analyze),BIN_WIDTH=1,TF=paste0(sample_name,"_",tf_name)) %>% dplyr::relocate(TF)
@@ -75,7 +75,7 @@ calculate_MR_tfbs=function(bin_path="tools/PileOMeth/output/MethylDackel",ref_da
 	# Generate per bin_width mean methylation data across all TFBS. Default bin_width 50. This is done because
 	# methylation ratio is scarcely distributed across all TFBS, so even though we analyze 1000 TFBS not all of them return methylation info.
 
-	merg_tfbs2=dplyr::left_join(ref_data,tfbs,by=c("chr","pos"))%>% dplyr::group_by(pos_relative_to_tfbs) %>% dplyr::mutate( x_bins = ifelse(is.na(cut(pos_relative_to_tfbs, breaks = seq(-tfbs_end,tfbs_start,bin_width),include.lowest=FALSE,labels=FALSE)),0,cut(pos_relative_to_tfbs, breaks = seq(-tfbs_end,tfbs_start,bin_width),include.lowest=TRUE,labels=FALSE)))%>% dplyr::group_by(x_bins) %>%
+	merg_tfbs2=dplyr::left_join(ref_data,tfbs,by=c("chr","pos"))%>% dplyr::group_by(pos_relative_to_tfbs) %>% dplyr::mutate( x_bins = ifelse(is.na(cut(pos_relative_to_tfbs, breaks = seq(-tfbs_end,tfbs_start,bin_width),include.lowest=TRUE,labels=FALSE)),0,cut(pos_relative_to_tfbs, breaks = seq(-tfbs_end,tfbs_start,bin_width),include.lowest=TRUE,labels=FALSE)))%>% dplyr::group_by(x_bins) %>%
 	dplyr::mutate(x_bins=as.integer((max(pos_relative_to_tfbs)+min(pos_relative_to_tfbs))/2)) %>%
 	dplyr::summarise(MEAN_MR=mean(MR,na.rm=TRUE),CI=qt(0.95,(sum(!is.na(MR))-1))*sd(MR,na.rm=TRUE)/sqrt(sum(!is.na(MR))),DATA_POINTS_ANALYZED=sum(!is.na(MR)))
 	merg_tfbs2= dplyr::rename(merg_tfbs2,POSITION_RELATIVE_TO_TFBS=x_bins) %>% dplyr::mutate(CI95_UPPER_BOUND=ifelse(MEAN_MR+CI>100,100,MEAN_MR+CI),CI95_LOWER_BOUND=ifelse(MEAN_MR-CI<0,0,MEAN_MR-CI),TFBS_ANALYZED=nrow(tfbs_to_analyze),BIN_WIDTH=bin_width,TF=paste0(sample_name,"_",tf_name)) %>% dplyr::relocate(TF)
