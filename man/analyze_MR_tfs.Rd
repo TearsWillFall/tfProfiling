@@ -8,6 +8,7 @@ analyze_MR_tfs(
   bin_path = "tools/samtools/samtools",
   bin_path2 = "tools/PileOMeth/output/MethylDackel",
   bed_dir = "",
+  tfs = "",
   bam = "",
   tfbs_start = 1000,
   tfbs_end = 1000,
@@ -27,6 +28,8 @@ analyze_MR_tfs(
 \item{bin_path}{Path to binary. Default tools/samtools/samtools}
 
 \item{bin_path2}{Path to secondary binary. Default tools/PileOMeth/output/MethylDackel}
+
+\item{tfs}{Number of TFs to analyze or a list with TFs to analyze. Default none will analyze all TFs in BED directory.}
 
 \item{bam}{Path to BAM file.}
 
