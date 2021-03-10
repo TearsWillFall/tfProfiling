@@ -9,7 +9,8 @@ plot_motif_MR(
   trend_line = TRUE,
   tf_name = "",
   sample_name = "",
-  output_dir = ""
+  output_dir = "",
+  line = TRUE
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ plot_motif_MR(
 \item{sample_name}{Sample name}
 
 \item{output_dir}{Directory to output results.}
+
+\item{line}{Draw a line between points. Default TRUE}
 }
 \description{
 This function takes a DATA.FRAME with Mean Methylation Ratio data as input, and plots it
