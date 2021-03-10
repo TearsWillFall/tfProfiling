@@ -120,7 +120,6 @@ analyze_tfs=function(bin_path="tools/bedtools2/bin/bedtools",bin_path2="tools/sa
 analyze_tfbs_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bin_path2="tools/samtools/samtools",bed="",bam="",tfbs_start=1000,tfbs_end=1000,mean_cov="",norm="",threads=1,cov_limit=1000,max_regions=100000,mapq=0,verbose=FALSE,output_dir="",plot=TRUE){
   tictoc::tic("Analysis time")
 
-
   options(scipen=999)
 
   chr_check=system(paste(bin_path2,"view",bam," | head -n 1 | awk -F \"\t\" '{print $3}'"),intern=TRUE)
@@ -363,25 +362,28 @@ rank_accessibility=function(data="",output_dir="",verbose=FALSE){
 #' This function takes the path to the directory with BED files for each TF, a BAM file with an aligned bisulfite treated sequence
 #' and estimates methylation ratio values around TFBS.
 #'
-#' @param bin_path Path to binary. Default tools/bedtools2/bin/bedtools
-#' @param bin_path2 Path to secondary binary. Default tools/samtools/samtools
-#' @param bed_dir Path to directory with BED files for TFBS
-#' @param tfs Number of TFs to analyze or a list with TFs to analyze. Default none will analyze all TFs in BED directory.
-#' @param bam Path to BAM file
+#' @param bin_path Path to binary. Default tools/samtools/samtools
+#' @param bin_path2 Path to secondary binary. Default tools/PileOMeth/output/MethylDackel
+#' @param bed Path to BED file.
+#' @param bam Path to BAM file.
 #' @param tfbs_start Number of bases to analyze forward from TFBS central point. Default 1000
 #' @param tfbs_end Number of bases to analyze  backward from TFBS central point. Default 1000
+#' @param ref_genome Path to reference genome FA file.
 #' @param max_regions Max number of TFBS to analyze. Default 100000
-#' @param mapq Min quality of mapping reads. Default 0
-#' @param mapq Min quality of mapping reads. Default 0
-#' @param threads Number of threads. Default 1
+#' @param mapq Min quality of mapping reads. Default 10
+#' @param phred Min phred quality. Default 5
 #' @param verbose Enables progress messages. Default FALSE
 #' @param output_dir Directory to output results. If not provided then outputs in current directory
-#' @param plot Create plots. Default TRUE.
+#' @param plot Create a plot with coverage data. Default TRUE.
+#' @param keep_strand Use strand information from BED files if available. Default TRUE.
+#' @param bin_width Width of the the bins in which to group methylation data. Default 50.
+#' @param threads Number of threads to use. Default 1.
 #' @return A DATA.FRAME with coverage data
 #' @export
+#' @import pbapply
 
 
-analyze_MR_tfs=function(bin_path="tools/samtools/samtools",bin_path2="tools/PileOMeth/output/MethylDackel",bed_dir="",tfs="",bam="",tfbs_start=1000,tfbs_end=1000,max_regions=100000,mapq=10,phred=5,verbose=FALSE,output_dir="",plot=TRUE,keep_strand=TRUE,bin_width=50){
+analyze_MR_tfs=function(bin_path="tools/samtools/samtools",bin_path2="tools/PileOMeth/output/MethylDackel",bed_dir="",bam="",tfbs_start=1000,tfbs_end=1000,ref_genome="",max_regions=100000,mapq=10,phred=5,verbose=FALSE,output_dir="",plot=TRUE,keep_strand=TRUE,bin_width=50,threads=1){
 
     sep="/"
     if(output_dir==""){
@@ -418,12 +420,13 @@ analyze_MR_tfs=function(bin_path="tools/samtools/samtools",bin_path2="tools/Pile
 
     print("=========================================================")
 
-    FUN=function(bed,bin_path,bin_path2,bam,tfbs_start,tfbs_end,mean_cov,norm,threads,cov_limit,max_regions,mapq,verbose,output_dir,plot){
-      accessibility_score(analyze_tfbs_around_position(bin_path=bin_path,bin_path2=bin_path2,bam=bam,bed=bed,norm=norm,threads=threads,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,plot=plot,mapq=mapq,cov_limit=cov_limit,mean_cov=mean_cov,max_regions=max_regions,verbose=verbose),output_dir=output_dir,verbose=verbose)
+    FUN=function(x,bin_path,bin_path2,bam,tfbs_start,tfbs_end,mean_cov,norm,threads,cov_limit,max_regions,mapq,verbose,output_dir,plot){
+      methylation_score(analyze_tfbs_around_position(bin_path=bin_path,bin_path2=bin_path2,bam=bam,bed=bed_files[x],norm=norm,threads=threads,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,plot=plot,mapq=mapq,phred=phred,max_regions=max_regions,verbose=verbose,ref_genome=ref_genome,keep_strand=keep_strand,bin_width=bin_width),output_dir=output_dir,verbose=verbose)
     }
 
-
-    all_stats=mapply(bed_files,FUN=FUN,SIMPLIFY=FALSE,bin_path=bin_path,bin_path2=bin_path2,bam=bam,norm=norm,threads=threads,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,plot=plot,mapq=mapq,cov_limit=cov_limit,mean_cov=mean_cov,max_regions=max_regions,verbose=verbose)
+    cl=parallel::makeCluster(threads,outfile=paste0(output_dir,sep,sample_name,".parallel.log"))
+    all_stats=pbapply(X=as.data.frame(1:length(bed_files)),1,FUN=FUN,bin_path=bin_path,bin_path2=bin_path2,bam=bam,norm=norm,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,plot=plot,mapq=mapq,phred=phred,max_regions=max_regions,verbose=verbose,ref_genome=ref_genome,keep_strand=keep_strand,bin_width=bin_width,cl=cl)
+    on.exit(parallel::stopCluster(cl))
 
     all_stats=suppressMessages(all_stats %>% dplyr::bind_rows())
 
@@ -630,14 +633,14 @@ methylation_score=function(data="",output_dir="",verbose=FALSE){
     }
 
 
-  #' Ranks the Accessibility Score for all the TFs
-  #'
-  #' This function takes a path to a TXT file with the accessibility scores of all the TFs analyzed and ranks them.
+#' Ranks the Accessibility Score for all the TFs
+#'
+#' This function takes a path to a TXT file with the accessibility scores of all the TFs analyzed and ranks them.
 
-  #' @param data Path to TXT file
-  #' @param output_dir Directory to output results. If not provided then outputs in current directory
-  #' @param verbose Enables progress messages. Default FALSE
-  #' @export
+#' @param data Path to TXT file
+#' @param output_dir Directory to output results. If not provided then outputs in current directory
+#' @param verbose Enables progress messages. Default FALSE
+#' @export
 
 
 rank_accessibility=function(data="",output_dir="",verbose=FALSE){

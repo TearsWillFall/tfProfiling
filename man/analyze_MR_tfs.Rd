@@ -8,10 +8,10 @@ analyze_MR_tfs(
   bin_path = "tools/samtools/samtools",
   bin_path2 = "tools/PileOMeth/output/MethylDackel",
   bed_dir = "",
-  tfs = "",
   bam = "",
   tfbs_start = 1000,
   tfbs_end = 1000,
+  ref_genome = "",
   max_regions = 1e+05,
   mapq = 10,
   phred = 5,
@@ -19,35 +19,42 @@ analyze_MR_tfs(
   output_dir = "",
   plot = TRUE,
   keep_strand = TRUE,
-  bin_width = 50
+  bin_width = 50,
+  threads = 1
 )
 }
 \arguments{
-\item{bin_path}{Path to binary. Default tools/bedtools2/bin/bedtools}
+\item{bin_path}{Path to binary. Default tools/samtools/samtools}
 
-\item{bin_path2}{Path to secondary binary. Default tools/samtools/samtools}
+\item{bin_path2}{Path to secondary binary. Default tools/PileOMeth/output/MethylDackel}
 
-\item{bed_dir}{Path to directory with BED files for TFBS}
-
-\item{tfs}{Number of TFs to analyze or a list with TFs to analyze. Default none will analyze all TFs in BED directory.}
-
-\item{bam}{Path to BAM file}
+\item{bam}{Path to BAM file.}
 
 \item{tfbs_start}{Number of bases to analyze forward from TFBS central point. Default 1000}
 
 \item{tfbs_end}{Number of bases to analyze  backward from TFBS central point. Default 1000}
 
+\item{ref_genome}{Path to reference genome FA file.}
+
 \item{max_regions}{Max number of TFBS to analyze. Default 100000}
 
-\item{mapq}{Min quality of mapping reads. Default 0}
+\item{mapq}{Min quality of mapping reads. Default 10}
+
+\item{phred}{Min phred quality. Default 5}
 
 \item{verbose}{Enables progress messages. Default FALSE}
 
 \item{output_dir}{Directory to output results. If not provided then outputs in current directory}
 
-\item{plot}{Create plots. Default TRUE.}
+\item{plot}{Create a plot with coverage data. Default TRUE.}
 
-\item{threads}{Number of threads. Default 1}
+\item{keep_strand}{Use strand information from BED files if available. Default TRUE.}
+
+\item{bin_width}{Width of the the bins in which to group methylation data. Default 50.}
+
+\item{threads}{Number of threads to use. Default 1.}
+
+\item{bed}{Path to BED file.}
 }
 \value{
 A DATA.FRAME with coverage data
