@@ -27,3 +27,20 @@ char2seed <- function(x,set=TRUE){
 		return(seed)
 	}
 }
+
+#' Generates a bed file with temp suffix
+#'
+#'
+#'
+#' @param chr A vector with chromosome names
+#' @param start A vector with starting position
+#' @param end A vector with end position
+#' @param strand A vector with strand information
+#' @param name A string with file name
+#' @return
+#' @export
+
+tmp_bed=function(chr="",start="",end="",strand="",name="File"){
+	dat=data.frame(chr=chr,start=start,end=end,fill1=".",fill2=".",strand=strand)
+	write.table(paste0(name,".bed.tmp"),quotes=FALSE,col.names=FALSE,row.names=FALSE)
+}

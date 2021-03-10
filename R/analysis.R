@@ -33,57 +33,57 @@ analyze_tfs=function(bin_path="tools/bedtools2/bin/bedtools",bin_path2="tools/sa
   }
 
 
-tictoc::tic("Time")
+  tictoc::tic("Time")
 
-sample_name=ULPwgs::get_sample_name(bam)
+  sample_name=ULPwgs::get_sample_name(bam)
 
-print(paste("Analyzing sample ",sample_name))
+  print(paste("Analyzing sample ",sample_name))
 
 
-bed_files=list.files(bed_dir,full.names=TRUE)
-bed_files=bed_files[grepl(".bed",bed_files)]
-if (is.numeric(tfs)){
-  if (tfs<length(bed_files)){
-  print(paste(length(bed_files),"TFs in total"))
-  print(paste("Total TFs > Number of TFs to analyze",paste0("(",tfs,")")))
-  options(warn=-1)
-  print(paste("Random sampling",tfs,"TFs from all TFs with seed",char2seed(bed_dir,set=FALSE)))
-  char2seed(bed_dir)
-  bed_files=sample(bed_files,tfs)
-  options(warn=0)
-}else{
-  bed_files
-}
-}else if(is.vector(tfs)&& !tfs==""){
-  bed_files=bed_files[grepl(paste(tfs,collapse="|"),bed_files)]
-  if (length(bed_files)<length(tfs)){
-    warning("Number of TFs to analyze > Number of TFs listed. Perhaps the TFs names provided are too unspecific?")
+  bed_files=list.files(bed_dir,full.names=TRUE)
+  bed_files=bed_files[grepl(".bed",bed_files)]
+  if (is.numeric(tfs)){
+    if (tfs<length(bed_files)){
+    print(paste(length(bed_files),"TFs in total"))
+    print(paste("Total TFs > Number of TFs to analyze",paste0("(",tfs,")")))
+    options(warn=-1)
+    print(paste("Random sampling",tfs,"TFs from all TFs with seed",char2seed(bed_dir,set=FALSE)))
+    char2seed(bed_dir)
+    bed_files=sample(bed_files,tfs)
+    options(warn=0)
+  }else{
+    bed_files
   }
-}
+  }else if(is.vector(tfs)&& !tfs==""){
+    bed_files=bed_files[grepl(paste(tfs,collapse="|"),bed_files)]
+    if (length(bed_files)<length(tfs)){
+      warning("Number of TFs to analyze > Number of TFs listed. Perhaps the TFs names provided are too unspecific?")
+    }
+  }
 
-print("=========================================================")
+  print("=========================================================")
 
-FUN=function(bed,bin_path,bin_path2,bam,tfbs_start,tfbs_end,mean_cov,norm,threads,cov_limit,max_regions,mapq,verbose,output_dir,plot){
-  accessibility_score(analyze_tfbs_around_position(bin_path=bin_path,bin_path2=bin_path2,bam=bam,bed=bed,norm=norm,threads=threads,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,plot=plot,mapq=mapq,cov_limit=cov_limit,mean_cov=mean_cov,max_regions=max_regions,verbose=verbose),output_dir=output_dir,verbose=verbose)
-}
+  FUN=function(bed,bin_path,bin_path2,bam,tfbs_start,tfbs_end,mean_cov,norm,threads,cov_limit,max_regions,mapq,verbose,output_dir,plot){
+    accessibility_score(analyze_tfbs_around_position(bin_path=bin_path,bin_path2=bin_path2,bam=bam,bed=bed,norm=norm,threads=threads,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,plot=plot,mapq=mapq,cov_limit=cov_limit,mean_cov=mean_cov,max_regions=max_regions,verbose=verbose),output_dir=output_dir,verbose=verbose)
+  }
 
-all_stats=mapply(bed_files,FUN=FUN,SIMPLIFY=FALSE,bin_path=bin_path,bin_path2=bin_path2,bam=bam,norm=norm,threads=threads,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,plot=plot,mapq=mapq,cov_limit=cov_limit,mean_cov=mean_cov,max_regions=max_regions,verbose=verbose)
+  all_stats=mapply(bed_files,FUN=FUN,SIMPLIFY=FALSE,bin_path=bin_path,bin_path2=bin_path2,bam=bam,norm=norm,threads=threads,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,plot=plot,mapq=mapq,cov_limit=cov_limit,mean_cov=mean_cov,max_regions=max_regions,verbose=verbose)
 
-all_stats=suppressMessages(all_stats %>% dplyr::bind_rows())
+  all_stats=suppressMessages(all_stats %>% dplyr::bind_rows())
 
-output_dir=paste0(output_dir,sep,sample_name)
+  output_dir=paste0(output_dir,sep,sample_name)
 
-out_file=paste0(output_dir,"/",sample_name,".ALL.ANALYZED.TFS.STATS.txt")
+  out_file=paste0(output_dir,"/",sample_name,".ALL.ANALYZED.TFS.STATS.txt")
 
 
-if (file.exists(out_file)){
-  write.table(all_stats,quote=FALSE,row.names=FALSE,out_file,append=TRUE,col.names=FALSE)
+  if (file.exists(out_file)){
+    write.table(all_stats,quote=FALSE,row.names=FALSE,out_file,append=TRUE,col.names=FALSE)
 
-}else{
-  write.table(all_stats,quote=FALSE,row.names=FALSE,out_file)
-}
+  }else{
+    write.table(all_stats,quote=FALSE,row.names=FALSE,out_file)
+  }
 
-tictoc::toc()
+  tictoc::toc()
 
 
 }
@@ -355,10 +355,196 @@ rank_accessibility=function(data="",output_dir="",verbose=FALSE){
   write.table(results,quote=FALSE,row.names=FALSE,out_file)
 
 
+  }
 
 
+#' Analyze methylation ration around TFBS
+#'
+#' This function takes the path to the directory with BED files for each TF, a BAM file with an aligned bisulfite treated sequence
+#' and estimates methylation ratio values around TFBS.
+#'
+#' @param bin_path Path to binary. Default tools/bedtools2/bin/bedtools
+#' @param bin_path2 Path to secondary binary. Default tools/samtools/samtools
+#' @param bed_dir Path to directory with BED files for TFBS
+#' @param tfs Number of TFs to analyze or a list with TFs to analyze. Default none will analyze all TFs in BED directory.
+#' @param bam Path to BAM file
+#' @param tfbs_start Number of bases to analyze forward from TFBS central point. Default 1000
+#' @param tfbs_end Number of bases to analyze  backward from TFBS central point. Default 1000
+#' @param mean_cov Mean genome wide coverage. If not provided it will be estimated.
+#' @param norm Path to TXT file with normalized local coverage
+#' @param cov_limit Max base depth. Default 1000
+#' @param max_regions Max number of TFBS to analyze. Default 100000
+#' @param mapq Min quality of mapping reads. Default 0
+#' @param threads Number of threads. Default 1
+#' @param verbose Enables progress messages. Default FALSE
+#' @param output_dir Directory to output results. If not provided then outputs in current directory
+#' @param plot Create plots. Default TRUE.
+#' @return A DATA.FRAME with coverage data
+#' @export
 
 
+analyze_MR_tfs=function(bin_path="tools/samtools/samtools",bin_path2="tools/PileOMeth/output/MethylDackel",bed_dir="",tfs="",bam="",tfbs_start=1000,tfbs_end=1000,max_regions=100000,mapq=10,phred=5,verbose=FALSE,output_dir="",plot=TRUE,keep_strand=TRUE,bin_width=50){
+
+    sep="/"
+    if(output_dir==""){
+      sep=""
+    }
+
+    tictoc::tic("Time")
+
+    sample_name=ULPwgs::get_sample_name(bam)
+
+    print(paste("Analyzing sample ",sample_name))
 
 
+    bed_files=list.files(bed_dir,full.names=TRUE)
+    bed_files=bed_files[grepl(".bed",bed_files)]
+    if (is.numeric(tfs)){
+      if (tfs<length(bed_files)){
+      print(paste(length(bed_files),"TFs in total"))
+      print(paste("Total TFs > Number of TFs to analyze",paste0("(",tfs,")")))
+      options(warn=-1)
+      print(paste("Random sampling",tfs,"TFs from all TFs with seed",char2seed(bed_dir,set=FALSE)))
+      char2seed(bed_dir)
+      bed_files=sample(bed_files,tfs)
+      options(warn=0)
+    }else{
+      bed_files
+    }
+    }else if(is.vector(tfs)&& !tfs==""){
+      bed_files=bed_files[grepl(paste(tfs,collapse="|"),bed_files)]
+      if (length(bed_files)<length(tfs)){
+        warning("Number of TFs to analyze > Number of TFs listed. Perhaps the TFs names provided are too unspecific?")
+      }
+    }
+
+    print("=========================================================")
+
+    FUN=function(bed,bin_path,bin_path2,bam,tfbs_start,tfbs_end,mean_cov,norm,threads,cov_limit,max_regions,mapq,verbose,output_dir,plot){
+      accessibility_score(analyze_tfbs_around_position(bin_path=bin_path,bin_path2=bin_path2,bam=bam,bed=bed,norm=norm,threads=threads,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,plot=plot,mapq=mapq,cov_limit=cov_limit,mean_cov=mean_cov,max_regions=max_regions,verbose=verbose),output_dir=output_dir,verbose=verbose)
+    }
+
+    all_stats=mapply(bed_files,FUN=FUN,SIMPLIFY=FALSE,bin_path=bin_path,bin_path2=bin_path2,bam=bam,norm=norm,threads=threads,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,plot=plot,mapq=mapq,cov_limit=cov_limit,mean_cov=mean_cov,max_regions=max_regions,verbose=verbose)
+
+    all_stats=suppressMessages(all_stats %>% dplyr::bind_rows())
+
+    output_dir=paste0(output_dir,sep,sample_name)
+
+    out_file=paste0(output_dir,"/",sample_name,".ALL.ANALYZED.TFS.STATS.txt")
+
+
+    if (file.exists(out_file)){
+      write.table(all_stats,quote=FALSE,row.names=FALSE,out_file,append=TRUE,col.names=FALSE)
+
+    }else{
+      write.table(all_stats,quote=FALSE,row.names=FALSE,out_file)
+    }
+
+    tictoc::toc()
+
+
+  }
+
+#' Analyze Mean Methylation Ratio around TFBS
+#'
+#' This function takes a BED file with TFBS, a BAM file with an aligned sequence
+#' and outputs mean methylation ratio values around TFBS, as well as
+#' generates a PDF with a plot for them.
+#' For better understanding check: https://www.nature.com/articles/s41467-019-12714-4
+#'
+#'
+#' @param bin_path Path to binary. Default tools/bedtools2/bin/bedtools
+#' @param bin_path2 Path to secondary binary. Default tools/samtools/samtools
+#' @param bed Path to BED file.
+#' @param bam Path to BAM file.
+#' @param tfbs_start Number of bases to analyze forward from TFBS central point. Default 1000
+#' @param tfbs_end Number of bases to analyze  backward from TFBS central point. Default 1000
+#' @param mean_cov Mean genome wide coverage. If not provided it will be estimated.
+#' @param norm Path to TXT file with normalized local coverage
+#' @param cov_limit Max base depth. Default 1000
+#' @param max_regions Max number of TFBS to analyze. Default 100000
+#' @param mapq Min quality of mapping reads. Default 0
+#' @param threads Number of threads. Default 1
+#' @param verbose Enables progress messages. Default FALSE
+#' @param output_dir Directory to output results. If not provided then outputs in current directory
+#' @param plot Create a plot with coverage data. Default TRUE.
+#' @return A DATA.FRAME with coverage data
+#' @export
+
+
+  ### ////TO DO IMPLEMENT verbose to the rest of the functions
+
+analyze_MR_tfbs_around_position=function(bin_path="tools/samtools/samtools",bin_path2="tools/PileOMeth/output/MethylDackel",bed="",bam="",tfbs_start=1000,tfbs_end=1000,mapq=10,phred=5,verbose=FALSE,output_dir="",plot=TRUE,keep_strand=TRUE,bin_width=50){
+
+    tictoc::tic("Analysis time")
+
+    options(scipen=999)
+    if(verbose){
+      print(paste(bin_path,"view",bam," | head -n 1 | awk -F \"\t\" '{print $3}'"))
+    }
+
+    chr_check=system(paste(bin_path,"view",bam," | head -n 1 | awk -F \"\t\" '{print $3}'"),intern=TRUE)
+
+    ref_data=read.table(bed,comment.char="")
+    if (!grepl("chr",chr_check)){
+      ref_data[,1]=gsub("chr","",ref_data[,1])
+    }
+
+    sample_name=ULPwgs::get_sample_name(bam)
+    tf_name=ULPwgs::get_sample_name(bed)
+
+
+    print(paste("Analyzing Methylation Ratio at ",tf_name,"Binding Sites for",sample_name))
+
+    sep="/"
+
+    if(output_dir==""){
+      sep=""
+    }
+
+    output_dir=paste0(output_dir,sep,sample_name)
+
+    if(!dir.exists(output_dir)){
+      dir.create(output_dir)
+    }
+
+    output_dir=paste0(output_dir,"/",tf_name)
+
+    if(!dir.exists(output_dir)){
+      dir.create(output_dir)
+    }
+
+    print(paste(nrow(ref_data)," TFBS found in total"))
+
+    if ((max_regions) !=0 & max_regions<nrow(ref_data)){
+      print(paste("Total TFBS > Maximum Number of regions to analyze",paste0("(",max_regions,")")))
+      print(paste("Random sampling",max_regions,"regions from all TFBS with seed",char2seed(tf_name,set=FALSE)))
+      char2seed(tf_name)
+      ref_data=ref_data[sample(c(1:nrow(ref_data)),max_regions),]
+    }
+
+    # Calculate Mean Methylation Ratios Around TFBS
+
+    print("Calculating Mean Methylation Ratio Around TFBS")
+
+    MR_list=calculate_MR_tfbs(bin_path=bin_path2,ref_data=ref_data,bam=bam,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,mapq=mapq,phred=phred,tf_name=tf_name,sample_name=sample_name,keep_strand=keep_strand,bin_width=bin_width)
+    log_data[[1]]=cbind(TF=paste0(sample_name,"_",tf_name),log_data[[1]])
+    log_data[[2]]=cbind(TF=paste0(sample_name,"_",tf_name),log_data[[2]])
+    out_file=paste0(output_dir,"/",sample_name,"_",tf_name,".",max(log_data[[1]]$TFBS_ANALYZED),"TFBS.S",tfbs_start,"-E",tfbs_end,",",max(log_data[[1]]$BIN_WIDTH),".MR.tss")
+    write.table(log_data,quote=FALSE,row.names=FALSE,out_file)
+    out_file=paste0(output_dir,"/",sample_name,"_",tf_name,".",max(log_data[[2]]$TFBS_ANALYZED),"TFBS.S",tfbs_start,"-E",tfbs_end,",",max(log_data[[2]]$BIN_WIDTH),".MR.tss")
+    write.table(log_data,quote=FALSE,row.names=FALSE,out_file)
+    if(plot){
+      print("Generating plots")
+      tictoc::tic("Generation time")
+      plot_motif_MR(log_data[[1]],tf_name=tf_name,sample_name=sample_name,output_dir=output_dir)
+      plot_motif_MR(log_data[[2]],tf_name=tf_name,sample_name=sample_name,output_dir=output_dir)
+      tictoc::toc()
+    }
+
+    print(paste("Analysis finished for", tf_name))
+    tictoc::toc()
+    print("######################################################")
+
+    return(log_data[[2]])
   }
