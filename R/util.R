@@ -40,7 +40,7 @@ char2seed <- function(x,set=TRUE){
 #' @return
 #' @export
 
-tmp_bed=function(chr="",start="",end="",strand="",name="File"){
+tmp_bed=function(chr="",start="",end="",strand="",name=""){
 	dat=data.frame(chr=chr,start=start,end=end,fill1=".",fill2=".",strand=strand)
 	write.table(dat,paste0(name,".bed.tmp"),quote=FALSE,col.names=FALSE,row.names=FALSE)
 }
