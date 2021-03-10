@@ -61,7 +61,7 @@ calculate_MR_tfbs=function(bin_path="tools/PileOMeth/output/MethylDackel",ref_da
 		print(paste(bin_path," extract ",ref_genome, bam,"-l ",gsub(";","\\\\;",gsub("&","\\\\&",paste0(output_dir,sep,sample_name,"_",tf_name,".bed.tmp")))," -o ",gsub(";","\\\\;",gsub("&","\\\\&",out_file)),strand," -q ",mapq," -p ",phred," -@ ",threads))
 	}
 	system(paste(bin_path," extract ",ref_genome, bam,"-l ",gsub(";","\\\\;",gsub("&","\\\\&",paste0(output_dir,sep,sample_name,"_",tf_name,".bed.tmp")))," -o ",gsub(";","\\\\;",gsub("&","\\\\&",out_file)),strand," -q ",mapq," -p ",phred," -@ ",threads))
-	system(paste0("rm ",paste0(output_dir,sep,sample_name,"_",tf_name,".bed.tmp")))
+	system(gsub(";","\\\\;",gsub("&","\\\\&",paste0("rm ",paste0(output_dir,sep,sample_name,"_",tf_name,".bed.tmp")))))
 	tfbs=read.table(paste0(out_file,"_CpG.bedGraph"),skip=1)
 	tfbs$pos=as.integer((tfbs$V2+tfbs$V3)/2)
 	colnames(tfbs)=c("chr","start","end","MR","nC","nT","pos")
