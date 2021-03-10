@@ -30,7 +30,6 @@ plot_motif_MR=function(data="",trend_line=TRUE,tf_name="",sample_name="",output_
   if(trend_line){
       p=p+ggplot2::geom_smooth(method = "loess", formula = y ~ x, size = 1)
   }
-
   print(p)
   dev.off()
 }
