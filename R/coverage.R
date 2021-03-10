@@ -8,9 +8,6 @@
 #' @param output_dir Directory to output results. If not provided then outputs in current directory
 #' @export
 
-
-
-
 calculate_genowide_coverage=function(bin_path="tools/bedtools2/bin/bedtools",bam="",verbose=FALSE,output_dir=""){
 
   sep="/"
