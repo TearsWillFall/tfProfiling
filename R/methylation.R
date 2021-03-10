@@ -16,12 +16,13 @@
 #' @param phred Min phred base quality. Default 5
 #' @param keep_strand Use strand information from BED files if available. Default TRUE.
 #' @param bin_width Width of the the bins in which to group methylation data. Default 50.
+#' @param verbose Enables progress messages. Default FALSE
 #' @param output_dir Directory to output results. If not provided then outputs in current directory
 #' @return A list of DATA.FRAMEs with the methylation ratio per base and per bin_width with default bin_width 50
 #' @export
 #' @import pbapply
 
-calculate_MR_tfbs=function(bin_path="tools/PileOMeth/output/MethylDackel",ref_data="",bam="",sample_name="",tf_name="",tfbs_start=1000,tfbs_end=1000,mapq=10,phred=5,output_dir="",keep_strand=TRUE,bin_width=50){
+calculate_MR_tfbs=function(bin_path="tools/PileOMeth/output/MethylDackel",ref_data="",bam="",sample_name="",tf_name="",tfbs_start=1000,tfbs_end=1000,mapq=10,phred=5,output_dir="",keep_strand=TRUE,bin_width=50,verbose=FALSE){
 
 	sep="/"
   if(output_dir==""){
