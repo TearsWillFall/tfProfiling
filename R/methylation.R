@@ -66,7 +66,7 @@ calculate_MR_tfbs=function(bin_path="tools/PileOMeth/output/MethylDackel",ref_da
 	colnames(tfbs)=c("chr","start","end","MR","nC","nT","pos")
 
 	# Generate per base mean methylation data across all TFBS
-
+	options(warn = -1)
 	merg_tfbs1=dplyr::left_join(ref_data,tfbs,by=c("chr","pos"))%>% dplyr::group_by(pos_relative_to_tfbs) %>% dplyr::mutate( x_bins = ifelse(is.na(cut(pos_relative_to_tfbs, breaks = seq(-tfbs_end,tfbs_start,1),include.lowest=FALSE,labels=FALSE)),0,cut(pos_relative_to_tfbs, breaks = seq(-tfbs_end,tfbs_start,1),include.lowest=FALSE,labels=FALSE)))%>% dplyr::group_by(x_bins) %>%
 	dplyr::mutate(x_bins=as.integer((max(pos_relative_to_tfbs)+min(pos_relative_to_tfbs))/2)) %>%
 	dplyr::summarise(MEAN_MR=mean(MR,na.rm=TRUE),CI=qt(0.95,(sum(!is.na(MR))-1))*sd(MR,na.rm=TRUE)/sqrt(sum(!is.na(MR))),DATA_POINTS_ANALYZED=sum(!is.na(MR)))
@@ -83,6 +83,6 @@ calculate_MR_tfbs=function(bin_path="tools/PileOMeth/output/MethylDackel",ref_da
   print(paste("TFBS analyzed:",nrow(tfbs_to_analyze)))
   print(paste("TFBS skipped:", numb_tfbs-nrow(tfbs_to_analyze)))
 
-
+	options(warn = 0)
 	return(list(merg_tfbs1,merg_tfbs2))
   }
