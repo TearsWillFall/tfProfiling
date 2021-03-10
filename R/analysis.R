@@ -459,6 +459,7 @@ analyze_MR_tfs=function(bin_path="tools/samtools/samtools",bin_path2="tools/Pile
 #' @param bam Path to BAM file.
 #' @param tfbs_start Number of bases to analyze forward from TFBS central point. Default 1000
 #' @param tfbs_end Number of bases to analyze  backward from TFBS central point. Default 1000
+#' @param ref_genome Path to reference genome FA file.
 #' @param max_regions Max number of TFBS to analyze. Default 100000
 #' @param mapq Min quality of mapping reads. Default 10
 #' @param phred Min phred quality. Default 5
@@ -473,7 +474,7 @@ analyze_MR_tfs=function(bin_path="tools/samtools/samtools",bin_path2="tools/Pile
 
   ### ////TO DO IMPLEMENT verbose to the rest of the functions
 
-analyze_MR_tfbs_around_position=function(bin_path="tools/samtools/samtools",bin_path2="tools/PileOMeth/output/MethylDackel",bed="",bam="",tfbs_start=1000,tfbs_end=1000,max_regions=100000,mapq=10,phred=5,verbose=FALSE,output_dir="",plot=TRUE,keep_strand=TRUE,bin_width=50){
+analyze_MR_tfbs_around_position=function(bin_path="tools/samtools/samtools",bin_path2="tools/PileOMeth/output/MethylDackel",bed="",bam="",tfbs_start=1000,tfbs_end=1000,ref_genome="",max_regions=100000,mapq=10,phred=5,verbose=FALSE,output_dir="",plot=TRUE,keep_strand=TRUE,bin_width=50){
 
     tictoc::tic("Analysis time")
 

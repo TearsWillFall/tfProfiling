@@ -8,6 +8,7 @@
 #' @param bin_path Path to binary. Default tools/samtools/samtools
 #' @param ref_data Data from BED file as Data.frame
 #' @param bam Path to BAM file.
+#' @param ref_genome Path to reference genome FA file.
 #' @param sample_name Sample name
 #' @param tf_name Transcription Factor name
 #' @param tfbs_start Number of bases to analyze forward from TFBS central point. Default 1000
@@ -22,7 +23,7 @@
 #' @export
 #' @import pbapply
 
-calculate_MR_tfbs=function(bin_path="tools/PileOMeth/output/MethylDackel",ref_data="",bam="",sample_name="",tf_name="",tfbs_start=1000,tfbs_end=1000,mapq=10,phred=5,output_dir="",keep_strand=TRUE,bin_width=50,verbose=FALSE){
+calculate_MR_tfbs=function(bin_path="tools/PileOMeth/output/MethylDackel",ref_data="",bam="",sample_name="",tf_name="",ref_genome="",tfbs_start=1000,tfbs_end=1000,mapq=10,phred=5,output_dir="",keep_strand=TRUE,bin_width=50,verbose=FALSE){
 
 	sep="/"
   if(output_dir==""){
