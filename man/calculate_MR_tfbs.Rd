@@ -18,7 +18,8 @@ calculate_MR_tfbs(
   output_dir = "",
   keep_strand = TRUE,
   bin_width = 50,
-  verbose = FALSE
+  verbose = FALSE,
+  threads = 1
 )
 }
 \arguments{
@@ -49,6 +50,8 @@ calculate_MR_tfbs(
 \item{bin_width}{Width of the the bins in which to group methylation data. Default 50.}
 
 \item{verbose}{Enables progress messages. Default FALSE}
+
+\item{threads}{Number of threads to use. Default 1}
 }
 \value{
 A list of DATA.FRAMEs with the methylation ratio per base and per bin_width with default bin_width 50

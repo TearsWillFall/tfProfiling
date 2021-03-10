@@ -47,12 +47,6 @@ analyze_MR_tfs(
 
 \item{plot}{Create plots. Default TRUE.}
 
-\item{mean_cov}{Mean genome wide coverage. If not provided it will be estimated.}
-
-\item{norm}{Path to TXT file with normalized local coverage}
-
-\item{cov_limit}{Max base depth. Default 1000}
-
 \item{threads}{Number of threads. Default 1}
 }
 \value{
