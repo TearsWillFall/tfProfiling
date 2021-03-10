@@ -369,6 +369,7 @@ rank_accessibility=function(data="",output_dir="",verbose=FALSE){
 #' @param tfbs_start Number of bases to analyze forward from TFBS central point. Default 1000
 #' @param tfbs_end Number of bases to analyze  backward from TFBS central point. Default 1000
 #' @param ref_genome Path to reference genome FA file.
+#' @param tfs Number of TFs to analyze or a list with TFs to analyze. Default none will analyze all TFs in BED directory.
 #' @param max_regions Max number of TFBS to analyze. Default 100000
 #' @param mapq Min quality of mapping reads. Default 10
 #' @param phred Min phred quality. Default 5
@@ -383,7 +384,7 @@ rank_accessibility=function(data="",output_dir="",verbose=FALSE){
 #' @import pbapply
 
 
-analyze_MR_tfs=function(bin_path="tools/samtools/samtools",bin_path2="tools/PileOMeth/output/MethylDackel",bed_dir="",bam="",tfbs_start=1000,tfbs_end=1000,ref_genome="",max_regions=100000,mapq=10,phred=5,verbose=FALSE,output_dir="",plot=TRUE,keep_strand=TRUE,bin_width=50,threads=1){
+analyze_MR_tfs=function(bin_path="tools/samtools/samtools",bin_path2="tools/PileOMeth/output/MethylDackel",bed_dir="",tfs="",bam="",tfbs_start=1000,tfbs_end=1000,ref_genome="",max_regions=100000,mapq=10,phred=5,verbose=FALSE,output_dir="",plot=TRUE,keep_strand=TRUE,bin_width=50,threads=1){
 
     sep="/"
     if(output_dir==""){
