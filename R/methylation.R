@@ -32,7 +32,7 @@ calculate_MR_tfbs=function(bin_path="tools/PileOMeth/output/MethylDackel",ref_da
 	if (!dir.exists(output_dir)){
 			dir.create(output_dir)
 		}
-		
+
 	out_file=paste0(output_dir,sep,sample_name,"_",tf_name)
 
 
@@ -81,7 +81,7 @@ calculate_MR_tfbs=function(bin_path="tools/PileOMeth/output/MethylDackel",ref_da
 	merg_tfbs2= dplyr::rename(merg_tfbs2,POSITION_RELATIVE_TO_TFBS=x_bins) %>% dplyr::mutate(CI95_UPPER_BOUND=MEAN_MR+CI,CI95_LOWER_BOUND=MEAN_MR-CI,TFBS_ANALYZED=nrow(tfbs_to_analyze),BIN_WIDTH=bin_width)
 
   print(paste("TFBS analyzed:",nrow(tfbs_to_analyze)))
-  print(paste("TFBS skipped:",nrow(numb_tfbs)-nrow(tfbs_to_analyze)))
+  print(paste("TFBS skipped:", numb_tfbs-nrow(tfbs_to_analyze)))
 
 
 	return(list(merg_tfbs1,merg_tfbs2))
