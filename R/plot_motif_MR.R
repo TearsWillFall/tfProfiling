@@ -4,13 +4,14 @@
 #'
 #' @param data Data.frame with mean depth coverage data.
 #' @param trend_line Draw trend line. Default TRUE
+#' @param line Draw a line between points. Default TRUE
 #' @param tf_name Transcription Factor name
 #' @param sample_name Sample name
 #' @param output_dir Directory to output results.
 #' @export
 
 
-plot_motif_MR=function(data="",trend_line=TRUE,tf_name="",sample_name="",output_dir=""){
+plot_motif_MR=function(data="",trend_line=TRUE,tf_name="",sample_name="",output_dir="",line=TRUE){
   sep="/"
 
   if(output_dir==""){
@@ -19,12 +20,17 @@ plot_motif_MR=function(data="",trend_line=TRUE,tf_name="",sample_name="",output_
   out_file=paste0(output_dir,sep,sample_name,"_",tf_name,".",max(data$TFBS_ANALYZED),"TFBS.S",abs(min(data$POSITION_RELATIVE_TO_TFBS)),"-E",max(data$POSITION_RELATIVE_TO_TFBS),".",max(data$BIN_WIDTH),".MR.pdf")
   pdf(out_file)
   p=ggplot2::ggplot(data,  ggplot2::aes(x=POSITION_RELATIVE_TO_TFBS,y=MEAN_MR))+
+  ggplot2::geom_point()+
   ggplot2::geom_ribbon(ggplot2::aes(ymin=CI95_LOWER_BOUND, ymax=CI95_UPPER_BOUND), fill="red", alpha=0.1) +
   ggplot2::ggtitle(label=paste(tf_name,"for sample",sample_name,"(",max(data$TFBS_ANALYZED),"TFBS analyzed)"),subtitle=paste0("Bin-width=",max(data$BIN_WIDTH)," pb")) +
   ggplot2::theme_classic()
-  if(trend_line){
-      p=p+ggplot2::geom_line(col="red")+ ggplot2::geom_smooth(method = "loess", formula = y ~ x, size = 1)
+  if(line){
+    p=p+ggplot2::geom_line(col="red",group=1)
   }
+  if(trend_line){
+      p=p+ggplot2::geom_smooth(method = "loess", formula = y ~ x, size = 1)
+  }
+
   print(p)
   dev.off()
 }

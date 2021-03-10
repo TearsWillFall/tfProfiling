@@ -535,7 +535,7 @@ analyze_MR_tfbs_around_position=function(bin_path="tools/samtools/samtools",bin_
     if(plot){
       print("Generating plots")
       tictoc::tic("Generation time")
-      plot_motif_MR(log_data[[1]],tf_name=tf_name,sample_name=sample_name,output_dir=output_dir)
+      plot_motif_MR(log_data[[1]],tf_name=tf_name,sample_name=sample_name,output_dir=output_dir,line=FALSE)
       plot_motif_MR(log_data[[2]],tf_name=tf_name,sample_name=sample_name,output_dir=output_dir)
       tictoc::toc()
     }
