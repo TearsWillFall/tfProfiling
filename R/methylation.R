@@ -13,8 +13,9 @@
 #' @param tfbs_start Number of bases to analyze forward from TFBS central point. Default 1000
 #' @param tfbs_end Number of bases to analyze  backward from TFBS central point. Default 1000
 #' @param mapq Min quality of mapping reads. Default 10
-#' @param phred Min quality of mapping reads. Default 5
-#' @param keep_strand Use strand information from BED files if available. Default TRUE
+#' @param phred Min phred base quality. Default 5
+#' @param keep_strand Use strand information from BED files if available. Default TRUE.
+#' @param bin_width Width of the the bins in which to group methylation data. Default 50.
 #' @param output_dir Directory to output results. If not provided then outputs in current directory
 #' @return A list of DATA.FRAMEs with the methylation ratio per base and per bin_width with default bin_width 50
 #' @export
@@ -78,6 +79,6 @@ calculate_MR_tfbs=function(bin_path="tools/PileOMeth/output/MethylDackel",ref_da
   print(paste("TFBS analyzed:",nrow(tfbs_to_analyze)))
   print(paste("TFBS skipped:",nrow(numb_tfbs)-nrow(tfbs_to_analyze)))
 
-	
+
 	return(list(merg_tfbs1,merg_tfbs2))
   }

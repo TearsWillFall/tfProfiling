@@ -11,6 +11,7 @@ analyze_MR_tfbs_around_position(
   bam = "",
   tfbs_start = 1000,
   tfbs_end = 1000,
+  max_regions = 1e+05,
   mapq = 10,
   phred = 5,
   verbose = FALSE,
@@ -21,9 +22,9 @@ analyze_MR_tfbs_around_position(
 )
 }
 \arguments{
-\item{bin_path}{Path to binary. Default tools/bedtools2/bin/bedtools}
+\item{bin_path}{Path to binary. Default tools/samtools/samtools}
 
-\item{bin_path2}{Path to secondary binary. Default tools/samtools/samtools}
+\item{bin_path2}{Path to secondary binary. Default tools/PileOMeth/output/MethylDackel}
 
 \item{bed}{Path to BED file.}
 
@@ -33,7 +34,11 @@ analyze_MR_tfbs_around_position(
 
 \item{tfbs_end}{Number of bases to analyze  backward from TFBS central point. Default 1000}
 
-\item{mapq}{Min quality of mapping reads. Default 0}
+\item{max_regions}{Max number of TFBS to analyze. Default 100000}
+
+\item{mapq}{Min quality of mapping reads. Default 10}
+
+\item{phred}{Min phred quality. Default 5}
 
 \item{verbose}{Enables progress messages. Default FALSE}
 
@@ -41,15 +46,9 @@ analyze_MR_tfbs_around_position(
 
 \item{plot}{Create a plot with coverage data. Default TRUE.}
 
-\item{mean_cov}{Mean genome wide coverage. If not provided it will be estimated.}
+\item{keep_strand}{Use strand information from BED files if available. Default TRUE.}
 
-\item{norm}{Path to TXT file with normalized local coverage}
-
-\item{cov_limit}{Max base depth. Default 1000}
-
-\item{max_regions}{Max number of TFBS to analyze. Default 100000}
-
-\item{threads}{Number of threads. Default 1}
+\item{bin_width}{Width of the the bins in which to group methylation data. Default 50.}
 }
 \value{
 A DATA.FRAME with coverage data

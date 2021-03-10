@@ -36,11 +36,13 @@ calculate_MR_tfbs(
 
 \item{mapq}{Min quality of mapping reads. Default 10}
 
-\item{phred}{Min quality of mapping reads. Default 5}
+\item{phred}{Min phred base quality. Default 5}
 
 \item{output_dir}{Directory to output results. If not provided then outputs in current directory}
 
-\item{keep_strand}{Use strand information from BED files if available. Default TRUE}
+\item{keep_strand}{Use strand information from BED files if available. Default TRUE.}
+
+\item{bin_width}{Width of the the bins in which to group methylation data. Default 50.}
 }
 \value{
 A list of DATA.FRAMEs with the methylation ratio per base and per bin_width with default bin_width 50

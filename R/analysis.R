@@ -453,28 +453,27 @@ analyze_MR_tfs=function(bin_path="tools/samtools/samtools",bin_path2="tools/Pile
 #' For better understanding check: https://www.nature.com/articles/s41467-019-12714-4
 #'
 #'
-#' @param bin_path Path to binary. Default tools/bedtools2/bin/bedtools
-#' @param bin_path2 Path to secondary binary. Default tools/samtools/samtools
+#' @param bin_path Path to binary. Default tools/samtools/samtools
+#' @param bin_path2 Path to secondary binary. Default tools/PileOMeth/output/MethylDackel
 #' @param bed Path to BED file.
 #' @param bam Path to BAM file.
 #' @param tfbs_start Number of bases to analyze forward from TFBS central point. Default 1000
 #' @param tfbs_end Number of bases to analyze  backward from TFBS central point. Default 1000
-#' @param mean_cov Mean genome wide coverage. If not provided it will be estimated.
-#' @param norm Path to TXT file with normalized local coverage
-#' @param cov_limit Max base depth. Default 1000
 #' @param max_regions Max number of TFBS to analyze. Default 100000
-#' @param mapq Min quality of mapping reads. Default 0
-#' @param threads Number of threads. Default 1
+#' @param mapq Min quality of mapping reads. Default 10
+#' @param phred Min phred quality. Default 5
 #' @param verbose Enables progress messages. Default FALSE
 #' @param output_dir Directory to output results. If not provided then outputs in current directory
 #' @param plot Create a plot with coverage data. Default TRUE.
+#' @param keep_strand Use strand information from BED files if available. Default TRUE.
+#' @param bin_width Width of the the bins in which to group methylation data. Default 50.
 #' @return A DATA.FRAME with coverage data
 #' @export
 
 
   ### ////TO DO IMPLEMENT verbose to the rest of the functions
 
-analyze_MR_tfbs_around_position=function(bin_path="tools/samtools/samtools",bin_path2="tools/PileOMeth/output/MethylDackel",bed="",bam="",tfbs_start=1000,tfbs_end=1000,mapq=10,phred=5,verbose=FALSE,output_dir="",plot=TRUE,keep_strand=TRUE,bin_width=50){
+analyze_MR_tfbs_around_position=function(bin_path="tools/samtools/samtools",bin_path2="tools/PileOMeth/output/MethylDackel",bed="",bam="",tfbs_start=1000,tfbs_end=1000,max_regions=100000,mapq=10,phred=5,verbose=FALSE,output_dir="",plot=TRUE,keep_strand=TRUE,bin_width=50){
 
     tictoc::tic("Analysis time")
 
