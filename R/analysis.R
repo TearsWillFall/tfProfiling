@@ -421,12 +421,12 @@ analyze_MR_tfs=function(bin_path="tools/samtools/samtools",bin_path2="tools/Pile
 
     print("=========================================================")
 
-    FUN=function(x,bin_path,bin_path2,bam,tfbs_start,tfbs_end,mean_cov,norm,threads,cov_limit,max_regions,mapq,verbose,output_dir,plot){
-      methylation_score(analyze_MR_tfbs_around_position(bin_path=bin_path,bin_path2=bin_path2,bam=bam,bed=bed_files[x],norm=norm,threads=threads,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,plot=plot,mapq=mapq,phred=phred,max_regions=max_regions,verbose=verbose,ref_genome=ref_genome,keep_strand=keep_strand,bin_width=bin_width),output_dir=output_dir,verbose=verbose)
+    FUN=function(x,bin_path,bin_path2,bam,tfbs_start,tfbs_end,phred,ref_genome,keep_strand,bin_width,norm,max_regions,mapq,verbose,output_dir,plot,bed_files){
+      methylation_score(analyze_MR_tfbs_around_position(bin_path=bin_path,bin_path2=bin_path2,bam=bam,bed=bed_files[x],tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,plot=plot,mapq=mapq,phred=phred,max_regions=max_regions,verbose=verbose,ref_genome=ref_genome,keep_strand=keep_strand,bin_width=bin_width),output_dir=output_dir,verbose=verbose)
     }
 
     cl=parallel::makeCluster(threads,outfile=paste0(output_dir,sep,sample_name,".parallel.log"))
-    all_stats=pbapply(X=as.data.frame(1:length(bed_files)),1,FUN=FUN,bin_path=bin_path,bin_path2=bin_path2,bam=bam,norm=norm,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,plot=plot,mapq=mapq,phred=phred,max_regions=max_regions,verbose=verbose,ref_genome=ref_genome,keep_strand=keep_strand,bin_width=bin_width,cl=cl)
+    all_stats=pbapply(X=as.data.frame(1:length(bed_files)),1,FUN=FUN,bin_path=bin_path,bin_path2=bin_path2,bam=bam,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,plot=plot,mapq=mapq,phred=phred,max_regions=max_regions,verbose=verbose,ref_genome=ref_genome,keep_strand=keep_strand,bin_width=bin_width,bed_files=bed_files,cl=cl)
     on.exit(parallel::stopCluster(cl))
 
     all_stats=suppressMessages(all_stats %>% dplyr::bind_rows())
