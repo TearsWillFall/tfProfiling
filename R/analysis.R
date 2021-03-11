@@ -600,7 +600,6 @@ methylation_score=function(data="",output_dir="",verbose=FALSE){
       mean_peak_distance = mean(peak_distance$PEAK_DISTANCE)
       median_peak_distance = median(peak_distance$PEAK_DISTANCE)
 
-
       stats=data.frame(TF=met_data$TF[1],MEAN_NUMBER_OF_DATA_POINTS=n,RANGE=range,MEAN_PEAK_DISTANCE=mean_peak_distance,MEDIAN_PEAK_DISTANCE=median_peak_distance)
       info=list(COV_DATA=met_data,STATS=stats)
 
