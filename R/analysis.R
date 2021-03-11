@@ -553,11 +553,9 @@ analyze_MR_tfbs_around_position=function(bin_path="tools/samtools/samtools",bin_
 
 
 
-
-
 #' Estimates the unranked Methylation score for TFBS
 #'
-#' This function takes a DATA.FRAME/ TXT file with the TFBS coverage data and
+#' This function takes a DATA.FRAME/ TXT file with the TFBS methylation ratio data and
 #' estimates the Methylation score as the range between the global maximum and minimum of
 #' the binned_data signal.
 
@@ -565,7 +563,6 @@ analyze_MR_tfbs_around_position=function(bin_path="tools/samtools/samtools",bin_
 #' @param output_dir Directory to output results. If not provided then outputs in current directory
 #' @param verbose Enables progress messages. Default FALSE
 #' @export
-
 
 
 methylation_score=function(data="",output_dir="",verbose=FALSE){
@@ -585,7 +582,7 @@ methylation_score=function(data="",output_dir="",verbose=FALSE){
       sample_name=paste0(strsplit(name,"_")[[1]][-length(strsplit(name,"_")[[1]])],collapse="_")
 
 
-      print(paste("Estimating",tf_name,"Accesibility Score for",sample_name))
+      print(paste("Estimating",tf_name,"Methylation Score for",sample_name))
 
       sep="/"
 
@@ -597,14 +594,14 @@ methylation_score=function(data="",output_dir="",verbose=FALSE){
 
       n=floor(mean(met_data$DATA_POINTS_ANALYZED))
       range=max(met_data$MEAN_MR) - min(met_data$MEAN_MR)
-      peaks=data.frame(PEAKS=find_peaks(met_data$MEAN_MR,m=5))
+      peaks=data.frame(PEAKS=find_peaks(met_data$MEAN_MR,m=3))
       peak_positions = data.frame(PEAK_POSITIONS=met_data$POSITION_RELATIVE_TO_TFBS[peaks$PEAKS])
       peak_distance = data.frame(PEAK_DISTANCE=c(diff(peak_positions$PEAK_POSITIONS)))
       mean_peak_distance = mean(peak_distance$PEAK_DISTANCE)
       median_peak_distance = median(peak_distance$PEAK_DISTANCE)
 
 
-      stats=data.frame(TF=met_data$TF[1],MEAN_NUMBER_TFBS_ANALYZED=n,RANGE=range,MEAN_PEAK_DISTANCE=mean_peak_distance,MEDIAN_PEAK_DISTANCE=median_peak_distance)
+      stats=data.frame(TF=met_data$TF[1],MEAN_NUMBER_OF_DATA_POINTS=n,RANGE=range,MEAN_PEAK_DISTANCE=mean_peak_distance,MEDIAN_PEAK_DISTANCE=median_peak_distance)
       info=list(COV_DATA=met_data,STATS=stats)
 
       output_dir=paste0(output_dir,sep,sample_name,"/",tf_name)
@@ -613,7 +610,7 @@ methylation_score=function(data="",output_dir="",verbose=FALSE){
       ## Generate LOG with data
       options(warn = -1)
       cat(paste(Sys.time(),"\n\n"),file=out_file,append=FALSE)
-      cat(paste("# COVERAGE \n"),file=out_file,append=TRUE)
+      cat(paste("# METHYLATION RATIO \n"),file=out_file,append=TRUE)
       write.table(met_data,file=out_file,append=TRUE,sep="\t",quote=FALSE,row.names=FALSE,col.names=TRUE)
       cat("\n",file=out_file,append=TRUE)
       cat(paste("## STATS \n"),file=out_file,append=TRUE)
@@ -631,7 +628,7 @@ methylation_score=function(data="",output_dir="",verbose=FALSE){
     tictoc::toc()
     print("-------------------------------------------------")
     return(stats)
-    }
+  }
 
 
 #' Ranks the Accessibility Score for all the TFs
@@ -670,3 +667,40 @@ rank_accessibility=function(data="",output_dir="",verbose=FALSE){
 
 
     }
+
+#' Ranks the Methylation Score for all the TFs
+#'
+#' This function takes a path to a TXT file with the accessibility scores of all the TFs analyzed and ranks them.
+
+#' @param data Path to TXT file
+#' @param output_dir Directory to output results. If not provided then outputs in current directory
+#' @param verbose Enables progress messages. Default FALSE
+#' @export
+
+
+rank_methylation=function(data="",output_dir="",verbose=FALSE){
+
+  stats_data=read.table(data,header=TRUE,comment.char="")
+  sample_name=ULPwgs::get_sample_name(data)
+
+
+  print(paste("Ranking Methylation Score for",sample_name))
+
+  sep="/"
+
+  if(output_dir==""){
+    sep=""
+  }
+
+  results=data.frame(TF=stats_data$TF,RANGE=stats_data$RANGE,RANK=rank(stats_data$RANGE)/length(rank(stats_data$RANGE)))
+
+
+
+  out_file=paste0(output_dir,sep,sample_name,".RANKED.METHYLATION.SCORE.txt")
+
+
+
+  write.table(results,quote=FALSE,row.names=FALSE,out_file)
+
+
+  }
