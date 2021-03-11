@@ -14,7 +14,7 @@ methylation_score(data = "", output_dir = "", verbose = FALSE)
 \item{verbose}{Enables progress messages. Default FALSE}
 }
 \description{
-This function takes a DATA.FRAME/ TXT file with the TFBS coverage data and
+This function takes a DATA.FRAME/ TXT file with the TFBS methylation ratio data and
 estimates the Methylation score as the range between the global maximum and minimum of
 the binned_data signal.
 }

@@ -693,11 +693,7 @@ rank_methylation=function(data="",output_dir="",verbose=FALSE){
 
   results=data.frame(TF=stats_data$TF,RANGE=stats_data$RANGE,RANK=rank(stats_data$RANGE)/length(rank(stats_data$RANGE)))
 
-
-
   out_file=paste0(output_dir,sep,sample_name,".RANKED.METHYLATION.SCORE.txt")
-
-
 
   write.table(results,quote=FALSE,row.names=FALSE,out_file)
 
