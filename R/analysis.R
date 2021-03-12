@@ -640,41 +640,6 @@ methylation_score=function(data="",output_dir="",verbose=FALSE){
 #' @export
 
 
-rank_accessibility=function(data="",output_dir="",verbose=FALSE){
-
-    stats_data=read.table(data,header=TRUE,comment.char="")
-    sample_name=ULPwgs::get_sample_name(data)
-
-
-    print(paste("Ranking Accesibility Score for",sample_name))
-
-    sep="/"
-
-    if(output_dir==""){
-      sep=""
-    }
-
-    results=data.frame(TF=stats_data$TF,RANGE=stats_data$RANGE,RANK=rank(stats_data$RANGE)/length(rank(stats_data$RANGE)))
-
-
-
-    out_file=paste0(output_dir,sep,sample_name,".RANKED.ACCESSIBILITY.SCORE.txt")
-
-
-
-    write.table(results,quote=FALSE,row.names=FALSE,out_file)
-
-
-    }
-
-#' Ranks the Methylation Score for all the TFs
-#'
-#' This function takes a path to a TXT file with the accessibility scores of all the TFs analyzed and ranks them.
-
-#' @param data Path to TXT file
-#' @param output_dir Directory to output results. If not provided then outputs in current directory
-#' @param verbose Enables progress messages. Default FALSE
-#' @export
 
 
 rank_methylation=function(data="",output_dir="",verbose=FALSE){
