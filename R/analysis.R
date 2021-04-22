@@ -479,7 +479,6 @@ analyze_MR_tfs=function(bin_path="tools/samtools/samtools",bin_path2="tools/Pile
   ### ////TO DO IMPLEMENT verbose to the rest of the functions
 
 analyze_MR_tfbs_around_position=function(bin_path="tools/samtools/samtools",bin_path2="tools/PileOMeth/output/MethylDackel",bed="",bam="",tfbs_start=1000,tfbs_end=1000,ref_genome="",max_regions=100000,mapq=10,phred=5,verbose=FALSE,output_dir="",plot=TRUE,keep_strand=TRUE,bin_width=50,threads=1){
-
     tictoc::tic("Analysis time")
 
     options(scipen=999)
