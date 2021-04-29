@@ -73,7 +73,7 @@ calculate_MR_tfbs=function(bin_path="tools/PileOMeth/output/MethylDackel",ref_da
 	options(warn = -1)
 	merg_tfbs1=dplyr::left_join(ref_data,tfbs,by=c("chr","pos"))
 	if(tfbs_data_keep){
-		write.table(paste0(output_dir,sep,sample_name,"_",tf_name,".tfbs.data"),merg_tfbs1,quote=FALSE,row.names=FALSE,col.names=TRUE)
+		write.table(merg_tfbs1,paste0(output_dir,sep,sample_name,"_",tf_name,".tfbs.data"),quote=FALSE,row.names=FALSE,col.names=TRUE)
 	}
 	merg_tfbs1=merg_tfbs1%>% dplyr::group_by(pos_relative_to_tfbs) %>%  dplyr::mutate( x_bins = ifelse(is.na(cut(pos_relative_to_tfbs, breaks = seq(-tfbs_end,tfbs_start,1),include.lowest=FALSE,labels=FALSE)),0,cut(pos_relative_to_tfbs, breaks = seq(-tfbs_end,tfbs_start,1),include.lowest=FALSE,labels=FALSE)))%>% dplyr::group_by(x_bins) %>%
 	dplyr::mutate(x_bins=as.integer((max(pos_relative_to_tfbs)+min(pos_relative_to_tfbs))/2)) %>%
