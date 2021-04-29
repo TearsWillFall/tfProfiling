@@ -472,14 +472,15 @@ analyze_MR_tfs=function(bin_path="tools/samtools/samtools",bin_path2="tools/Pile
 #' @param keep_strand Use strand information from BED files if available. Default TRUE.
 #' @param bin_width Width of the the bins in which to group methylation data. Default 50.
 #' @param threads Number of threads to use. Default 1.
-#' @param rm_tmp Removes tmp files generated after finishing. Default TRUE
+#' @param tfbs_data_keep Keep unprocessed MR tfbs data. Default FALSE
 #' @return A DATA.FRAME with coverage data
 #' @export
 
 
   ### ////TO DO IMPLEMENT verbose to the rest of the functions
 
-analyze_MR_tfbs_around_position=function(bin_path="tools/samtools/samtools",bin_path2="tools/PileOMeth/output/MethylDackel",bed="",bam="",tfbs_start=1000,tfbs_end=1000,ref_genome="",max_regions=100000,mapq=10,phred=5,verbose=FALSE,output_dir="",plot=TRUE,keep_strand=TRUE,bin_width=50,threads=1,rm_tmp=TRUE){
+analyze_MR_tfbs_around_position=function(bin_path="tools/samtools/samtools",bin_path2="tools/PileOMeth/output/MethylDackel",bed="",bam="",tfbs_start=1000,tfbs_end=1000,ref_genome="",max_regions=100000,mapq=10,phred=5,verbose=FALSE,output_dir="",plot=TRUE,keep_strand=TRUE,bin_width=50,threads=1,tfbs_data_keep=FALSE){
+
     tictoc::tic("Analysis time")
 
     options(scipen=999)
@@ -531,7 +532,7 @@ analyze_MR_tfbs_around_position=function(bin_path="tools/samtools/samtools",bin_
 
     print("Calculating Mean Methylation Ratio Around TFBS")
 
-    log_data=calculate_MR_tfbs(bin_path=bin_path2,ref_data=ref_data,bam=bam,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,mapq=mapq,phred=phred,tf_name=tf_name,sample_name=sample_name,keep_strand=keep_strand,bin_width=bin_width,verbose=verbose,ref_genome=ref_genome,threads=threads,rm_tmp=rm_tmp)
+    log_data=calculate_MR_tfbs(bin_path=bin_path2,ref_data=ref_data,bam=bam,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,mapq=mapq,phred=phred,tf_name=tf_name,sample_name=sample_name,keep_strand=keep_strand,bin_width=bin_width,verbose=verbose,ref_genome=ref_genome,threads=threads,tfbs_data_keep=tfbs_data_keep)
     out_file=paste0(output_dir,"/",sample_name,"_",tf_name,".",max(log_data[[1]]$TFBS_ANALYZED),"TFBS.S",tfbs_start,"-E",tfbs_end,".",max(log_data[[1]]$BIN_WIDTH),".MR.tss")
     write.table(log_data[[1]],quote=FALSE,row.names=FALSE,out_file)
     out_file=paste0(output_dir,"/",sample_name,"_",tf_name,".",max(log_data[[2]]$TFBS_ANALYZED),"TFBS.S",tfbs_start,"-E",tfbs_end,".",max(log_data[[2]]$BIN_WIDTH),".MR.tss")
@@ -550,7 +551,6 @@ analyze_MR_tfbs_around_position=function(bin_path="tools/samtools/samtools",bin_
 
     return(log_data[[2]])
   }
-
 
 
 #' Estimates the unranked Methylation score for TFBS
