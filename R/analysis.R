@@ -21,11 +21,12 @@
 #' @param verbose Enables progress messages. Default FALSE
 #' @param output_dir Directory to output results. If not provided then outputs in current directory
 #' @param plot Create plots. Default TRUE.
+#' @param tfbs_data_keep Keep unprocessed coverage tfbs data. Default FALSE.
 #' @return A DATA.FRAME with coverage data
 #' @export
 
 
-analyze_tfs=function(bin_path="tools/bedtools2/bin/bedtools",bin_path2="tools/samtools/samtools",bed_dir="",tfs="",bam="",tfbs_start=1000,tfbs_end=1000,mean_cov="",norm="",threads=1,cov_limit=1000,max_regions=100000,mapq=0,verbose=FALSE,output_dir="",plot=TRUE){
+analyze_tfs=function(bin_path="tools/bedtools2/bin/bedtools",bin_path2="tools/samtools/samtools",bed_dir="",tfs="",bam="",tfbs_start=1000,tfbs_end=1000,mean_cov="",norm="",threads=1,cov_limit=1000,max_regions=100000,mapq=0,verbose=FALSE,output_dir="",plot=TRUE,tfbs_data_keep=TRUE){
 
   sep="/"
   if(output_dir==""){
@@ -63,11 +64,11 @@ analyze_tfs=function(bin_path="tools/bedtools2/bin/bedtools",bin_path2="tools/sa
 
   print("=========================================================")
 
-  FUN=function(bed,bin_path,bin_path2,bam,tfbs_start,tfbs_end,mean_cov,norm,threads,cov_limit,max_regions,mapq,verbose,output_dir,plot){
-    accessibility_score(analyze_tfbs_around_position(bin_path=bin_path,bin_path2=bin_path2,bam=bam,bed=bed,norm=norm,threads=threads,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,plot=plot,mapq=mapq,cov_limit=cov_limit,mean_cov=mean_cov,max_regions=max_regions,verbose=verbose),output_dir=output_dir,verbose=verbose)
+  FUN=function(bed,bin_path,bin_path2,bam,tfbs_start,tfbs_end,mean_cov,norm,threads,cov_limit,max_regions,mapq,verbose,output_dir,plot,tfbs_data_keep){
+    accessibility_score(analyze_tfbs_around_position(bin_path=bin_path,bin_path2=bin_path2,bam=bam,bed=bed,norm=norm,threads=threads,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,plot=plot,mapq=mapq,cov_limit=cov_limit,mean_cov=mean_cov,max_regions=max_regions,verbose=verbose,tfbs_data_keep=tfbs_data_keep),output_dir=output_dir,verbose=verbose)
   }
 
-  all_stats=mapply(bed_files,FUN=FUN,SIMPLIFY=FALSE,bin_path=bin_path,bin_path2=bin_path2,bam=bam,norm=norm,threads=threads,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,plot=plot,mapq=mapq,cov_limit=cov_limit,mean_cov=mean_cov,max_regions=max_regions,verbose=verbose)
+  all_stats=mapply(bed_files,FUN=FUN,SIMPLIFY=FALSE,bin_path=bin_path,bin_path2=bin_path2,bam=bam,norm=norm,threads=threads,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,plot=plot,mapq=mapq,cov_limit=cov_limit,mean_cov=mean_cov,max_regions=max_regions,verbose=verbose,tfbs_data_keep=tfbs_data_keep)
 
   all_stats=suppressMessages(all_stats %>% dplyr::bind_rows())
 
@@ -111,13 +112,14 @@ analyze_tfs=function(bin_path="tools/bedtools2/bin/bedtools",bin_path2="tools/sa
 #' @param verbose Enables progress messages. Default FALSE
 #' @param output_dir Directory to output results. If not provided then outputs in current directory
 #' @param plot Create a plot with coverage data. Default TRUE.
+#' @param tfbs_data_keep Keep unprocessed Coverage tfbs data. Default FALSE.
 #' @return A DATA.FRAME with coverage data
 #' @export
 
 
 ### ////TO DO IMPLEMENT verbose to the rest of the functions
 
-analyze_tfbs_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bin_path2="tools/samtools/samtools",bed="",bam="",tfbs_start=1000,tfbs_end=1000,mean_cov="",norm="",threads=1,cov_limit=1000,max_regions=100000,mapq=0,verbose=FALSE,output_dir="",plot=TRUE){
+analyze_tfbs_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bin_path2="tools/samtools/samtools",bed="",bam="",tfbs_start=1000,tfbs_end=1000,mean_cov="",norm="",threads=1,cov_limit=1000,max_regions=100000,mapq=0,verbose=FALSE,output_dir="",plot=TRUE,tfbs_data_keep=FALSE){
   tictoc::tic("Analysis time")
 
   options(scipen=999)
@@ -204,7 +206,9 @@ analyze_tfbs_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bi
 
   print("Calculating Mean Depth Coverage Around TFBS")
   coverage_list=calculate_coverage_tfbs(bin_path=bin_path2,ref_data=ref_data,bam=bam,norm_log2=norm_log2,tfbs_start=tfbs_start,tfbs_end=tfbs_end,cov_limit=cov_limit,output_dir=output_dir,mapq=mapq,tf_name=tf_name,sample_name=sample_name,threads=threads,mean_cov=mean_cov)
-
+  if(tfbs_data_keep){
+		write.table(coverage_list,paste0(output_dir,sep,sample_name,"_",tf_name,".tfbs.data"),quote=FALSE,row.names=FALSE,col.names=TRUE)
+	}
   log_data=get_mean_and_conf_intervals(cov_data=coverage_list)
   log_data=cbind(TF=paste0(sample_name,"_",tf_name),log_data)
 
@@ -379,12 +383,13 @@ rank_accessibility=function(data="",output_dir="",verbose=FALSE){
 #' @param keep_strand Use strand information from BED files if available. Default TRUE.
 #' @param bin_width Width of the the bins in which to group methylation data. Default 50.
 #' @param threads Number of threads to use. Default 1.
+#' @param tfbs_data_keep Keep unprocessed MR tfbs data. Default FALSE.
 #' @return A DATA.FRAME with coverage data
 #' @export
 #' @import pbapply
 
 
-analyze_MR_tfs=function(bin_path="tools/samtools/samtools",bin_path2="tools/PileOMeth/output/MethylDackel",bed_dir="",tfs="",bam="",tfbs_start=1000,tfbs_end=1000,ref_genome="",max_regions=100000,mapq=10,phred=5,verbose=FALSE,output_dir="",plot=TRUE,keep_strand=TRUE,bin_width=50,threads=1){
+analyze_MR_tfs=function(bin_path="tools/samtools/samtools",bin_path2="tools/PileOMeth/output/MethylDackel",bed_dir="",tfs="",bam="",tfbs_start=1000,tfbs_end=1000,ref_genome="",max_regions=100000,mapq=10,phred=5,verbose=FALSE,output_dir="",plot=TRUE,keep_strand=TRUE,bin_width=50,threads=1,tfbs_data_keep=FALSE){
 
     sep="/"
     if(output_dir==""){
@@ -421,12 +426,12 @@ analyze_MR_tfs=function(bin_path="tools/samtools/samtools",bin_path2="tools/Pile
 
     print("=========================================================")
 
-    FUN=function(x,bin_path,bin_path2,bam,tfbs_start,tfbs_end,phred,ref_genome,keep_strand,bin_width,norm,max_regions,mapq,verbose,output_dir,plot,bed_files){
-      methylation_score(analyze_MR_tfbs_around_position(bin_path=bin_path,bin_path2=bin_path2,bam=bam,bed=bed_files[x],tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,plot=plot,mapq=mapq,phred=phred,max_regions=max_regions,verbose=verbose,ref_genome=ref_genome,keep_strand=keep_strand,bin_width=bin_width),output_dir=output_dir,verbose=verbose)
+    FUN=function(x,bin_path,bin_path2,bam,tfbs_start,tfbs_end,phred,ref_genome,keep_strand,bin_width,norm,max_regions,mapq,verbose,output_dir,plot,bed_files,tfbs_data_keep){
+      methylation_score(analyze_MR_tfbs_around_position(bin_path=bin_path,bin_path2=bin_path2,bam=bam,bed=bed_files[x],tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,plot=plot,mapq=mapq,phred=phred,max_regions=max_regions,verbose=verbose,ref_genome=ref_genome,keep_strand=keep_strand,bin_width=bin_width,tfbs_data_keep=tfbs_data_keep),output_dir=output_dir,verbose=verbose)
     }
 
     cl=parallel::makeCluster(threads,outfile=paste0(output_dir,sep,sample_name,".parallel.log"))
-    all_stats=pbapply(X=as.data.frame(1:length(bed_files)),1,FUN=FUN,bin_path=bin_path,bin_path2=bin_path2,bam=bam,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,plot=plot,mapq=mapq,phred=phred,max_regions=max_regions,verbose=verbose,ref_genome=ref_genome,keep_strand=keep_strand,bin_width=bin_width,bed_files=bed_files,cl=cl)
+    all_stats=pbapply(X=as.data.frame(1:length(bed_files)),1,FUN=FUN,bin_path=bin_path,bin_path2=bin_path2,bam=bam,tfbs_start=tfbs_start,tfbs_end=tfbs_end,output_dir=output_dir,plot=plot,mapq=mapq,phred=phred,max_regions=max_regions,verbose=verbose,ref_genome=ref_genome,keep_strand=keep_strand,bin_width=bin_width,bed_files=bed_files,tfbs_data_keep=tfbs_data_keep,cl=cl)
     on.exit(parallel::stopCluster(cl))
 
     all_stats=suppressMessages(all_stats %>% dplyr::bind_rows())

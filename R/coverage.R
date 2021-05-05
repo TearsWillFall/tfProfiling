@@ -175,7 +175,7 @@ calculate_coverage_tfbs=function(bin_path="tools/samtools/samtools",ref_data="",
   }
 
   cov_data=cbind(cov_data,strand=tfbs_data[4])
-  cov_data=cov_data %>% dplyr::mutate(cor_cov=as.numeric(cov)/as.numeric(mean_cov))  %>% dplyr::mutate(norm_cor_cov=cor_cov/as.numeric(norm_cov),pos_relative_to_tfbs=dplyr::if_else(strand=="+",pos-as.numeric(tfbs_data[5]),-(pos-as.numeric(tfbs_data[5])))) %>% dplyr::arrange(pos_relative_to_tfbs)
+  cov_data=cov_data %>% dplyr::mutate(cor_cov=as.numeric(cov)/as.numeric(mean_cov),tfbs_pos=as.numeric(tfbs_data[5]))  %>% dplyr::mutate(norm_cor_cov=cor_cov/as.numeric(norm_cov),pos_relative_to_tfbs=dplyr::if_else(strand=="+",pos-as.numeric(tfbs_data[5]),-(pos-as.numeric(tfbs_data[5])))) %>% dplyr::arrange(pos_relative_to_tfbs)
 
   return(cov_data)
   }
