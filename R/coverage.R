@@ -109,7 +109,7 @@ get_coverage_bed=function(bin_path="tools/samtools/samtools",bam="",bed="",mapq=
   region_data=region_data[,c(1,2,3,4)]
   colnames(region_data)=c("chr","start","end")
   cov_results=parallel::mclapply(1:nrow(region_data),FUN=function(x){
-    cov_data=read.csv(text=system(paste(bin_path,"depth -a -Q",mapq, "-r",paste0(region_data[x,1],":",region_data[x,2],"-",region_data[x,3]),bam),intern=TRUE),header=FALSE,sep="\t");
+    cov_data=read.csv(text=system(paste(bin_path,"depth -a -Q",mapq, "-r",paste0(region_data[x,1],":",region_data[x,2],"-",region_data[x,3]),bam),intern=TRUE),header=FALSE,sep="\t",stringsAsFactors=FALSE);
     cov_data$Original=paste0(region_data[x,1],":",region_data[x,2],"-",region_data[x,3]);
     cov_data$Id=region_data[x,4];
     return(cov_data)
