@@ -114,6 +114,7 @@ get_coverage_bed=function(bin_path="tools/samtools/samtools",bam="",bed="",mapq=
     cov_data$Id=region_data[x,4];
     return(cov_data)
   },mc.cores=threads)
+  cov_results=dplyr::bind_rows(cov_results)
   return(cov_results)
 }
 
