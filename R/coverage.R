@@ -112,8 +112,8 @@ get_coverage_bed=function(bin_path="tools/samtools/samtools",bam="",bed="",mapq=
     cov_data=read.csv(text=system(paste(bin_path,"depth -a -Q",mapq, "-r",paste0(region_data[x,1],":",region_data[x,2],"-",region_data[x,3]),bam),intern=TRUE),header=FALSE,sep="\t",stringsAsFactors=FALSE,colClasses=c("character"));
     cov_data$Original=paste0(region_data[x,1],":",region_data[x,2],"-",region_data[x,3]);
     cov_data$Id=region_data[x,4];
-    cov_data$Position=(as.numeric(region_data[x,2])+as.numeric(region_data[x,3]))/2;
-    cov_data$Relative_Position=cov_data$Position-cov_data$V3;
+    cov_data$Position=as.integer((as.numeric(region_data[x,2])+as.numeric(region_data[x,3]))/2);
+    cov_data$Relative_Position=cov_data$Position-as.numeric(cov_data$V3);
     return(cov_data)
   },mc.cores=threads)
   cov_results=dplyr::bind_rows(cov_results)
