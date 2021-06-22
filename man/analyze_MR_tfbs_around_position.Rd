@@ -20,7 +20,8 @@ analyze_MR_tfbs_around_position(
   plot = TRUE,
   keep_strand = TRUE,
   bin_width = 50,
-  threads = 1
+  threads = 1,
+  tfbs_data_keep = FALSE
 )
 }
 \arguments{
@@ -55,6 +56,8 @@ analyze_MR_tfbs_around_position(
 \item{bin_width}{Width of the the bins in which to group methylation data. Default 50.}
 
 \item{threads}{Number of threads to use. Default 1.}
+
+\item{tfbs_data_keep}{Keep unprocessed MR tfbs data. Default FALSE}
 }
 \value{
 A DATA.FRAME with coverage data

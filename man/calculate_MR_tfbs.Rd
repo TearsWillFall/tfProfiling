@@ -19,7 +19,8 @@ calculate_MR_tfbs(
   keep_strand = TRUE,
   bin_width = 50,
   verbose = FALSE,
-  threads = 1
+  threads = 1,
+  tfbs_data_keep = FALSE
 )
 }
 \arguments{
@@ -52,6 +53,8 @@ calculate_MR_tfbs(
 \item{verbose}{Enables progress messages. Default FALSE}
 
 \item{threads}{Number of threads to use. Default 1}
+
+\item{tfbs_data_keep}{Keep unprocessed MR tfbs data. Default FALSE}
 }
 \value{
 A list of DATA.FRAMEs with the methylation ratio per base and per bin_width with default bin_width 50

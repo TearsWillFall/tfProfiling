@@ -2,7 +2,7 @@
 % Please edit documentation in R/analysis.R
 \name{rank_methylation}
 \alias{rank_methylation}
-\title{Ranks the Methylation Score for all the TFs}
+\title{Ranks the Accessibility Score for all the TFs}
 \usage{
 rank_methylation(data = "", output_dir = "", verbose = FALSE)
 }
