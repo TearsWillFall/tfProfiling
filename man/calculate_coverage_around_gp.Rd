@@ -2,7 +2,7 @@
 % Please edit documentation in R/coverage.R
 \name{calculate_coverage_around_gp}
 \alias{calculate_coverage_around_gp}
-\title{Calculate Mean Coverage Depth around Genomic Position}
+\title{Calculate Coverage around Genomic Position}
 \usage{
 calculate_coverage_around_gp(
   bin_path = "tools/samtools/samtools",
@@ -14,14 +14,13 @@ calculate_coverage_around_gp(
   start = 1000,
   end = 1000,
   mean_cov = 1,
-  cov_limit = NA,
   mapq = 0
 )
 }
 \arguments{
 \item{bin_path}{Path to binary. Default tools/samtools/samtools}
 
-\item{chr}{Chromosome}
+\item{chr}{Chromosome to analyze.}
 
 \item{position}{Genomic position within the chromosome}
 
@@ -36,8 +35,6 @@ calculate_coverage_around_gp(
 \item{end}{Upstream distance from genomic position to estimate coverage}
 
 \item{mean_cov}{Mean genome wide coverage.}
-
-\item{cov_limit}{Max coverage limit for position to be taken into account}
 
 \item{mapq}{Min quality of mapping reads. Default 0}
 }

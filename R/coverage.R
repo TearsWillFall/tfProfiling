@@ -224,7 +224,7 @@ calculate_coverage_tfbs=function(bin_path="tools/samtools/samtools",ref_data="",
   return(coverage_list)
   }
 
-#' Calculate Mean Coverage Depth around Genomic Position
+#' Calculate Coverage around Genomic Position
 #'
 #' This function takes chromosome location, as well as strand information, and generates a coverage report around
 #' for it. This coverage can be normalized if local segmentation values for the region are given and further corrected by the
@@ -232,7 +232,7 @@ calculate_coverage_tfbs=function(bin_path="tools/samtools/samtools",ref_data="",
 #'
 #'
 #' @param bin_path Path to binary. Default tools/samtools/samtools
-#' @param chr Chromosome
+#' @param chr Chromosome to analyze.
 #' @param bam Path to BAM file.
 #' @param position Genomic position within the chromosome
 #' @param strand Strand direction. If not available asumes + strand.
@@ -240,11 +240,10 @@ calculate_coverage_tfbs=function(bin_path="tools/samtools/samtools",ref_data="",
 #' @param start Downstream distance from genomic position to estimate coverage
 #' @param end Upstream distance from genomic position to estimate coverage
 #' @param mean_cov Mean genome wide coverage.
-#' @param cov_limit Max coverage limit for position to be taken into account
 #' @param mapq Min quality of mapping reads. Default 0
 #' @return A DATA.FRAME with per base coverage por each genomic position
 
-calculate_coverage_around_gp=function(bin_path="tools/samtools/samtools",chr="",position="",strand="",bam="",norm_log2=1,start=1000,end=1000,mean_cov=1,cov_limit=NA,mapq=0){
+calculate_coverage_around_gp=function(bin_path="tools/samtools/samtools",chr="",position="",strand="",bam="",norm_log2=1,start=1000,end=1000,mean_cov=1,mapq=0){
   cov_data=read.csv(text=system(paste(bin_path,"depth -a -Q",mapq, "-r",paste0(chr,":",as.numeric(position)-start,"-",as.numeric(position)+end),bam),intern=TRUE),header=FALSE,sep="\t",stringsAsFactors=FALSE)
   colnames(cov_data)=c("chr","pos","cov")
   cov_data$strand=strand
