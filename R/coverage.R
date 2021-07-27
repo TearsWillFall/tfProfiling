@@ -242,6 +242,7 @@ calculate_coverage_tfbs=function(bin_path="tools/samtools/samtools",ref_data="",
 #' @param mean_cov Mean genome wide coverage.
 #' @param mapq Min quality of mapping reads. Default 0
 #' @return A DATA.FRAME with per base coverage por each genomic position
+#' @export
 
 calculate_coverage_around_gp=function(bin_path="tools/samtools/samtools",chr="",position="",strand="",bam="",norm_log2=1,start=1000,end=1000,mean_cov=1,mapq=0){
   cov_data=read.csv(text=system(paste(bin_path,"depth -a -Q",mapq, "-r",paste0(chr,":",as.numeric(position)-start,"-",as.numeric(position)+end),bam),intern=TRUE),header=FALSE,sep="\t",stringsAsFactors=FALSE)
