@@ -250,5 +250,4 @@ calculate_coverage_around_gp=function(bin_path="tools/samtools/samtools",chr="",
   cov_data$strand=strand
   cov_data=cov_data %>% dplyr::mutate(cor_cov=as.numeric(cov)/sum(as.numeric(cov)))  %>% dplyr::mutate(norm_cor_cov=cor_cov/as.numeric(norm_log2),pos_relative_to_tfbs=dplyr::if_else(strand=="+"|strand=="",pos-as.numeric(position),-(pos-as.numeric(position)))) %>% dplyr::arrange(pos_relative_to_tfbs)
   return(cov_data)
-
 }
