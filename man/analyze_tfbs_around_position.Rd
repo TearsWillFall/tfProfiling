@@ -19,7 +19,8 @@ analyze_tfbs_around_position(
   mapq = 0,
   verbose = FALSE,
   output_dir = "",
-  plot = TRUE
+  plot = TRUE,
+  tfbs_data_keep = FALSE
 )
 }
 \arguments{
@@ -52,6 +53,8 @@ analyze_tfbs_around_position(
 \item{output_dir}{Directory to output results. If not provided then outputs in current directory}
 
 \item{plot}{Create a plot with coverage data. Default TRUE.}
+
+\item{tfbs_data_keep}{Keep unprocessed Coverage tfbs data. Default FALSE.}
 }
 \value{
 A DATA.FRAME with coverage data

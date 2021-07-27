@@ -20,7 +20,8 @@ analyze_tfs(
   mapq = 0,
   verbose = FALSE,
   output_dir = "",
-  plot = TRUE
+  plot = TRUE,
+  tfbs_data_keep = TRUE
 )
 }
 \arguments{
@@ -55,6 +56,8 @@ analyze_tfs(
 \item{output_dir}{Directory to output results. If not provided then outputs in current directory}
 
 \item{plot}{Create plots. Default TRUE.}
+
+\item{tfbs_data_keep}{Keep unprocessed coverage tfbs data. Default FALSE.}
 }
 \value{
 A DATA.FRAME with coverage data
