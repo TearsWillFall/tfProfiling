@@ -8,7 +8,6 @@
 #' @param output_dir Directory to output results. If not provided then outputs in current directory
 #' @export
 
-
 calculate_genowide_coverage=function(bin_path="tools/bedtools2/bin/bedtools",bam="",verbose=FALSE,output_dir=""){
 
   sep="/"
@@ -56,7 +55,6 @@ get_norm_local_coverage=function(pos="",chr="",norm_log2=""){
      else{
        return(norm)
      }
-
    }else{
      return (1)
    }
@@ -89,6 +87,39 @@ get_mean_and_conf_intervals=function(cov_data="",CI=0.95){
   }
   return (results)
 }
+
+
+
+#' Get coverage for target regions
+#'
+#' This function takes a  BAM and a BED file with target regions and estimate per base coverage for them
+#' using samtools depth
+#'
+#' @param bin_path Path to samtools. Default tools/samtools/samtools
+#' @param bam Path to BAM file
+#' @param bed Path to BED file
+#' @param mapq Minimum mapping quality
+#' @param threads Number of threads to use. Default 3
+#' @param output_dir Directory to output results
+#' @return A double with the mean genome coverage
+#' @export
+
+get_coverage_bed=function(bin_path="tools/samtools/samtools",bam="",bed="",mapq=0,threads=3,output_dir=""){
+  region_data=read.table(bed,comment.char="$")
+  region_data=region_data[,c(1,2,3,4)]
+  colnames(region_data)=c("chr","start","end")
+  cov_results=parallel::mclapply(1:nrow(region_data),FUN=function(x){
+    cov_data=read.csv(text=system(paste(bin_path,"depth -a -Q",mapq, "-r",paste0(region_data[x,1],":",region_data[x,2],"-",region_data[x,3]),bam),intern=TRUE),header=FALSE,sep="\t",stringsAsFactors=FALSE,colClasses=c("character"));
+    cov_data$Original=paste0(region_data[x,1],":",region_data[x,2],"-",region_data[x,3]);
+    cov_data$Id=region_data[x,4];
+    cov_data$Position=as.integer((as.numeric(region_data[x,2])+as.numeric(region_data[x,3]))/2);
+    cov_data$Relative_Position=cov_data$Position-as.numeric(cov_data$V3);
+    return(cov_data)
+  },mc.cores=threads)
+  cov_results=dplyr::bind_rows(cov_results)
+  return(cov_results)
+}
+
 
 #' Calculate mean genome coverage
 #'
@@ -158,28 +189,28 @@ calculate_coverage_tfbs=function(bin_path="tools/samtools/samtools",ref_data="",
   tfbs_to_analyze=tfbs_to_analyze %>% dplyr::filter(!grepl("_",chr),(pos-start)<1) %>% dplyr::distinct(chr, pos, .keep_all = TRUE)
 
   FUN=function(x,bin_path,norm_log2,start,end,mean_cov,bam,cov_limit,mapq){
-  tfbs_data=t(x)
+    tfbs_data=t(x)
 
-  ## IF running sambamba
-  ## cov_data=read.csv(text=system(paste(bin_path,"depth base -t 3 -z -L ",paste0(tfbs_data$chr,":",as.numeric(tfbs_data$pos)-start,"-",as.numeric(tfbs_data$pos)+end),bam),intern=TRUE),header=TRUE,sep="\t")
-  ## cov_data=cbind(cov_data[,1:3],strand=tfbs_data$strand)
-  ## names(cov_data)=c("chr","pos","cov","strand")
+    ## IF running sambamba
+    ## cov_data=read.csv(text=system(paste(bin_path,"depth base -t 3 -z -L ",paste0(tfbs_data$chr,":",as.numeric(tfbs_data$pos)-start,"-",as.numeric(tfbs_data$pos)+end),bam),intern=TRUE),header=TRUE,sep="\t")
+    ## cov_data=cbind(cov_data[,1:3],strand=tfbs_data$strand)
+    ## names(cov_data)=c("chr","pos","cov","strand")
 
-  cov_data=read.csv(text=system(paste(bin_path,"depth -a -Q",mapq, "-r",paste0(tfbs_data[1],":",as.numeric(tfbs_data[5])-start,"-",as.numeric(tfbs_data[5])+end),bam),intern=TRUE),header=FALSE,sep="\t")
-  colnames(cov_data)=c("chr","pos","cov")
-  cov_data$chr=as.character(cov_data$chr)
-  norm_cov=get_norm_local_coverage(pos=as.numeric(tfbs_data[5]),chr=tfbs_data[1],norm_log2=norm_log2)
+    cov_data=read.csv(text=system(paste(bin_path,"depth -a -Q",mapq, "-r",paste0(tfbs_data[1],":",as.numeric(tfbs_data[5])-start,"-",as.numeric(tfbs_data[5])+end),bam),intern=TRUE),header=FALSE,sep="\t")
+    colnames(cov_data)=c("chr","pos","cov")
+    cov_data$chr=as.character(cov_data$chr)
+    norm_cov=get_norm_local_coverage(pos=as.numeric(tfbs_data[5]),chr=tfbs_data[1],norm_log2=norm_log2)
 
-  if(!(nrow(cov_data)==(start+end+1))){
-    fix=(as.numeric(tfbs_data[5])-start):(as.numeric(tfbs_data[5])+end)
-    fix=data.frame(chr=tfbs_data[1],pos=fix[!fix==cov_data$pos])
-    cov_data=dplyr::bind_rows(cov_data,fix) %>% dplyr::arrange(pos)
-  }
+    if(!(nrow(cov_data)==(start+end+1))){
+      fix=(as.numeric(tfbs_data[5])-start):(as.numeric(tfbs_data[5])+end)
+      fix=data.frame(chr=tfbs_data[1],pos=fix[!fix==cov_data$pos])
+      cov_data=dplyr::bind_rows(cov_data,fix) %>% dplyr::arrange(pos)
+    }
 
-  cov_data=cbind(cov_data,strand=tfbs_data[4])
-  cov_data=cov_data %>% dplyr::mutate(cor_cov=as.numeric(cov)/as.numeric(mean_cov))  %>% dplyr::mutate(norm_cor_cov=cor_cov/as.numeric(norm_cov),pos_relative_to_tfbs=dplyr::if_else(strand=="+",pos-as.numeric(tfbs_data[5]),-(pos-as.numeric(tfbs_data[5])))) %>% dplyr::arrange(pos_relative_to_tfbs)
+    cov_data=cbind(cov_data,strand=tfbs_data[4])
+    cov_data=cov_data %>% dplyr::mutate(cor_cov=as.numeric(cov)/as.numeric(mean_cov))  %>% dplyr::mutate(norm_cor_cov=cor_cov/as.numeric(norm_cov),pos_relative_to_tfbs=dplyr::if_else(strand=="+",pos-as.numeric(tfbs_data[5]),-(pos-as.numeric(tfbs_data[5])))) %>% dplyr::arrange(pos_relative_to_tfbs)
 
-  return(cov_data)
+    return(cov_data)
   }
   cl=parallel::makeCluster(threads)
   coverage_list=pbapply(X=tfbs_to_analyze,1,FUN=FUN,bin_path=bin_path,norm_log2=norm_log2,start=tfbs_start,end=tfbs_end,mean_cov=mean_cov,bam=bam,cov_limit=cov_limit,mapq=mapq,cl=cl)
@@ -192,3 +223,32 @@ calculate_coverage_tfbs=function(bin_path="tools/samtools/samtools",ref_data="",
 
   return(coverage_list)
   }
+
+#' Calculate Mean Coverage Depth around Genomic Position
+#'
+#' This function takes chromosome location, as well as strand information, and generates a coverage report around
+#' for it. This coverage can be normalized if local segmentation values for the region are given and further corrected by the
+#' the local coverage in the BAM
+#'
+#'
+#' @param bin_path Path to binary. Default tools/samtools/samtools
+#' @param chr Chromosome
+#' @param bam Path to BAM file.
+#' @param position Genomic position within the chromosome
+#' @param strand Strand direction. If not available asumes + strand.
+#' @param norm_log2 Local segment log2
+#' @param start Downstream distance from genomic position to estimate coverage
+#' @param end Upstream distance from genomic position to estimate coverage
+#' @param mean_cov Mean genome wide coverage.
+#' @param cov_limit Max coverage limit for position to be taken into account
+#' @param mapq Min quality of mapping reads. Default 0
+#' @return A DATA.FRAME with per base coverage por each genomic position
+
+calculate_coverage_around_gp=function(bin_path="tools/samtools/samtools",chr="",position="",strand="",bam="",norm_log2=1,start=1000,end=1000,mean_cov=1,cov_limit=NA,mapq=0){
+  cov_data=read.csv(text=system(paste(bin_path,"depth -a -Q",mapq, "-r",paste0(chr,":",as.numeric(position)-start,"-",as.numeric(position)+end),bam),intern=TRUE),header=FALSE,sep="\t",stringsAsFactors=FALSE)
+  colnames(cov_data)=c("chr","pos","cov")
+  cov_data$strand=strand
+  cov_data=cov_data %>% dplyr::mutate(cor_cov=as.numeric(cov)/sum(as.numeric(cov)))  %>% dplyr::mutate(norm_cor_cov=cor_cov/as.numeric(norm_log2),pos_relative_to_tfbs=dplyr::if_else(strand=="+"|strand=="",pos-as.numeric(position),-(pos-as.numeric(position)))) %>% dplyr::arrange(pos_relative_to_tfbs)
+  return(cov_data)
+
+}
