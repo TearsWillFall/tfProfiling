@@ -31,9 +31,9 @@ calculate_genowide_coverage=function(bin_path="tools/bedtools2/bin/bedtools",bam
   }
 
   if(verbose){
-    print(paste(bin_path,"genomecov -ibam",genome,bam,">",out_file))
+    print(paste(bin_path,"genomecov -ibam",bam,genome,">",out_file))
   }
-  system(paste(bin_path,"genomecov -ibam",genome,bam,">",out_file))
+  system(paste(bin_path,"genomecov -ibam",bam,genome,">",out_file))
 
 }
 
@@ -140,8 +140,6 @@ get_coverage_bed=function(bin_path="tools/samtools/samtools",bam="",bed="",mapq=
 
 
 get_mean_coverage=function(file="",output_dir="",region="genome",sample_name="",save=TRUE){
-
-
   data=read.table(file)
   data=data %>% dplyr::mutate(tot_bases=(as.numeric(V2)*as.numeric(V3))) %>% dplyr::group_by(V1) %>% dplyr::summarise(cnt=dplyr::n(),avg_cov=sum(tot_bases)/max(V4), .groups = 'drop') %>% as.data.frame()
 
