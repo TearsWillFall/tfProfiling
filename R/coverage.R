@@ -5,10 +5,11 @@
 #' @param bin_path Path to binary. Default tools/bedtools2/bin/bedtools
 #' @param bam Path to BAM file.
 #' @param verbose Enables progress messages. Default FALSE.
+#' @param genome Genome file FA format. Not required. Only to estimate coverage for specific regions.
 #' @param output_dir Directory to output results. If not provided then outputs in current directory
 #' @export
 
-calculate_genowide_coverage=function(bin_path="tools/bedtools2/bin/bedtools",bam="",verbose=FALSE,output_dir=""){
+calculate_genowide_coverage=function(bin_path="tools/bedtools2/bin/bedtools",bam="",verbose=FALSE,output_dir="",genome=""){
 
   sep="/"
   sample_name=ULPwgs::get_sample_name(bam)
@@ -25,10 +26,14 @@ calculate_genowide_coverage=function(bin_path="tools/bedtools2/bin/bedtools",bam
 
   out_file=paste0(out_file,"/",sample_name,"_genome_coverage.txt")
 
-  if(verbose){
-    print(paste(bin_path,"genomecov -ibam",bam,">",out_file))
+  if (genome!=""){
+    genome=paste("-g",genome)
   }
-  system(paste(bin_path,"genomecov -ibam",bam,">",out_file))
+
+  if(verbose){
+    print(paste(bin_path,"genomecov -ibam",genome,bam,">",out_file))
+  }
+  system(paste(bin_path,"genomecov -ibam",genome,bam,">",out_file))
 
 }
 

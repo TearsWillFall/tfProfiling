@@ -8,7 +8,8 @@ calculate_genowide_coverage(
   bin_path = "tools/bedtools2/bin/bedtools",
   bam = "",
   verbose = FALSE,
-  output_dir = ""
+  output_dir = "",
+  genome = ""
 )
 }
 \arguments{
@@ -19,6 +20,8 @@ calculate_genowide_coverage(
 \item{verbose}{Enables progress messages. Default FALSE.}
 
 \item{output_dir}{Directory to output results. If not provided then outputs in current directory}
+
+\item{genome}{Genome file FA format. Not required. Only to estimate coverage for specific regions.}
 }
 \description{
 This function takes a BAM file and generates a TXT file with its genome-wide coverage
