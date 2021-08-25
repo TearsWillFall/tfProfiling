@@ -3,13 +3,15 @@
 #' This function takes a BAM file and generates a TXT file with its genome-wide coverage
 #'
 #' @param bin_path Path to binary. Default tools/bedtools2/bin/bedtools
+#' @param bin_path2 Path to binary. Default tools/samtools/samtools
 #' @param bam Path to BAM file.
 #' @param verbose Enables progress messages. Default FALSE.
+#' @param bed Path to BED with regions to filter.
 #' @param genome Genome file FA format. Not required. Only to estimate coverage for specific regions.
 #' @param output_dir Directory to output results. If not provided then outputs in current directory
 #' @export
 
-calculate_genowide_coverage=function(bin_path="tools/bedtools2/bin/bedtools",bam="",verbose=FALSE,output_dir="",genome=""){
+calculate_genowide_coverage=function(bin_path="tools/bedtools2/bin/bedtools",bin_path2="tools/samtools/samtools",bam="",verbose=FALSE,output_dir="",genome="",bed=""){
 
   sep="/"
   sample_name=ULPwgs::get_sample_name(bam)
@@ -30,11 +32,17 @@ calculate_genowide_coverage=function(bin_path="tools/bedtools2/bin/bedtools",bam
     genome=paste("-g",genome)
   }
 
-  if(verbose){
-    print(paste(bin_path,"genomecov -ibam",bam,genome,">",out_file))
+  if (bed==""){
+    if(verbose){
+      print(paste(bin_path,"genomecov -ibam",bam,genome,">",out_file))
+    }
+    system(paste(bin_path,"genomecov -ibam",bam,genome,">",out_file))
+  }else{
+    if(verbose){
+      print(paste(bin_path2," view -b -L",bed, bam,"|",bin_path,"genomecov -ibam stdin",genome,">",out_file))
+    }
+    system(paste(bin_path2," view -b -L",bed, bam,"|",bin_path,"genomecov -ibam stdin",genome,">",out_file))
   }
-  system(paste(bin_path,"genomecov -ibam",bam,genome,">",out_file))
-
 }
 
 #' Get normalized local coverage from segmentation data (CNA) for a single base position

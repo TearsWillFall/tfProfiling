@@ -6,14 +6,18 @@
 \usage{
 calculate_genowide_coverage(
   bin_path = "tools/bedtools2/bin/bedtools",
+  bin_path2 = "tools/samtools/samtools",
   bam = "",
   verbose = FALSE,
   output_dir = "",
-  genome = ""
+  genome = "",
+  bed = ""
 )
 }
 \arguments{
 \item{bin_path}{Path to binary. Default tools/bedtools2/bin/bedtools}
+
+\item{bin_path2}{Path to binary. Default tools/samtools/samtools}
 
 \item{bam}{Path to BAM file.}
 
@@ -22,6 +26,8 @@ calculate_genowide_coverage(
 \item{output_dir}{Directory to output results. If not provided then outputs in current directory}
 
 \item{genome}{Genome file FA format. Not required. Only to estimate coverage for specific regions.}
+
+\item{bed}{Path to BED with regions to filter.}
 }
 \description{
 This function takes a BAM file and generates a TXT file with its genome-wide coverage
