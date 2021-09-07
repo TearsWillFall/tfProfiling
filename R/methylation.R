@@ -38,7 +38,7 @@ calculate_MR_tfbs=function(bin_path="tools/PileOMeth/output/MethylDackel",ref_da
 	out_file=paste0(output_dir,sep,sample_name,"_",tf_name)
 
 
-  ref_data=data.frame(chr=ref_data[,1],start=ref_data[,2],end=ref_data[,3],strand=ref_data[,which(ref_data[1,]=="+" | ref_data[1,]=="-")],pos=as.integer((ref_data[,3]+ref_data[,2])/2))
+  ref_data=data.frame(chr=as.character(ref_data[,1]),start=ref_data[,2],end=ref_data[,3],strand=ref_data[,which(ref_data[1,]=="+" | ref_data[1,]=="-")],pos=as.integer((ref_data[,3]+ref_data[,2])/2))
 	numb_tfbs=nrow(ref_data)
 	tfbs_to_analyze=ref_data
 
