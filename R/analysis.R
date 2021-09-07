@@ -170,7 +170,6 @@ analyze_tfbs_around_position=function(bin_path="tools/bedtools2/bin/bedtools",bi
 
 
 
-
   output_dir=paste0(output_dir,"/",tf_name)
 
 
