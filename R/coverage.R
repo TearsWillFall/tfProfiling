@@ -259,9 +259,31 @@ calculate_coverage_tfbs=function(bin_path="tools/samtools/samtools",ref_data="",
 #' @export
 
 calculate_coverage_around_gp=function(bin_path="tools/samtools/samtools",chr="",position="",strand="",bam="",norm_log2=1,start=1000,end=1000,mean_cov=1,mapq=0,method="default",start_bin=75,end_bin=75){
-    cov_data=read.csv(text=system(paste(bin_path,"depth -a -Q",mapq, "-r",paste0(chr,":",as.numeric(position)-start,"-",as.numeric(position)+end),bam),intern=TRUE),header=FALSE,sep="\t",stringsAsFactors=FALSE)
-    colnames(cov_data)=c("chr","pos","cov")
-    cov_data$strand=strand
-    cov_data=cov_data %>% dplyr::mutate(cor_cov=as.numeric(cov)/sum(as.numeric(cov)))  %>% dplyr::mutate(norm_cor_cov=cor_cov/as.numeric(norm_log2),pos_relative_to_tfbs=dplyr::if_else(strand=="+"|strand=="",pos-as.numeric(position),-(pos-as.numeric(position)))) %>% dplyr::arrange(pos_relative_to_tfbs)
-    return(cov_data)
+    if (method=="default"){
+      cov_data=read.csv(text=system(paste(bin_path,"depth -a -Q",mapq, "-r",paste0(chr,":",as.numeric(position)-start,"-",as.numeric(position)+end),bam),intern=TRUE),header=FALSE,sep="\t",stringsAsFactors=FALSE)
+      colnames(cov_data)=c("chr","pos","cov")
+      cov_data$strand=strand
+      cov_data=cov_data %>% dplyr::mutate(cor_cov=as.numeric(cov)/sum(as.numeric(cov)))  %>% dplyr::mutate(norm_cor_cov=cor_cov/as.numeric(norm_log2),pos_relative_to_tfbs=dplyr::if_else(strand=="+"|strand=="",pos-as.numeric(position),-(pos-as.numeric(position)))) %>% dplyr::arrange(pos_relative_to_tfbs)
+      return(cov_data)
+
+    }else if (method=="binned"){
+      cov_data_central=read.csv(text=system(paste(bin_path,"depth -a -Q",mapq, "-r",paste0(chr,":",as.numeric(position)-start_bin,"-",as.numeric(position)+end_bin),bam),intern=TRUE),header=FALSE,sep="\t",stringsAsFactors=FALSE)
+      colnames(cov_data_central)=c("chr","pos","cov")
+      cov_data_central$bin="CENTRAL"
+      cov_data_central$bin_pos=paste0(chr,":",as.numeric(position)-start_bin,"-",as.numeric(position)+end_bin)
+      cov_data=cov_data %>% group_by(bin) %>% summarise(cov)
+      cov_data_left_flank=read.csv(text=system(paste(bin_path,"depth -a -Q",mapq, "-r",paste0(chr,":",as.numeric(position)-start,"-",as.numeric(position)-start_bin),bam),intern=TRUE),header=FALSE,sep="\t",stringsAsFactors=FALSE)
+      colnames(cov_data_left_flank)=c("chr","pos","cov")
+      cov_data_left_flank$bin="LEFT_FLANK"
+      cov_data_left_flank$bin_pos=paste0(chr,":",as.numeric(position)-start,"-",as.numeric(position)-start_bin)
+      cov_data_left_flank=cov_data_left_flank %>% group_by(bin,bin_pos) %>% summarise(cov)
+      cov_data_right_flank=read.csv(text=system(paste(bin_path,"depth -a -Q",mapq, "-r",paste0(chr,":",as.numeric(position)+end_bin,"-",as.numeric(position)+end),bam),intern=TRUE),header=FALSE,sep="\t",stringsAsFactors=FALSE)
+      colnames(cov_data_right_flank)=c("chr","pos","cov")
+      cov_data_right_flank$bin="RIGHT_FLANK"
+      cov_data_right_flank$bin_pos=paste0(chr,":",as.numeric(position)+end_bin,"-",as.numeric(position)+bin)
+      cov_data_right_flank=cov_data_right_flank %>% group_by(bin,bin_pos) %>% summarise(cov)
+      cov_data=rbind(cov_data_central,cov_data_left_flank,cov_data_right_flank)
+      cov_data=cov_data %>% dplyr::mutate(cor_cov=as.numeric(cov)/mean_cov)  %>% dplyr::mutate(norm_cor_cov=cor_cov/as.numeric(norm_log2),bin=dplyr::if_else(strand=="+"|strand=="",bin,dplyr::if_else(bin=="RIGHT_FLANK","LEFT_FLANK","RIGHT_FLANK"))) %>% dplyr::arrange(bin)
+      return(cov_data)
+    }
 }
