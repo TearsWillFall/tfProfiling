@@ -14,7 +14,10 @@ calculate_coverage_around_gp(
   start = 1000,
   end = 1000,
   mean_cov = 1,
-  mapq = 0
+  mapq = 0,
+  method = "default",
+  start_bin = 75,
+  end_bin = 75
 )
 }
 \arguments{
@@ -37,6 +40,12 @@ calculate_coverage_around_gp(
 \item{mean_cov}{Mean genome wide coverage.}
 
 \item{mapq}{Min quality of mapping reads. Default 0}
+
+\item{method}{Method to use to estimate coverage. default/binned}
+
+\item{start_bin}{Downstream distance from genomic position to limit bin size of central region. Only if binned mode is selected.}
+
+\item{end_bin}{Upstream distance from genomic position to limit bin size of central region. Only if binned mode is selected.}
 }
 \value{
 A DATA.FRAME with per base coverage por each genomic position

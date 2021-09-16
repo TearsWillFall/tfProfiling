@@ -256,6 +256,7 @@ calculate_coverage_tfbs=function(bin_path="tools/samtools/samtools",ref_data="",
 #' @param method Method to use to estimate coverage. default/binned
 #' @param mapq Min quality of mapping reads. Default 0
 #' @return A DATA.FRAME with per base coverage por each genomic position
+#' @import tidyverse
 #' @export
 
 calculate_coverage_around_gp=function(bin_path="tools/samtools/samtools",chr="",position="",strand="",bam="",norm_log2=1,start=1000,end=1000,mean_cov=1,mapq=0,method="default",start_bin=75,end_bin=75){
