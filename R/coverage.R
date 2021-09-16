@@ -269,7 +269,7 @@ calculate_coverage_around_gp=function(bin_path="tools/samtools/samtools",chr="",
 
     }else if (method=="binned"){
       central=system(paste(bin_path,"view -c -q",mapq,bam, paste0(chr,":",as.numeric(position)-start_bin,"-",as.numeric(position)+end_bin)),intern=TRUE)
-      cov_data_central=data.frame(cov=unlist(central),bin="CENTRAL",bin_pos=paste0(chr,":",as.numeric(position)-start_bin,"-",as.numeric(position)+end_bin))
+      cov_data_central=data.frame(cov=as.numeric(central),bin="CENTRAL",bin_pos=paste0(chr,":",as.numeric(position)-start_bin,"-",as.numeric(position)+end_bin))
       left_flank=system(paste(bin_path,"view -c -q",mapq,bam,paste0(chr,":",as.numeric(position)-start,"-",as.numeric(position)-start_bin)),intern=TRUE)
       cov_data_left_flank=data.frame(cov=as.numeric(left_flank),bin="LEFT_FLANK",bin_pos=paste0(chr,":",as.numeric(position)-start,"-",as.numeric(position)-start_bin))
       right_flank=system(paste(bin_path,"view -c -q",mapq,bam, paste0(chr,":",as.numeric(position)+end_bin,"-",as.numeric(position)+end)),intern=TRUE)
