@@ -269,11 +269,11 @@ calculate_coverage_around_gp=function(bin_path="tools/samtools/samtools",chr="",
 
     }else if (method=="binned"){
       central=read.csv(text=system(paste(bin_path,"view -c -q",mapq,bam, paste0(chr,":",as.numeric(position)-start_bin,"-",as.numeric(position)+end_bin)),intern=TRUE),header=FALSE,sep="\t",stringsAsFactors=FALSE)
-      cov_data_central=data.frame(cov=central,bin="CENTRAL",bin_pos=paste0(chr,":",as.numeric(position)-start_bin,"-",as.numeric(position)+end_bin))
+      cov_data_central=data.frame(cov=as.numeric(central),bin="CENTRAL",bin_pos=paste0(chr,":",as.numeric(position)-start_bin,"-",as.numeric(position)+end_bin))
       left_flank=read.csv(text=system(paste(bin_path,"view -c -q",mapq,bam,paste0(chr,":",as.numeric(position)-start,"-",as.numeric(position)-start_bin)),intern=TRUE),header=FALSE,sep="\t",stringsAsFactors=FALSE)
-      cov_data_left_flank=data.frame(cov=left_flank,bin="LEFT_FLANK",bin_pos=paste0(chr,":",as.numeric(position)-start,"-",as.numeric(position)-start_bin))
+      cov_data_left_flank=data.frame(cov=as.numeric(left_flank),bin="LEFT_FLANK",bin_pos=paste0(chr,":",as.numeric(position)-start,"-",as.numeric(position)-start_bin))
       right_flank=read.csv(text=system(paste(bin_path,"view -c -q",mapq,bam, paste0(chr,":",as.numeric(position)+end_bin,"-",as.numeric(position)+end)),intern=TRUE),header=FALSE,sep="\t",stringsAsFactors=FALSE)
-      cov_data_right_flank=data.frame(cov=right_flank,bin="RIGHT_FLANK",bin_pos=paste0(chr,":",as.numeric(position)+end_bin,"-",as.numeric(position)+end))
+      cov_data_right_flank=data.frame(cov=as.numeric(right_flank),bin="RIGHT_FLANK",bin_pos=paste0(chr,":",as.numeric(position)+end_bin,"-",as.numeric(position)+end))
       cov_data=dplyr::bind_rows(list(cov_data_central,cov_data_left_flank,cov_data_right_flank))
       print(cov_data)
       cov_data=cov_data %>% dplyr::mutate(cor_cov=as.numeric(cov)/mean_cov)  %>% dplyr::mutate(norm_cor_cov=cor_cov/as.numeric(norm_log2),bin=dplyr::if_else(strand=="+"|strand=="",bin,dplyr::if_else(bin=="RIGHT_FLANK","LEFT_FLANK","RIGHT_FLANK"))) %>% dplyr::arrange(bin)
