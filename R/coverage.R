@@ -276,7 +276,7 @@ calculate_coverage_around_gp=function(bin_path="tools/samtools/samtools",chr="",
       cov_data_right_flank=data.frame(cov=as.numeric(right_flank),bin="RIGHT_FLANK",bin_pos=paste0(chr,":",as.numeric(position)+end_bin,"-",as.numeric(position)+end),stringsAsFactors=FALSE)
       cov_data=as.data.frame(dplyr::bind_rows(list(cov_data_central,cov_data_left_flank,cov_data_right_flank)))
       print(cov_data)
-      cov_data=cov_data %>% dplyr::mutate(cor_cov=as.numeric(cov)/mean_cov)  %>% dplyr::mutate(norm_cor_cov=cor_cov/as.numeric(norm_log2),bin=dplyr::if_else(strand=="+"|strand=="",bin,dplyr::if_else(bin=="RIGHT_FLANK","LEFT_FLANK","RIGHT_FLANK"))) %>% dplyr::arrange(bin)
+      cov_data=cov_data %>% dplyr::mutate(cor_cov=as.numeric(cov)/mean_cov)  %>% dplyr::mutate(norm_cor_cov=cor_cov/as.numeric(norm_log2))
       return(cov_data)
     }
 }
