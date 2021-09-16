@@ -272,7 +272,7 @@ calculate_coverage_around_gp=function(bin_path="tools/samtools/samtools",chr="",
       colnames(cov_data_central)=c("chr","pos","cov")
       cov_data_central$bin="CENTRAL"
       cov_data_central$bin_pos=paste0(chr,":",as.numeric(position)-start_bin,"-",as.numeric(position)+end_bin)
-      cov_data=cov_data_central %>% dplyr::group_by(bin) %>% dplyr::summarise(cov=sum(cov))
+      cov_data_central=cov_data_central %>% dplyr::group_by(bin) %>% dplyr::summarise(cov=sum(cov))
       cov_data_left_flank=read.csv(text=system(paste(bin_path,"depth -a -Q",mapq, "-r",paste0(chr,":",as.numeric(position)-start,"-",as.numeric(position)-start_bin),bam),intern=TRUE),header=FALSE,sep="\t",stringsAsFactors=FALSE)
       colnames(cov_data_left_flank)=c("chr","pos","cov")
       cov_data_left_flank$bin="LEFT_FLANK"
