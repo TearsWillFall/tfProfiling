@@ -272,17 +272,17 @@ calculate_coverage_around_gp=function(bin_path="tools/samtools/samtools",chr="",
       colnames(cov_data_central)=c("chr","pos","cov")
       cov_data_central$bin="CENTRAL"
       cov_data_central$bin_pos=paste0(chr,":",as.numeric(position)-start_bin,"-",as.numeric(position)+end_bin)
-      cov_data=cov_data_central %>% dplyr::group_by(bin) %>% dplyr::summarise(cov)
+      cov_data=cov_data_central %>% dplyr::group_by(bin) %>% dplyr::summarise(cov=cov)
       cov_data_left_flank=read.csv(text=system(paste(bin_path,"depth -a -Q",mapq, "-r",paste0(chr,":",as.numeric(position)-start,"-",as.numeric(position)-start_bin),bam),intern=TRUE),header=FALSE,sep="\t",stringsAsFactors=FALSE)
       colnames(cov_data_left_flank)=c("chr","pos","cov")
       cov_data_left_flank$bin="LEFT_FLANK"
       cov_data_left_flank$bin_pos=paste0(chr,":",as.numeric(position)-start,"-",as.numeric(position)-start_bin)
-      cov_data_left_flank=cov_data_left_flank %>% dplyr::group_by(bin,bin_pos) %>% dplyr::summarise(cov)
+      cov_data_left_flank=cov_data_left_flank %>% dplyr::group_by(bin,bin_pos) %>% dplyr::summarise(cov=cov)
       cov_data_right_flank=read.csv(text=system(paste(bin_path,"depth -a -Q",mapq, "-r",paste0(chr,":",as.numeric(position)+end_bin,"-",as.numeric(position)+end),bam),intern=TRUE),header=FALSE,sep="\t",stringsAsFactors=FALSE)
       colnames(cov_data_right_flank)=c("chr","pos","cov")
       cov_data_right_flank$bin="RIGHT_FLANK"
       cov_data_right_flank$bin_pos=paste0(chr,":",as.numeric(position)+end_bin,"-",as.numeric(position)+end)
-      cov_data_right_flank=cov_data_right_flank %>% dplyr::group_by(bin,bin_pos) %>% dplyr::summarise(cov)
+      cov_data_right_flank=cov_data_right_flank %>% dplyr::group_by(bin,bin_pos) %>% dplyr::summarise(cov=cov)
       cov_data=rbind(cov_data_central,cov_data_left_flank,cov_data_right_flank)
       cov_data=cov_data %>% dplyr::mutate(cor_cov=as.numeric(cov)/mean_cov)  %>% dplyr::mutate(norm_cor_cov=cor_cov/as.numeric(norm_log2),bin=dplyr::if_else(strand=="+"|strand=="",bin,dplyr::if_else(bin=="RIGHT_FLANK","LEFT_FLANK","RIGHT_FLANK"))) %>% dplyr::arrange(bin)
       return(cov_data)
