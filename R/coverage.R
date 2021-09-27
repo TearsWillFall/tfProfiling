@@ -252,6 +252,7 @@ calculate_coverage_tfbs=function(bin_path="tools/samtools/samtools",ref_data="",
 #' @param end Upstream distance from genomic position to estimate coverage
 #' @param start_bin Downstream distance from genomic position to limit bin size of central region. Only if binned mode is selected.
 #' @param end_bin Upstream distance from genomic position to limit bin size of central region. Only if binned mode is selected.
+#' @param score Score to measure. ACC/MR
 #' @param mean_cov Mean genome wide coverage.
 #' @param method Method to use to estimate coverage. default/binned
 #' @param mapq Min quality of mapping reads. Default 0
@@ -259,24 +260,76 @@ calculate_coverage_tfbs=function(bin_path="tools/samtools/samtools",ref_data="",
 #' @import tidyverse
 #' @export
 
-calculate_coverage_around_gp=function(bin_path="tools/samtools/samtools",chr="",position="",strand="",bam="",norm_log2=1,start=1000,end=1000,mean_cov=1,mapq=0,method="default",start_bin=75,end_bin=75){
-    if (method=="default"){
-      cov_data=read.csv(text=system(paste(bin_path,"depth -a -Q",mapq, "-r",paste0(chr,":",as.numeric(position)-start,"-",as.numeric(position)+end),bam),intern=TRUE),header=FALSE,sep="\t",stringsAsFactors=FALSE)
-      colnames(cov_data)=c("chr","pos","cov")
-      cov_data$strand=strand
-      cov_data=cov_data %>% dplyr::mutate(cor_cov=as.numeric(cov)/sum(as.numeric(cov)))  %>% dplyr::mutate(norm_cor_cov=cor_cov/as.numeric(norm_log2),pos_relative_to_tfbs=dplyr::if_else(strand=="+"|strand=="",pos-as.numeric(position),-(pos-as.numeric(position)))) %>% dplyr::arrange(pos_relative_to_tfbs)
-      return(cov_data)
+calculate_coverage_around_gp=function(bin_path="tools/samtools/samtools",chr="",position="",strand="",bam="",norm_log2=1,start=1000,end=1000,mean_cov=1,mapq=0,method="default",start_bin=75,end_bin=75,score="ACC"){
 
-    }else if (method=="binned"){
-      central=system(paste(bin_path,"view -c -q",mapq,bam, paste0(chr,":",as.numeric(position)-start_bin,"-",as.numeric(position)+end_bin)),intern=TRUE)
-      cov_data_central=data.frame(cov=as.numeric(central),bin="CENTRAL",bin_pos=paste0(chr,":",as.numeric(position)-start_bin,"-",as.numeric(position)+end_bin),stringsAsFactors=FALSE)
-      left_flank=system(paste(bin_path,"view -c -q",mapq,bam,paste0(chr,":",as.numeric(position)-start,"-",as.numeric(position)-start_bin)),intern=TRUE)
-      cov_data_left_flank=data.frame(cov=as.numeric(left_flank),bin="LEFT_FLANK",bin_pos=paste0(chr,":",as.numeric(position)-start,"-",as.numeric(position)-start_bin),stringsAsFactors=FALSE)
-      right_flank=system(paste(bin_path,"view -c -q",mapq,bam, paste0(chr,":",as.numeric(position)+end_bin,"-",as.numeric(position)+end)),intern=TRUE)
-      cov_data_right_flank=data.frame(cov=as.numeric(right_flank),bin="RIGHT_FLANK",bin_pos=paste0(chr,":",as.numeric(position)+end_bin,"-",as.numeric(position)+end),stringsAsFactors=FALSE)
-      cov_data=as.data.frame(dplyr::bind_rows(list(cov_data_central,cov_data_left_flank,cov_data_right_flank)))
-      cov_data$strand=strand
-      cov_data=cov_data %>% dplyr::mutate(cor_cov=as.numeric(cov)/mean_cov)  %>% dplyr::mutate(norm_cor_cov=cor_cov/as.numeric(norm_log2),bin=dplyr::if_else(strand=="+"|strand=="",bin,dplyr::if_else(bin=="RIGHT_FLANK","LEFT_FLANK","RIGHT_FLANK"))) %>% dplyr::arrange(bin)
-      return(cov_data)
-    }
+    sample_name=ULPwgs::get_sample_name(bam)
+
+    if(score=="ACC"){
+        if (method=="default"){
+          cov_data=read.csv(text=system(paste(bin_path,"depth -a -Q",mapq, "-r",paste0(chr,":",as.numeric(position)-start,"-",as.numeric(position)+end),bam),intern=TRUE),header=FALSE,sep="\t",stringsAsFactors=FALSE)
+          colnames(cov_data)=c("chr","pos","cov")
+          cov_data$strand=strand
+          cov_data=cov_data %>% dplyr::mutate(cor_cov=as.numeric(cov)/sum(as.numeric(cov)))  %>% dplyr::mutate(norm_cor_cov=cor_cov/as.numeric(norm_log2),pos_relative_to_tfbs=dplyr::if_else(strand=="+"|strand=="",pos-as.numeric(position),-(pos-as.numeric(position)))) %>% dplyr::arrange(pos_relative_to_tfbs)
+          return(cov_data)
+
+        }else if (method=="binned"){
+          central=system(paste(bin_path,"view -c -q",mapq,bam, paste0(chr,":",as.numeric(position)-start_bin,"-",as.numeric(position)+end_bin)),intern=TRUE)
+          cov_data_central=data.frame(cov=as.numeric(central),bin="CENTRAL",bin_pos=paste0(chr,":",as.numeric(position)-start_bin,"-",as.numeric(position)+end_bin),stringsAsFactors=FALSE)
+          left_flank=system(paste(bin_path,"view -c -q",mapq,bam,paste0(chr,":",as.numeric(position)-start,"-",as.numeric(position)-start_bin)),intern=TRUE)
+          cov_data_left_flank=data.frame(cov=as.numeric(left_flank),bin="LEFT_FLANK",bin_pos=paste0(chr,":",as.numeric(position)-start,"-",as.numeric(position)-start_bin),stringsAsFactors=FALSE)
+          right_flank=system(paste(bin_path,"view -c -q",mapq,bam, paste0(chr,":",as.numeric(position)+end_bin,"-",as.numeric(position)+end)),intern=TRUE)
+          cov_data_right_flank=data.frame(cov=as.numeric(right_flank),bin="RIGHT_FLANK",bin_pos=paste0(chr,":",as.numeric(position)+end_bin,"-",as.numeric(position)+end),stringsAsFactors=FALSE)
+          cov_data=as.data.frame(dplyr::bind_rows(list(cov_data_central,cov_data_left_flank,cov_data_right_flank)))
+          cov_data$strand=strand
+          cov_data=cov_data %>% dplyr::mutate(cor_cov=as.numeric(cov)/mean_cov)  %>% dplyr::mutate(norm_cor_cov=cor_cov/as.numeric(norm_log2),bin=dplyr::if_else(strand=="+"|strand=="",bin,dplyr::if_else(bin=="RIGHT_FLANK","LEFT_FLANK","RIGHT_FLANK")),tfbs=paste0(chr,":",as.numeric(position)),sample=sample_name) %>% dplyr::arrange(bin)
+          return(cov_data)
+        }
+    }else{
+
+
+        out_file=paste0(output_dir,sep,sample_name,"_",paste0(chr,"_",as.numeric(position)))
+
+        ref_data=dplyr::do(data.frame(chr=chr,pos_relative_to_tfbs =seq(-start,end,by=1), pos = seq(as.numeric(position)-start, as.numeric(position)+end, by = 1),tfbs=paste0(chr,":",as.numeric(position))))
+
+        ## Create a temporary bed file with regions +-1000 pb from TFBS to feed to MethylDackel
+
+        tmp_bed(chr=chr,start=start,end=end,strand=strand,name=paste0(output_dir,sep,sample_name,"_",paste0(chr,"_",as.numeric(position))))
+
+        keep_strand=""
+
+        if (keep_strand){
+          keep_strand="--keepStrand"
+        }
+
+        if (verbose){
+          print(paste(bin_path," extract ",ref_genome, bam,"-l ",gsub(";","\\\\;",gsub("&","\\\\&",paste0(output_dir,sep,sample_name,"_",tf_name,".bed.tmp")))," -o ",gsub(";","\\\\;",gsub("&","\\\\&",out_file)),keep_strand," -q ",mapq," -p ",phred," -@ ",threads))
+        }
+        system(paste(bin_path," extract ",ref_genome, bam,"-l ",gsub(";","\\\\;",gsub("&","\\\\&",paste0(output_dir,sep,sample_name,"_",tf_name,".bed.tmp")))," -o ",gsub(";","\\\\;",gsub("&","\\\\&",out_file)),keep_strand," -q ",mapq," -p ",phred," -@ ",threads))
+        system(gsub(";","\\\\;",gsub("&","\\\\&",paste0("rm ",paste0(output_dir,sep,sample_name,"_",paste0(chr,"_",as.numeric(position)),".bed.tmp")))))
+
+        tfbs=read.table(paste0(out_file,"_CpG.bedGraph"),skip=1,stringsAsFactors=FALSE)
+        tfbs$pos=as.integer(position)
+        colnames(tfbs)=c("chr","start","end","MR","nC","nT","pos")
+
+
+        options(warn = -1)
+      	merg_tfbs1=dplyr::left_join(ref_data,tfbs,by=c("chr","pos"))
+      	if(tfbs_data_keep){
+      		write.table(merg_tfbs1,paste0(output_dir,sep,sample_name,"_",paste0(chr,"_",as.numeric(position)),".tfbs.data"),quote=FALSE,row.names=FALSE,col.names=TRUE)
+      	}
+        if (method=="binned"){
+          merg_tfbs1=dplyr::left_join(ref_data,tfbs,by=c("chr","pos"))%>% dplyr::group_by(pos_relative_to_tfbs) %>%
+          mutate(bin=ifelse(as.numeric(pos_relative_to_tfbs)+start_bin>=0|as.numeric(pos_relative_to_tfbs)-end_bin<=0,"CENTRAL",
+          ifelse(as.numeric(pos_relative_to_tfbs)+start_bin>0,"LEFT_FLANK",ifelse(as.numeric(pos_relative_to_tfbs)+end_bin<0,"RIGHT_FLANK")))) %>%
+          group_by(bin) %>% summarise(MEAN_MR=mean(MR/100,na.rm=TRUE),CI=qt(0.95,(sum(!is.na(MR/100))-1))*sd(MR/100,na.rm=TRUE)/sqrt(sum(!is.na(MR/100))),DATA_POINTS_ANALYZED=sum(!is.na(MR/100)))
+          merg_tfbs1= merg_tfbs1 %>% mutate(SAMPLE=sample_name,CI95_UPPER_BOUND=ifelse(MEAN_MR+CI>1,1,MEAN_MR+CI),CI95_LOWER_BOUND=ifelse(MEAN_MR-CI<0,0,MEAN_MR-CI),TFBS=paste0(chr,":",position))
+
+      }else if (method=="default"){
+        merg_tfbs1=dplyr::left_join(ref_data,tfbs,by=c("chr","pos"))%>% dplyr::group_by(pos_relative_to_tfbs) %>% dplyr::mutate( x_bins = ifelse(is.na(cut(pos_relative_to_tfbs, breaks = seq(-tfbs_end,tfbs_start,bin_width),include.lowest=TRUE,labels=FALSE)),0,cut(pos_relative_to_tfbs,
+        breaks = seq(-tfbs_end,tfbs_start,bin_width),include.lowest=TRUE,labels=FALSE)))%>% dplyr::group_by(x_bins) %>%
+        dplyr::mutate(x_bins=as.integer((max(pos_relative_to_tfbs)+min(pos_relative_to_tfbs))/2)) %>%
+        dplyr::summarise(MEAN_MR=mean(MR/100,na.rm=TRUE),CI=qt(0.95,(sum(!is.na(MR/100))-1))*sd(MR/100,na.rm=TRUE)/sqrt(sum(!is.na(MR/100))),DATA_POINTS_ANALYZED=sum(!is.na(MR/100)))
+        merg_tfbs1= dplyr::rename(merg_tfbs1,POSITION_RELATIVE_TO_TFBS=x_bins) %>% dplyr::mutate(CI95_UPPER_BOUND=ifelse(MEAN_MR+CI>1,1,MEAN_MR+CI),CI95_LOWER_BOUND=ifelse(MEAN_MR-CI<0,0,MEAN_MR-CI),BIN_WIDTH=bin_width,SAMPLE=paste0(sample_name),TFBS=paste0(chr,":",position))
+      }
+   }
 }
