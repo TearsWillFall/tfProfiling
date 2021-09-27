@@ -254,13 +254,14 @@ calculate_coverage_tfbs=function(bin_path="tools/samtools/samtools",ref_data="",
 #' @param end_bin Upstream distance from genomic position to limit bin size of central region. Only if binned mode is selected.
 #' @param score Score to measure. ACC/MR
 #' @param mean_cov Mean genome wide coverage.
+#' @param bin_width Bin size to bin methylation data in default mode
 #' @param method Method to use to estimate coverage. default/binned
 #' @param mapq Min quality of mapping reads. Default 0
 #' @return A DATA.FRAME with per base coverage por each genomic position
 #' @import tidyverse
 #' @export
 
-calculate_coverage_around_gp=function(bin_path="tools/samtools/samtools",chr="",position="",strand="",bam="",norm_log2=1,start=1000,end=1000,mean_cov=1,mapq=0,method="default",start_bin=75,end_bin=75,score="ACC"){
+calculate_coverage_around_gp=function(bin_path="tools/samtools/samtools",chr="",position="",strand="",bam="",norm_log2=1,start=1000,end=1000,mean_cov=1,mapq=0,method="default",start_bin=75,end_bin=75,score="ACC",bin_width=50,keep_strand=FALSE){
 
     sample_name=ULPwgs::get_sample_name(bam)
 
@@ -286,7 +287,6 @@ calculate_coverage_around_gp=function(bin_path="tools/samtools/samtools",chr="",
         }
     }else{
 
-
         out_file=paste0(output_dir,sep,sample_name,"_",paste0(chr,"_",as.numeric(position)))
 
         ref_data=dplyr::do(data.frame(chr=chr,pos_relative_to_tfbs =seq(-start,end,by=1), pos = seq(as.numeric(position)-start, as.numeric(position)+end, by = 1),tfbs=paste0(chr,":",as.numeric(position))))
@@ -297,14 +297,14 @@ calculate_coverage_around_gp=function(bin_path="tools/samtools/samtools",chr="",
 
         keep_strand=""
 
-        if (keep_strand){
+        if (strand){
           keep_strand="--keepStrand"
         }
 
         if (verbose){
-          print(paste(bin_path," extract ",ref_genome, bam,"-l ",gsub(";","\\\\;",gsub("&","\\\\&",paste0(output_dir,sep,sample_name,"_",tf_name,".bed.tmp")))," -o ",gsub(";","\\\\;",gsub("&","\\\\&",out_file)),keep_strand," -q ",mapq," -p ",phred," -@ ",threads))
+          print(paste(bin_path," extract ",ref_genome, bam,"-l ",gsub(";","\\\\;",gsub("&","\\\\&",paste0(output_dir,sep,sample_name,"_",paste0(chr,"_",position),".bed.tmp")))," -o ",gsub(";","\\\\;",gsub("&","\\\\&",out_file)),keep_strand," -q ",mapq," -p ",phred," -@ ",threads))
         }
-        system(paste(bin_path," extract ",ref_genome, bam,"-l ",gsub(";","\\\\;",gsub("&","\\\\&",paste0(output_dir,sep,sample_name,"_",tf_name,".bed.tmp")))," -o ",gsub(";","\\\\;",gsub("&","\\\\&",out_file)),keep_strand," -q ",mapq," -p ",phred," -@ ",threads))
+        system(paste(bin_path," extract ",ref_genome, bam,"-l ",gsub(";","\\\\;",gsub("&","\\\\&",paste0(output_dir,sep,sample_name,"_",paste0(chr,"_",position),".bed.tmp")))," -o ",gsub(";","\\\\;",gsub("&","\\\\&",out_file)),keep_strand," -q ",mapq," -p ",phred," -@ ",threads))
         system(gsub(";","\\\\;",gsub("&","\\\\&",paste0("rm ",paste0(output_dir,sep,sample_name,"_",paste0(chr,"_",as.numeric(position)),".bed.tmp")))))
 
         tfbs=read.table(paste0(out_file,"_CpG.bedGraph"),skip=1,stringsAsFactors=FALSE)
@@ -322,14 +322,16 @@ calculate_coverage_around_gp=function(bin_path="tools/samtools/samtools",chr="",
           mutate(bin=ifelse(as.numeric(pos_relative_to_tfbs)+start_bin>=0|as.numeric(pos_relative_to_tfbs)-end_bin<=0,"CENTRAL",
           ifelse(as.numeric(pos_relative_to_tfbs)+start_bin>0,"LEFT_FLANK",ifelse(as.numeric(pos_relative_to_tfbs)+end_bin<0,"RIGHT_FLANK")))) %>%
           group_by(bin) %>% summarise(MEAN_MR=mean(MR/100,na.rm=TRUE),CI=qt(0.95,(sum(!is.na(MR/100))-1))*sd(MR/100,na.rm=TRUE)/sqrt(sum(!is.na(MR/100))),DATA_POINTS_ANALYZED=sum(!is.na(MR/100)))
-          merg_tfbs1= merg_tfbs1 %>% mutate(SAMPLE=sample_name,CI95_UPPER_BOUND=ifelse(MEAN_MR+CI>1,1,MEAN_MR+CI),CI95_LOWER_BOUND=ifelse(MEAN_MR-CI<0,0,MEAN_MR-CI),TFBS=paste0(chr,":",position))
+          merg_tfbs1= merg_tfbs1 %>% mutate(SAMPLE=sample_name,CI95_UPPER_BOUND=ifelse(MEAN_MR+CI>1,1,MEAN_MR+CI),CI95_LOWER_BOUND=ifelse(MEAN_MR-CI<0,0,MEAN_MR-CI),TFBS=paste0(chr,":",position),BIN_POS=ifelse(bin=="CENTRAL",paste0(chr,":",as.numeric(position)-start_bin,"-",as.numeric(position)+end_bin),
+          ifelse(bin=="LEFT_FLANK",paste0(chr,":",as.numeric(position)-start,"-",as.numeric(position)-start_bin),ifelse(bin=="RIGHT_FLANK",paste0(chr,":",as.numeric(position)+end_bin,"-",as.numeric(position)+end),NA))))
 
-      }else if (method=="default"){
-        merg_tfbs1=dplyr::left_join(ref_data,tfbs,by=c("chr","pos"))%>% dplyr::group_by(pos_relative_to_tfbs) %>% dplyr::mutate( x_bins = ifelse(is.na(cut(pos_relative_to_tfbs, breaks = seq(-tfbs_end,tfbs_start,bin_width),include.lowest=TRUE,labels=FALSE)),0,cut(pos_relative_to_tfbs,
-        breaks = seq(-tfbs_end,tfbs_start,bin_width),include.lowest=TRUE,labels=FALSE)))%>% dplyr::group_by(x_bins) %>%
-        dplyr::mutate(x_bins=as.integer((max(pos_relative_to_tfbs)+min(pos_relative_to_tfbs))/2)) %>%
-        dplyr::summarise(MEAN_MR=mean(MR/100,na.rm=TRUE),CI=qt(0.95,(sum(!is.na(MR/100))-1))*sd(MR/100,na.rm=TRUE)/sqrt(sum(!is.na(MR/100))),DATA_POINTS_ANALYZED=sum(!is.na(MR/100)))
-        merg_tfbs1= dplyr::rename(merg_tfbs1,POSITION_RELATIVE_TO_TFBS=x_bins) %>% dplyr::mutate(CI95_UPPER_BOUND=ifelse(MEAN_MR+CI>1,1,MEAN_MR+CI),CI95_LOWER_BOUND=ifelse(MEAN_MR-CI<0,0,MEAN_MR-CI),BIN_WIDTH=bin_width,SAMPLE=paste0(sample_name),TFBS=paste0(chr,":",position))
+        }else if (method=="default"){
+          merg_tfbs1=dplyr::left_join(ref_data,tfbs,by=c("chr","pos"))%>% dplyr::group_by(pos_relative_to_tfbs) %>% dplyr::mutate( x_bins = ifelse(is.na(cut(pos_relative_to_tfbs, breaks = seq(-tfbs_end,tfbs_start,bin_width),include.lowest=TRUE,labels=FALSE)),0,cut(pos_relative_to_tfbs,
+          breaks = seq(-tfbs_end,tfbs_start,bin_width),include.lowest=TRUE,labels=FALSE)))%>% dplyr::group_by(x_bins) %>%
+          dplyr::mutate(x_bins=as.integer((max(pos_relative_to_tfbs)+min(pos_relative_to_tfbs))/2)) %>%
+          dplyr::summarise(MEAN_MR=mean(MR/100,na.rm=TRUE),CI=qt(0.95,(sum(!is.na(MR/100))-1))*sd(MR/100,na.rm=TRUE)/sqrt(sum(!is.na(MR/100))),DATA_POINTS_ANALYZED=sum(!is.na(MR/100)))
+          merg_tfbs1= dplyr::rename(merg_tfbs1,POSITION_RELATIVE_TO_TFBS=x_bins) %>% dplyr::mutate(CI95_UPPER_BOUND=ifelse(MEAN_MR+CI>1,1,MEAN_MR+CI),CI95_LOWER_BOUND=ifelse(MEAN_MR-CI<0,0,MEAN_MR-CI),BIN_WIDTH=bin_width,
+          SAMPLE=paste0(sample_name),TFBS=paste0(chr,":",position))
+        }
       }
-   }
-}
+    }

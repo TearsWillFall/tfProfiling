@@ -17,7 +17,10 @@ calculate_coverage_around_gp(
   mapq = 0,
   method = "default",
   start_bin = 75,
-  end_bin = 75
+  end_bin = 75,
+  score = "ACC",
+  bin_width = 50,
+  keep_strand = FALSE
 )
 }
 \arguments{
@@ -46,6 +49,10 @@ calculate_coverage_around_gp(
 \item{start_bin}{Downstream distance from genomic position to limit bin size of central region. Only if binned mode is selected.}
 
 \item{end_bin}{Upstream distance from genomic position to limit bin size of central region. Only if binned mode is selected.}
+
+\item{score}{Score to measure. ACC/MR}
+
+\item{bin_width}{Bin size to bin methylation data in default mode}
 }
 \value{
 A DATA.FRAME with per base coverage por each genomic position
