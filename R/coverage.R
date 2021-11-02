@@ -358,6 +358,7 @@ start_bin=75,end_bin=75,score="ACC",bin_width=50,keep_strand=FALSE){
 #' @param bin_width Bin size to bin methylation data in default mode
 #' @param method Method to use to estimate coverage. default/binned
 #' @param mapq Min quality of mapping reads. Default 0
+#' @param threads Number of cores to use. Default 3
 #' @return A DATA.FRAME with per base coverage por each genomic position
 #' @import tidyverse
 #' @export
@@ -374,6 +375,6 @@ score="ACC",bin_width=50,keep_strand=FALSE){
     position=regions[x,]$pos,strand=regions[x,6],bam=bam,
     norm_log2=log2_norm,start=strat,end=end,mean_cov=mean_cov,mapq=mapq,method=method,
     start_bin=start_bin,end_bin=end_bin,score=score,bin_width=bin_width,keep_strand=keep_strand)
-  })
+  },mc.cores=threads)
   cov_data$sample=ULPwgs::get_sample_name(bam)
 }
