@@ -261,7 +261,9 @@ calculate_coverage_tfbs=function(bin_path="tools/samtools/samtools",ref_data="",
 #' @import tidyverse
 #' @export
 
-calculate_coverage_around_gp=function(bin_path="tools/samtools/samtools",chr="",position="",strand="",bam="",norm_log2=1,start=1000,end=1000,mean_cov=1,mapq=0,method="default",start_bin=75,end_bin=75,score="ACC",bin_width=50,keep_strand=FALSE){
+calculate_coverage_around_gp=function(bin_path="tools/samtools/samtools",chr="",position="",
+strand="",bam="",norm_log2=1,start=1000,end=1000,mean_cov=1,mapq=0,method="default",
+start_bin=75,end_bin=75,score="ACC",bin_width=50,keep_strand=FALSE){
 
     sample_name=ULPwgs::get_sample_name(bam)
     if(score=="ACC"){
@@ -334,3 +336,44 @@ calculate_coverage_around_gp=function(bin_path="tools/samtools/samtools",chr="",
         }
       }
     }
+
+
+#' Calculate Coverage/Methylation around Genomic Positions
+#'
+#' This function takes chromosome location, as well as strand information, and generates a coverage report around
+#' for it. This coverage can be normalized if local segmentation values for the region are given and further corrected by the
+#' the local coverage in the BAM
+#'
+#'
+#' @param bin_path Path to binary. Default tools/samtools/samtools
+#' @param bed Path to BED file with regions.
+#' @param bam Path to BAM file.
+#' @param norm_log2 Local segment log2
+#' @param start Downstream distance from genomic position to estimate coverage
+#' @param end Upstream distance from genomic position to estimate coverage
+#' @param start_bin Downstream distance from genomic position to limit bin size of central region. Only if binned mode is selected.
+#' @param end_bin Upstream distance from genomic position to limit bin size of central region. Only if binned mode is selected.
+#' @param score Score to measure. ACC/MR
+#' @param mean_cov Mean genome wide coverage.
+#' @param bin_width Bin size to bin methylation data in default mode
+#' @param method Method to use to estimate coverage. default/binned
+#' @param mapq Min quality of mapping reads. Default 0
+#' @return A DATA.FRAME with per base coverage por each genomic position
+#' @import tidyverse
+#' @export
+
+calculate_ratios_aroung_gps=function(bin_path="tools/samtools/samtools",bed="",bam="",norm_log2,
+start=1000,end=1000,mean_cov=1,mapq=0,method="default",start_bin=75,end_bin=75,
+score="ACC",bin_width=50,keep_strand=FALSE){
+  regions=read.table(bed,stringsAsFactors=FALSE,sep="\t",quote="\\",comment.char="")
+  regions[,1]=sub("chr","",regions[,1])
+  regions$pos=as.integer((as.numeric(region[x,2])+as.numeric(region[x,3]))/2)
+  log2_norm=get_norm_local_coverage(pos="",chr=region[x,1],norm_log2=norm_log2)
+  cov_data=parallel::mclapply(1:nrow(regions),FUN=function(x){
+    calculate_coverage_around_gp(bin_path=bin_path,chr=region[x,1],
+    position=regions[x,]$pos,strand=region[x,6],bam=bam,
+    norm_log2=log2_norm,start=strat,end=end,mean_cov=mean_cov,mapq=mapq,method=method,
+    start_bin=start_bin,end_bin=end_bin,score=score,bin_width=bin_width,keep_strand=keep_strand)
+  })
+  cov_data$sample=ULPwgs::get_sample_name(bam)
+}
