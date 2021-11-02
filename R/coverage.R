@@ -368,7 +368,7 @@ start=1000,end=1000,mean_cov=1,mapq=0,method="default",start_bin=75,end_bin=75,
 score="ACC",bin_width=50,keep_strand=FALSE,threads=3){
   regions=read.table(bed,stringsAsFactors=FALSE,sep="\t",quote="\\",comment.char="")
   regions$pos=as.integer((as.numeric(regions[,2])+as.numeric(regions[,3]))/2)
-  cov_data=lapply(1:nrow(regions),FUN=function(x){
+  cov_data=parallel::mclapply(1:nrow(regions),FUN=function(x){
     log2_norm=get_norm_local_coverage(pos=regions[x,]$pos,chr=regions[x,1],norm_log2=norm_log2)
     calculate_coverage_around_gp(bin_path=bin_path,chr=regions[x,1],
     position=regions[x,]$pos,strand=regions[x,6],bam=bam,
