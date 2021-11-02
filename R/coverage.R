@@ -374,7 +374,7 @@ score="ACC",bin_width=50,keep_strand=FALSE,threads=3){
     calculate_coverage_around_gp(bin_path=bin_path,chr=regions[x,1],
     position=regions[x,]$pos,strand=regions[x,6],bam=bam,
     norm_log2=log2_norm,
-    start=strat,end=end,mean_cov=mean_cov,mapq=mapq,method=method,
+    start=start,end=end,mean_cov=mean_cov,mapq=mapq,method=method,
     start_bin=start_bin,end_bin=end_bin,score=score,bin_width=bin_width,keep_strand=keep_strand)
   })
   cov_data=dplyr::bind_rows(cov_data)
