@@ -376,5 +376,7 @@ score="ACC",bin_width=50,keep_strand=FALSE,threads=3){
     start=strat,end=end,mean_cov=mean_cov,mapq=mapq,method=method,
     start_bin=start_bin,end_bin=end_bin,score=score,bin_width=bin_width,keep_strand=keep_strand)
   },mc.cores=threads)
+  cov_data=dplyr::bind_rows(cov_data)
   cov_data$sample=ULPwgs::get_sample_name(bam)
+  return(cov_data)
 }
