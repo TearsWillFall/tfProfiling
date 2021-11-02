@@ -264,13 +264,12 @@ calculate_coverage_tfbs=function(bin_path="tools/samtools/samtools",ref_data="",
 calculate_coverage_around_gp=function(bin_path="tools/samtools/samtools",chr="",position="",strand="",bam="",norm_log2=1,start=1000,end=1000,mean_cov=1,mapq=0,method="default",start_bin=75,end_bin=75,score="ACC",bin_width=50,keep_strand=FALSE){
 
     sample_name=ULPwgs::get_sample_name(bam)
-
     if(score=="ACC"){
         if (method=="default"){
           cov_data=read.csv(text=system(paste(bin_path,"depth -a -Q",mapq, "-r",paste0(chr,":",as.numeric(position)-start,"-",as.numeric(position)+end),bam),intern=TRUE),header=FALSE,sep="\t",stringsAsFactors=FALSE)
           colnames(cov_data)=c("chr","pos","cov")
           cov_data$strand=strand
-          cov_data=cov_data %>% dplyr::mutate(cor_cov=as.numeric(cov)/sum(as.numeric(cov)))  %>% dplyr::mutate(norm_cor_cov=cor_cov/as.numeric(norm_log2),pos_relative_to_tfbs=dplyr::if_else(strand=="+"|strand=="",pos-as.numeric(position),-(pos-as.numeric(position)))) %>% dplyr::arrange(pos_relative_to_tfbs)
+          cov_data=cov_data %>% dplyr::mutate(cor_cov=as.numeric(cov)/mean_cov)  %>% dplyr::mutate(norm_cor_cov=cor_cov/as.numeric(norm_log2),pos_relative_to_tfbs=dplyr::if_else(strand=="+"|strand=="",pos-as.numeric(position),-(pos-as.numeric(position)))) %>% dplyr::arrange(pos_relative_to_tfbs)
           return(cov_data)
 
         }else if (method=="binned"){
