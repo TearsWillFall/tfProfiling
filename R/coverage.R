@@ -365,7 +365,7 @@ start_bin=75,end_bin=75,score="ACC",bin_width=50,keep_strand=FALSE){
 
 calculate_ratios_aroung_gps=function(bin_path="tools/samtools/samtools",bed="",bam="",norm_log2,
 start=1000,end=1000,mean_cov=1,mapq=0,method="default",start_bin=75,end_bin=75,
-score="ACC",bin_width=50,keep_strand=FALSE){
+score="ACC",bin_width=50,keep_strand=FALSE,threads=3){
   regions=read.table(bed,stringsAsFactors=FALSE,sep="\t",quote="\\",comment.char="")
   regions[,1]=sub("chr","",regions[,1])
   regions$pos=as.integer((as.numeric(regions[,2])+as.numeric(regions[,3]))/2)
