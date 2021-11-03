@@ -366,7 +366,13 @@ start_bin=75,end_bin=75,score="ACC",bin_width=50,keep_strand=FALSE){
 calculate_ratios_aroung_gps=function(bin_path="tools/samtools/samtools",bed="",bam="",norm_log2,
 start=1000,end=1000,mean_cov=1,mapq=0,method="default",start_bin=75,end_bin=75,
 score="ACC",bin_width=50,keep_strand=FALSE,threads=3){
+
+  chr_check=system(paste(bin_path,"view",bam," | head -n 1 | awk -F \"\t\" '{print $3}'"),intern=TRUE)
+
   regions=read.table(bed,stringsAsFactors=FALSE,sep="\t",quote="\\",comment.char="")
+  if (!grepl("chr",chr_check)){
+    regions[,1]=sub("chr",regions[,1])
+  }
   regions$pos=as.integer((as.numeric(regions[,2])+as.numeric(regions[,3]))/2)
   cov_data=parallel::mclapply(1:nrow(regions),FUN=function(x){
     log2_norm=get_norm_local_coverage(pos=regions[x,]$pos,chr=regions[x,1],norm_log2=norm_log2)
