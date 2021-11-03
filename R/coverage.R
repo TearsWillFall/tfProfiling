@@ -375,7 +375,12 @@ score="ACC",bin_width=50,keep_strand=FALSE,threads=3){
   }
   regions$pos=as.integer((as.numeric(regions[,2])+as.numeric(regions[,3]))/2)
   cov_data=parallel::mclapply(1:nrow(regions),FUN=function(x){
-    log2_norm=get_norm_local_coverage(pos=regions[x,]$pos,chr=regions[x,1],norm_log2=norm_log2)
+    if (is.numeric(norm_log2)){
+        log2_norm=get_norm_local_coverage(pos=regions[x,]$pos,chr=regions[x,1],norm_log2=norm_log2)
+    }else{
+        log2_norm=norm_log2
+    }
+
     calculate_coverage_around_gp(bin_path=bin_path,chr=regions[x,1],
     position=regions[x,]$pos,strand=regions[x,6],bam=bam,
     norm_log2=log2_norm,
