@@ -371,7 +371,7 @@ score="ACC",bin_width=50,keep_strand=FALSE,threads=3){
 
   regions=read.table(bed,stringsAsFactors=FALSE,sep="\t",quote="\\",comment.char="")
   if (!grepl("chr",chr_check)){
-    regions[,1]=sub("chr",regions[,1])
+    regions[,1]=sub("chr","",regions[,1])
   }
   regions$pos=as.integer((as.numeric(regions[,2])+as.numeric(regions[,3]))/2)
   cov_data=parallel::mclapply(1:nrow(regions),FUN=function(x){
